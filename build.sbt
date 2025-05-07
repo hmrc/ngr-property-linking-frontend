@@ -24,7 +24,7 @@ lazy val microservice = Project("ngr-property-linking-frontend", file("."))
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(WartRemoverSettings.wartRemoverSettings *)
   .settings(CodeCoverageSettings.settings *)
-
+  .disablePlugins(JUnitXmlReportPlugin)
 
 lazy val it = project
   .enablePlugins(PlayScala)

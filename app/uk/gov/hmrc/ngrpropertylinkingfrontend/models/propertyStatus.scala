@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,17 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(layout: Layout)
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-@()(implicit request: RequestHeader, messages: Messages)
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-@layout(pageTitle = Some("ngr-property-linking-frontend")) {
-    <h1 class="govuk-heading-xl">ngr-property-linking-frontend</h1>
-    <p class="govuk-body">@{messages("service.text")}</p>
+sealed trait PropertyStatus extends EnumEntry
+
+object PropertyStatus extends Enum[PropertyStatus] with PlayJsonEnum[PropertyStatus] {
+
+  val values = findValues
+
+  case object ActionNeeded extends PropertyStatus
+
+  case object InReview extends PropertyStatus
+
+  case object Complete extends PropertyStatus
 }
 
-@{
-    //$COVERAGE-OFF$
-}
+
+

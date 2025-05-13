@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.config
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration
 
-import com.google.inject.AbstractModule
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, AuthRetrievalsImpl, RegistrationAction, RegistrationActionImpl}
+import play.api.libs.json.{Format, Json}
 
-class Module extends AbstractModule {
+final case class TradingName(value: String)
 
-  override def configure(): Unit = {
-    bind(classOf[AppConfig]).to(classOf[FrontendAppConfig]).asEagerSingleton()
-    bind(classOf[AuthRetrievals]).to(classOf[AuthRetrievalsImpl]).asEagerSingleton()
-    bind(classOf[RegistrationAction]).to(classOf[RegistrationActionImpl]).asEagerSingleton()
-  }
+object TradingName {
+  implicit val format: Format[TradingName] = Json.format[TradingName]
 }

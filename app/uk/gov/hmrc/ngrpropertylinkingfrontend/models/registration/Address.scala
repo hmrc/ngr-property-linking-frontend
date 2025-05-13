@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.config
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration
 
-import com.google.inject.AbstractModule
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, AuthRetrievalsImpl, RegistrationAction, RegistrationActionImpl}
+import play.api.libs.json.{Json, OFormat}
 
-class Module extends AbstractModule {
+final case class Address(line1: String,
+                         line2: Option[String],
+                         town: String,
+                         county: Option[String],
+                         postcode: Postcode,
+                        ) {
+  override def toString: String = Seq(line1, line2.getOrElse(""), town, county.getOrElse(""), postcode.toString).mkString(", ")
+}
 
-  override def configure(): Unit = {
-    bind(classOf[AppConfig]).to(classOf[FrontendAppConfig]).asEagerSingleton()
-    bind(classOf[AuthRetrievals]).to(classOf[AuthRetrievalsImpl]).asEagerSingleton()
-    bind(classOf[RegistrationAction]).to(classOf[RegistrationActionImpl]).asEagerSingleton()
-  }
+object Address {
+
+  implicit val format: OFormat[Address] = Json.format[Address]
+
+
 }

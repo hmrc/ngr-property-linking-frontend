@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.config
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration
 
-import com.google.inject.AbstractModule
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, AuthRetrievalsImpl, RegistrationAction, RegistrationActionImpl}
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-class Module extends AbstractModule {
+sealed trait ReferenceType extends EnumEntry
 
-  override def configure(): Unit = {
-    bind(classOf[AppConfig]).to(classOf[FrontendAppConfig]).asEagerSingleton()
-    bind(classOf[AuthRetrievals]).to(classOf[AuthRetrievalsImpl]).asEagerSingleton()
-    bind(classOf[RegistrationAction]).to(classOf[RegistrationActionImpl]).asEagerSingleton()
-  }
+object ReferenceType extends Enum[ReferenceType] with PlayJsonEnum[ReferenceType]  {
+
+  val values: IndexedSeq[ReferenceType] = findValues
+
+  case object TRN  extends ReferenceType
+  case object NINO extends ReferenceType
+  case object SAUTR  extends ReferenceType
 }

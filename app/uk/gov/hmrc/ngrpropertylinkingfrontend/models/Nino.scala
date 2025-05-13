@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.config
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import com.google.inject.AbstractModule
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, AuthRetrievalsImpl, RegistrationAction, RegistrationActionImpl}
+import play.api.libs.json.{Reads, Writes}
+import uk.gov.hmrc.domain.{SimpleObjectReads, SimpleObjectWrites, TaxIdentifier}
 
-class Module extends AbstractModule {
+final case class Nino(nino: String) extends TaxIdentifier {
+  def value: String = nino
+}
 
-  override def configure(): Unit = {
-    bind(classOf[AppConfig]).to(classOf[FrontendAppConfig]).asEagerSingleton()
-    bind(classOf[AuthRetrievals]).to(classOf[AuthRetrievalsImpl]).asEagerSingleton()
-    bind(classOf[RegistrationAction]).to(classOf[RegistrationActionImpl]).asEagerSingleton()
-  }
+object Nino {
+
+  implicit val ninoWrite: Writes[Nino] = new SimpleObjectWrites[Nino](_.value)
+  implicit val ninoRead: Reads[Nino] = new SimpleObjectReads[Nino]("nino", Nino.apply)
+
 }

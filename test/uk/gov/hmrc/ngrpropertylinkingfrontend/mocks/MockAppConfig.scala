@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models
+package uk.gov.hmrc.ngrpropertylinkingfrontend.mocks
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.Configuration
+import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 
-case class Address(
-                    postcode:Postcode
-                  )
-
-
-object Address {
-  // $COVERAGE-OFF$
-  implicit val format: OFormat[Address] = Json.format[Address]
-  // $COVERAGE-ON$
+class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
+  override val welshLanguageSupportEnabled: Boolean = false
+  override val nextGenerationRatesUrl: String = "https://localhost:1500"
+  override val ngrLoginRegistrationUrl: String = "https://localhost:1502"
 }
 

@@ -16,49 +16,54 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.actions
 
-import com.google.inject.{ImplementedBy, Inject}
-import play.api.mvc._
-import uk.gov.hmrc.auth.core._
+import com.google.inject.ImplementedBy
+import play.api.mvc.*
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
-import javax.inject.Singleton
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
-@Singleton
 class AuthRetrievalsImpl @Inject()(
                                     val authConnector: AuthConnector,
-                                    mcc: MessagesControllerComponents
+                                    mcc: MessagesControllerComponents,
                                   )(implicit ec: ExecutionContext) extends AuthRetrievals
   with AuthorisedFunctions {
 
-  type RetrievalsType = Option[Credentials] ~ Option[String] ~ Option[AffinityGroup]
+  type RetrievalsType = Option[Credentials] ~ Option[String] ~ ConfidenceLevel ~ Option[String] ~ Option[AffinityGroup] ~ Option[Name]
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedUserRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    val retrievals: Retrieval[RetrievalsType] = Retrievals.credentials and Retrievals.nino and Retrievals.affinityGroup
+    val retrievals: Retrieval[RetrievalsType] =
+      Retrievals.credentials and
+        Retrievals.nino and
+        Retrievals.confidenceLevel and
+        Retrievals.email and
+        Retrievals.affinityGroup and
+        Retrievals.name
 
     authorised(ConfidenceLevel.L250).retrieve(retrievals){
-      case credentials ~ Some(nino) ~ affinityGroup  =>
+      case credentials ~ Some(nino) ~ confidenceLevel ~ email ~ affinityGroup ~ name =>
         block(
           AuthenticatedUserRequest(
             request = request,
+            confidenceLevel = Some(confidenceLevel),
             authProvider = credentials.map(_.providerType),
             nino = Nino(hasNino = true,Some(nino)),
-            email = None,
+            email = email.filter(_.nonEmpty),
             credId = credentials.map(_.providerId),
             affinityGroup = affinityGroup,
-            name = None
+            name = name
           )
         )
-      case _ => Future.failed(new RuntimeException())
-    } recoverWith {
-      case NonFatal(ex) =>
+      case _ ~ _ ~ confidenceLevel ~ _ => throw new Exception("confidenceLevel not met")
+    }recoverWith {
+      case ex: Throwable =>
         throw ex
     }
   }

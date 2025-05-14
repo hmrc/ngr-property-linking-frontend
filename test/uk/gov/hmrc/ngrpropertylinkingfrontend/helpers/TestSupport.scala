@@ -22,9 +22,18 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.MessagesControllerComponents
 import play.api.test.Injecting
+import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockAppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestData
 
-class TestSupport extends PlaySpec 
+import scala.concurrent.ExecutionContext
+
+trait TestSupport extends PlaySpec 
   with TestData
   with GuiceOneAppPerSuite
   with Matchers
@@ -33,6 +42,30 @@ class TestSupport extends PlaySpec
   with BeforeAndAfterEach
   with ScalaFutures
   with IntegrationPatience {
+
+  protected def localGuiceApplicationBuilder(): GuiceApplicationBuilder =
+    GuiceApplicationBuilder()
+      .overrides()
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+  }
+
+  override implicit lazy val app: Application = localGuiceApplicationBuilder().build()
   
+
+  lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
+
+  implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
+
+  lazy val testCredId: Credentials = Credentials(providerId = "0000000022", providerType = "Government-Gateway")
+  lazy val testNino: String = "AA000003D"
+  lazy val testConfidenceLevel: ConfidenceLevel = ConfidenceLevel.L250
+  lazy val testEmail: String = "user@test.com"
+  lazy val testAffinityGroup: AffinityGroup = AffinityGroup.Individual
+  lazy val testName: Name = Name(name = Some("testUser"), lastName = Some("testUserLastName"))
+  lazy implicit val mockConfig: MockAppConfig = new MockAppConfig(app.configuration)
+
+
 }
 

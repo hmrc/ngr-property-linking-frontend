@@ -18,22 +18,24 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.auth.core.retrieve.Name
-import uk.gov.hmrc.auth.core.{AffinityGroup, Nino}
+import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel, Nino}
 
 
 sealed abstract class BaseUserRequest[A](
                                           val request: Request[A],
                                           val isAuthenticated: Boolean,
+                                          val confidenceLevel: Option[ConfidenceLevel],
                                           val authProvider: Option[String],
                                           val email: Option[String]
                                         ) extends WrappedRequest[A](request)
 
 final case class AuthenticatedUserRequest[A](
                                               override val request: Request[A],
+                                              override val confidenceLevel: Option[ConfidenceLevel],
                                               override val authProvider: Option[String],
                                               override val email: Option[String],
                                               credId: Option[String],
                                               name: Option[Name],
                                               affinityGroup: Option[AffinityGroup],
                                               nino: Nino
-                                            ) extends BaseUserRequest[A](request, isAuthenticated = true, authProvider, email)
+                                            ) extends BaseUserRequest[A](request, isAuthenticated = true, confidenceLevel, authProvider, email)

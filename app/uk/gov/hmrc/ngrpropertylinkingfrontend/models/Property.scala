@@ -17,6 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
 
 case class Property(
                       scatCode: ScatCode,

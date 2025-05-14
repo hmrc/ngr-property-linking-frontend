@@ -1,2 +1,17 @@
 service.name = ngr-property-linking-frontend
 service.text = This is your new service
+
+scat.1 = AA/RAC Service Centres Or Box
+scat.3 = Advertising Right
+scat.4 = Agricultural Showground
+scat.5 = Air Port (Minor)
+scat.6 = Air Strip
+scat.7 = Aircraft Works With Airfield
+scat.8 = Airport Let Outs
+scat.9 = Aluminium Smelting Works
+scat.10 = Ambulance Station
+scat.11 = Amusement Arcade
+scat.12 = Amusement Park
+scat.13 = Animal Boarding
+scat.14 = Arena
+scat.15 = Army Hereditament

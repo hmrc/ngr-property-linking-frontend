@@ -23,9 +23,9 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
 
 trait TestData {
-  val testScatCode:ScatCode  = ScatCode("204")
-  val credId: CredId = CredId("1234")
-  val testAddress: Address =
+  lazy val testScatCode:ScatCode  = ScatCode("204")
+  lazy val credId: CredId = CredId("1234")
+  lazy val testAddress: Address =
     Address(
       line1 = "99",
       line2 = Some("Wibble Rd"),
@@ -33,12 +33,12 @@ trait TestData {
       county = Some("West Sussex"),
       postcode = Postcode("BN110AA")
     )
-  val testFeatureMap: FeatureMap = 
+  lazy val testFeatureMap: FeatureMap =
     FeatureMap.empty
     .add(HasGarage, true)
     .add(Rooms, 10)
 
-  val testRegistrationModel: RatepayerRegistration = RatepayerRegistration(
+  lazy val testRegistrationModel: RatepayerRegistration = RatepayerRegistration(
           userType = Some(Individual),
           agentStatus = Some(AgentStatus.Agent),
           name = Some(Name("John Doe")),

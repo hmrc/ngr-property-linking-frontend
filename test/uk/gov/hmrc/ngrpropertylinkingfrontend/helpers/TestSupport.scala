@@ -28,12 +28,12 @@ import play.api.mvc.MessagesControllerComponents
 import play.api.test.Injecting
 import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockAppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestData
 
 import scala.concurrent.ExecutionContext
 
-trait TestSupport extends PlaySpec 
+trait TestSupport extends PlaySpec
   with TestData
   with GuiceOneAppPerSuite
   with Matchers
@@ -57,6 +57,8 @@ trait TestSupport extends PlaySpec
   lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
 
   implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+
 
   lazy val testCredId: Credentials = Credentials(providerId = "0000000022", providerType = "Government-Gateway")
   lazy val testNino: String = "AA000003D"
@@ -65,7 +67,6 @@ trait TestSupport extends PlaySpec
   lazy val testAffinityGroup: AffinityGroup = AffinityGroup.Individual
   lazy val testName: Name = Name(name = Some("testUser"), lastName = Some("testUserLastName"))
   lazy implicit val mockConfig: MockAppConfig = new MockAppConfig(app.configuration)
-
 
 }
 

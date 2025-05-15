@@ -16,15 +16,20 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
-
-
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.RatepayerRegistrationValuation
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockHttpV2
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 
 import scala.concurrent.Future
 
-class NGRConnectorSpec {
-
-  val ngrConnector: NGRConnector = new NGRConnector(mockHttpClientV2, mockConfig, logger)
+class NGRConnectorSpec extends MockHttpV2 {
+  val ngrConnector: NGRConnector = new NGRConnector(mockHttpClientV2, mockConfig)
+  val email: Email = Email("hello@me.com")
+  val trn: TRNReferenceNumber = TRNReferenceNumber(TRN, "1234")
+  val credId: CredId = CredId("1234")
+  
 
   "getRatepayer" when {
     "Successfully return a Ratepayer" in {
@@ -41,6 +46,6 @@ class NGRConnectorSpec {
       result.futureValue mustBe None
     }
   }
-
-
 }
+
+

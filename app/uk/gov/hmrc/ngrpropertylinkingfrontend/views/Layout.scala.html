@@ -15,23 +15,66 @@
  *@
 
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+@import uk.gov.hmrc.hmrcfrontend.config.ContactFrontendConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.HmrcStandardPageParams
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.navigationBarComponent
 
 @this(
   appConfig: AppConfig,
-  hmrcStandardPage: HmrcStandardPage
-)
+  hmrcLanguageSelectHelper: HmrcLanguageSelectHelper,
+  standardBetaBanner: StandardBetaBanner,
+  fullWidthLayout: FullWidthLayout,
+  hmrcStandardPage: HmrcStandardPage,
+  stylesheets: Stylesheets,
+  navigationBarComponent: navigationBarComponent
+)(implicit cfConfig: ContactFrontendConfig)
 
-@(pageTitle: Option[String] = None)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
+@(pageTitle: Option[String] = None,
+showBackLink: Boolean = false,
+fullWidth: Boolean = false,
+navigationBarContent: Option[NavigationBarContent] = None
+)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+
+@headScripts = {
+    @stylesheets()
+}
+
+@navBar = {
+    @navigationBarContent.map { content =>
+        @navigationBarComponent(content, showBackLink)
+    }
+}
+
+@languageSelector = {
+    @hmrcLanguageSelectHelper()
+}
+
+@content = {
+    @if(navigationBarContent != None){
+        @navBar
+    }
+    @if(appConfig.features.welshLanguageSupportEnabled()) {
+        @languageSelector
+    }
+    @contentBlock
+}
 
 @hmrcStandardPage(
-  HmrcStandardPageParams(
-    pageTitle = pageTitle,
-    isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled
-  )
-)(contentBlock)
-
-@{
-    //$COVERAGE-OFF$
-}
+    HmrcStandardPageParams(
+        pageTitle = pageTitle.map(title => messages("service.base.title", title)),
+        templateOverrides = TemplateOverrides(
+            mainContentLayout = if(fullWidth) Some(fullWidthLayout(_)) else None,
+            additionalHeadBlock = Some(headScripts)
+        ),
+        backLink = None,
+        banners = Banners(
+            phaseBanner = Some(standardBetaBanner()),
+        ),
+    )
+)(content)

@@ -1,5 +1,5 @@
-/*
- * Copyright 2025 HM Revenue & Customs
+@*
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,17 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.config
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-import com.google.inject.AbstractModule
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, AuthRetrievalsImpl}
-
-class Module extends AbstractModule {
-
-  override def configure(): Unit = {
-    bind(classOf[AuthRetrievals]).to(classOf[AuthRetrievalsImpl]).asEagerSingleton()
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
-}
+@(link: Link)(implicit messages: Messages)
+<p class="govuk-body">
+    <a href="@link.href.url" class="govuk-link govuk-link--no-visited-state">@messages(link.messageKey)</a>
+</p>

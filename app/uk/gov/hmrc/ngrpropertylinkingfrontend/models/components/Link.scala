@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.config
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.components
 
-import com.google.inject.AbstractModule
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, AuthRetrievalsImpl}
+import play.api.mvc.Call
 
-class Module extends AbstractModule {
-
-  override def configure(): Unit = {
-    bind(classOf[AuthRetrievals]).to(classOf[AuthRetrievalsImpl]).asEagerSingleton()
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
-}
+final case class Link(
+                       href: Call,
+                       messageKey: String,
+                       linkId: String,
+                       visuallyHiddenMessageKey: Option[String] = None,
+                       notification: Option[Int] = None,
+                       selected: Option[Boolean] = None
+                     )

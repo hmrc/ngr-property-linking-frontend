@@ -1,2 +1,41 @@
 service.name = ngr-property-linking-frontend
 service.text = This is your new service
+service.base.title = Manage your business rates valuation
+service.continue = Continue
+
+#NavigationBar
+nav.home=Account home
+nav.signOut=Sign out
+nav.messages=Messages
+nav.actionNeeded=Action needed
+nav.profileAndSettings=Profile and settings
+
+#BeforeYouGo
+beforeYouGo.title=You have signed out
+beforeYouGo.signin=Sign in to the service
+beforeYouGo.h2=Before you go
+beforeYouGo.p1=We will save your answers for 28 days.
+beforeYouGo.p2=Your feedback helps us make our service better.
+beforeYouGo.feedback=Take a short survey
+beforeYouGo.p3= to share your feedback on this service.
+
+#AddpropertyToYourAccount
+addpropertyToYourAccount.title=Add a property to your account
+addpropertyToYourAccount.p1=From 1 April 2026, you must tell us within 60 days if you become the ratepayer of a property. You can do this by adding the property to your account.
+addpropertyToYourAccount.p2=If you were the ratepayer before 1 April 2026, you need to add your property so you can report changes to your property, rent or lease.
+addpropertyToYourAccount.p3.inset=You must be the current ratepayer for any property you want to add.
+addpropertyToYourAccount.p4=You are the current ratepayer if you get a business rates bill and (either of these apply):
+addpropertyToYourAccount.p5.bullet1=you pay business rates for all or part of the property
+addpropertyToYourAccount.p5.bullet2=you do not pay business rates because you get relief such as small business rates relief
+addpropertyToYourAccount.p6=You are not the current ratepayer if someone else pays the business rates. For example, you own the property and a tenant pays the business rates.
+
+#FindAProperty
+findAProperty.title=Find a property
+findAProperty.postcode.label=Postcode
+findAProperty.manual=Enter the address manually
+findAProperty.propertyName=Property name or number (optional)
+findAProperty.propertyName.hint = For example, 116, The Mill, or Suite 10
+findAProperty.button = Find address
+findAProperty.postcode.empty.error=Enter postcode
+findAProperty.postcode.invalid.error=Enter a full UK postcode
+findAProperty.property.invalid.error=Property name or number must be 100 characters or less

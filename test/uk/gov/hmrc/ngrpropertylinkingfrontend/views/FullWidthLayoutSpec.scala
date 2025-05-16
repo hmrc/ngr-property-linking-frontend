@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.config
+package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
-import com.google.inject.AbstractModule
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, AuthRetrievalsImpl}
+import play.twirl.api.Html
+import uk.gov.hmrc.ngrdashboardfrontend.views.html.FullWidthLayout
 
-class Module extends AbstractModule {
+class FullWidthLayoutSpec extends ViewBaseSpec  {
 
-  override def configure(): Unit = {
-    bind(classOf[AuthRetrievals]).to(classOf[AuthRetrievalsImpl]).asEagerSingleton()
-    bind(classOf[AppConfig]).asEagerSingleton()
+  val injectedView: FullWidthLayout = inject[FullWidthLayout]
+
+  "produce the same output for apply() and render()" in {
+    val htmlApply = injectedView.apply(Html("Test")).body
+    val htmlRender = injectedView.render(Html("Test")).body
+    val htmlF = injectedView.f(Html("Test")).body
+    htmlApply mustBe htmlRender
+    htmlF must not be empty
   }
+
 }

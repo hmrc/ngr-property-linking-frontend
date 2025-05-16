@@ -17,33 +17,27 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
-import play.api.i18n.Lang.logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.BeforeYouGoView
+import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.auth.AuthJourney
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import java.util.UUID.randomUUID
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 @Singleton
-class BeforeYouGoController @Inject()(
-                                     beforeYouGoView: BeforeYouGoView,
-                                     mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
+class RedirectController @Inject()(
+                                    authenticate: AuthJourney,
+                                    mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
-  def signout: Action[AnyContent] = Action { _ =>
-    Redirect(appConfig.logoutUrl).withNewSession
+  def signout: Action[AnyContent] =
+    authenticate.authWithUserDetails.async { implicit request =>
+      Future.successful(Redirect(appConfig.logoutUrl))
   }
 
-  def show(): Action[AnyContent] = Action { implicit request =>
-      Ok(beforeYouGoView(appConfig.dashboardHomeUrl, routes.BeforeYouGoController.feedback().url))
-    }
-
-  def feedback: Action[AnyContent] = Action { _ =>
-    val uuid = randomUUID().toString
-    val auditData = Map("feedbackId" -> uuid, "customMetric" -> "NGR-Dashboard")
-    logger.info(s"Redirecting to feedback frontend $auditData")
-    Redirect(appConfig.feedbackFrontendUrl).withSession(("feedbackId", uuid))
+  def dashboard: Action[AnyContent] =
+    authenticate.authWithUserDetails.async { implicit request =>
+      Future.successful(Redirect(appConfig.dashboardUrl))
   }
 }

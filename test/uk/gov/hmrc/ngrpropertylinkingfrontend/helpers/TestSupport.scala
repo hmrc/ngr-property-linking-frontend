@@ -22,7 +22,14 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.test.Injecting
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
+import play.api.test.{FakeRequest, Injecting}
+import uk.gov.hmrc.auth.core.Nino
+import uk.gov.hmrc.http.HeaderNames
+import uk.gov.hmrc.ngrpropertylinkingfrontend.mock.MockAppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.auth.AuthenticatedUserRequest
+
+import scala.concurrent.ExecutionContext
 
 class TestSupport extends PlaySpec 
   with TestData
@@ -33,6 +40,13 @@ class TestSupport extends PlaySpec
   with BeforeAndAfterEach
   with ScalaFutures
   with IntegrationPatience {
-  
+  lazy implicit val mockConfig: MockAppConfig = new MockAppConfig(app.configuration)
+  lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
+  implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
+
+  lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest("", "").withHeaders(HeaderNames.authorisation -> "Bearer 1")
+  lazy val authenticatedFakeRequest: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
+    AuthenticatedUserRequest(fakeRequest, None, None, None, None, None, nino = Nino(true, Some("")))
 }
 

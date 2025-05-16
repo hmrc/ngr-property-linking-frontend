@@ -17,8 +17,9 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
 import play.api.data.Form
-import uk.gov.hmrc.ngrdashboardfrontend.models.forms.FindAProperty
-import uk.gov.hmrc.ngrdashboardfrontend.views.html.components.InputText
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.InputText
 
 class InputTextSpec extends ViewBaseSpec {
   val form: Form[FindAProperty] = FindAProperty.form()

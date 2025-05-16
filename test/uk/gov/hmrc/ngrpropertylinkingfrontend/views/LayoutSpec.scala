@@ -18,8 +18,10 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Mockito.when
 import play.twirl.api.Html
-import uk.gov.hmrc.ngrdashboardfrontend.views.html.{Layout, Stylesheets}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{Layout, Stylesheets}
 
 class LayoutSpec extends ViewBaseSpec {
   val injectedView: Layout = injector.instanceOf[Layout]
@@ -34,7 +36,6 @@ class LayoutSpec extends ViewBaseSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    mockConfig.features.welshLanguageSupportEnabled(false)
   }
 
 
@@ -42,8 +43,8 @@ class LayoutSpec extends ViewBaseSpec {
 
     "produce the same output for apply() and render()" in {
       val htmlApply = injectedView.apply(pageTitle = Some("Title of page"))(Html("Test")).body
-      val htmlRender = injectedView.render(pageTitle = Some("Title of page"), showBackLink = false, contentBlock = Html("Test"), request = request, messages = messages, appConfig = mockConfig, fullWidth = false, navigationBarContent = None).body
-      val htmlF = injectedView.f(Some("Title of page"), false, false, None)(Html("Test"))(request, messages, mockConfig).body
+      val htmlRender = injectedView.render(pageTitle = Some("Title of page"), showBackLink = false, contentBlock = Html("Test"), request = request, messages = messages, appConfig = mockAppConfig, fullWidth = false, navigationBarContent = None).body
+      val htmlF = injectedView.f(Some("Title of page"), false, false, None)(Html("Test"))(request, messages, mockAppConfig).body
       htmlApply mustBe htmlRender
       htmlF must not be empty
     }
@@ -51,26 +52,25 @@ class LayoutSpec extends ViewBaseSpec {
     "injected into the view" should {
 
       "show the nav title" in {
-        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request,messages,mockConfig)
+        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request,messages,mockAppConfig)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         elementText(Selectors.navTitle) mustBe navTitle
       }
 
       "should not display the language selector" in {
-        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request,messages,mockConfig)
+        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request,messages,mockAppConfig)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         elementExtinct(Selectors.languageSelector)
       }
 
       "the language selector feature switch is turned on" in {
-        mockConfig.features.welshLanguageSupportEnabled(true)
-        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request,messages,  mockConfig)
+        when(mockAppConfig.welshLanguageSupportEnabled).thenReturn(true)
+        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request,messages,  mockAppConfig)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         elementText(Selectors.languageSelector) mustBe "English"
-        mockConfig.features.welshLanguageSupportEnabled(false)
       }
     }
   }

@@ -17,55 +17,38 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.config
 
 import org.mockito.Mockito.when
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.Configuration
-import uk.gov.hmrc.ngrpropertylinkingfrontend.config.features.Features
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 class AppConfigSpec extends TestSupport {
-  "FrontendAppConfig" must {
-
-    "initialize features correctly" in {
+  "AppConfig" must {
+    "retrieve logout url correct from config" in {
       val mockConfig = mock[Configuration]
-      val mockServicesConfig = mock[ServicesConfig]
+      val appConfig = new AppConfig(mockConfig)
+      when(mockConfig.getOptional[String]("microservice.services.ngr-dashboard-frontend.host")).thenReturn(Some("http://localhost:1503"))
 
-      val appConfig = new AppConfig(mockConfig, mockServicesConfig)
-
-      appConfig.features shouldBe a[Features] // Ensures Features is initialized
+      appConfig.logoutUrl mustBe ("http://localhost:1503/ngr-dashboard-frontend/signout")
     }
 
-    "retrieve nextGenerationRatesUrl from ServicesConfig" in {
+    "missing dashboard host from config throws exception" in {
       val mockConfig = mock[Configuration]
-      val mockServicesConfig = mock[ServicesConfig]
-      when(mockServicesConfig.baseUrl("next-generation-rates")).thenReturn("http://localhost/next-generation-rates")
+      val appConfig = new AppConfig(mockConfig)
+      when(mockConfig.getOptional[String]("microservice.services.ngr-dashboard-frontend.host")).thenReturn(None)
 
-      val appConfig = new FrontendAppConfig(mockConfig, mockServicesConfig)
-
-      appConfig.nextGenerationRatesUrl shouldBe "http://localhost/next-generation-rates"
-    }
-
-    "retrieve existing config value using getString" in {
-      val mockConfig = mock[Configuration]
-      val mockServicesConfig = mock[ServicesConfig]
-      when(mockConfig.getOptional[String]("some.key")).thenReturn(Some("someValue"))
-
-      val appConfig = new FrontendAppConfig(mockConfig, mockServicesConfig)
-
-      appConfig.getString("some.key") shouldBe "someValue"
-    }
-
-    "throw an exception when config key is missing" in {
-      val mockConfig = mock[Configuration]
-      val mockServicesConfig = mock[ServicesConfig]
-      when(mockConfig.getOptional[String]("missing.key")).thenReturn(None)
-
-      val appConfig = new FrontendAppConfig(mockConfig, mockServicesConfig)
-
-      val exception = intercept[RuntimeException] {
-        appConfig.getString("missing.key")
+      val exception = intercept[Exception] {
+        appConfig.logoutUrl
       }
+      exception.getMessage mustBe "Could not find config key 'microservice.services.ngr-dashboard-frontend.host'"
+    }
 
-      exception.getMessage shouldBe "Could not find config key 'missing.key'"
+    "empty dashboard host String from config throws exception" in {
+      val mockConfig = mock[Configuration]
+      val appConfig = new AppConfig(mockConfig)
+      when(mockConfig.getOptional[String]("microservice.services.ngr-dashboard-frontend.host")).thenReturn(Some(""))
+
+      val exception = intercept[Exception] {
+        appConfig.logoutUrl
+      }
+      exception.getMessage mustBe "Could not find config key 'microservice.services.ngr-dashboard-frontend.host'"
     }
   }
 }

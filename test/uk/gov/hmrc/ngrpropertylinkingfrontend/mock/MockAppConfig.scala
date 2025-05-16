@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.config.features
+package uk.gov.hmrc.ngrpropertylinkingfrontend.mock
 
 import play.api.Configuration
 
-class Feature(val key: String)(implicit config: Configuration) {
-
-  def apply(value: Boolean): Unit = sys.props += key -> value.toString
-
-  def apply(): Boolean = sys.props.get(key).fold(config.getOptional[Boolean](key).getOrElse(false))(_.toBoolean)
+class MockAppConfig(val runModeConfiguration: Configuration) {
 }

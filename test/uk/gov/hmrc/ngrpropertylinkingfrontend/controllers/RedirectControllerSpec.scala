@@ -20,36 +20,35 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.RequestHeader
 import play.api.test.DefaultAwaitTimeout
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.AddPropertyToYourAccountView
 
-class AddPropertyToYourAccountControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
+class RedirectControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
   implicit val requestHeader: RequestHeader = mock[RequestHeader]
-  lazy val addPropertyView: AddPropertyToYourAccountView = inject[AddPropertyToYourAccountView]
-  val pageTitle = "Add a property to your account"
+  val pageTitle = "Manage your business rates valuation"
+  val expectedLogoutUrl = "http://localhost:1503/ngr-dashboard-frontend/signout"
 
-  def controller() = new AddPropertyToYourAccountController(
-    addPropertyView,
-    mockAuthJourney,
-    mcc
-  )(mockAppConfig)
+  def controller() = new RedirectController(mockAuthJourney, mcc)(mockAppConfig)
 
-  "AddPropertyToYourAccountController" must {
-    "method show" must {
-      "Return OK and the correct view" in {
-        val result = controller().show()(authenticatedFakeRequest)
-        status(result) mustBe OK
-        val content = contentAsString(result)
-        content must include(pageTitle)
+  "RedirectController" must {
+    "redirect user to ngr dashboard signout" when {
+      "logout() is called it" should {
+        "return status code 303" in {
+          val result = controller().signout()(authenticatedFakeRequest)
+          status(result) mustBe SEE_OTHER
+        }
+
+        "return the ngr dashboard sign out url" in {
+          val result = controller().signout()(authenticatedFakeRequest)
+          redirectLocation(result) mustBe Some(expectedLogoutUrl)
+        }
       }
     }
 
-    "method submit" must {
-      "Return OK and the correct view" in {
-        val result = controller().submit()(authenticatedFakeRequest)
+    "method dashboard" must {
+      "Return SEE_OTHER and redirect to dashboard home page" in {
+        val result = controller().dashboard()(authenticatedFakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.FindAPropertyController.show().url)
+        redirectLocation(result) mustBe Some("http://localhost:1503/ngr-dashboard-frontend/dashboard")
       }
     }
   }

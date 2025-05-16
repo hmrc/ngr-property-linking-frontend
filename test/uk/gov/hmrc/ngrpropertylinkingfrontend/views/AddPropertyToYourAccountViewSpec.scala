@@ -18,8 +18,9 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import uk.gov.hmrc.ngrdashboardfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
-import uk.gov.hmrc.ngrdashboardfrontend.views.html.AddPropertyToYourAccountView
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.AddPropertyToYourAccountView
 
 class AddPropertyToYourAccountViewSpec extends ViewBaseSpec {
   lazy val view: AddPropertyToYourAccountView = inject[AddPropertyToYourAccountView]
@@ -60,7 +61,7 @@ class AddPropertyToYourAccountViewSpec extends ViewBaseSpec {
     val addPropertyToYourAccountView = view(content)
     lazy implicit val document: Document = Jsoup.parse(addPropertyToYourAccountView.body)
     val htmlApply = view.apply(content).body
-    val htmlRender = view.render(content, request, messages, mockConfig).body
+    val htmlRender = view.render(content, request, messages, mockAppConfig).body
     lazy val htmlF = view.f(content)
 
     "htmlF is not empty" in {

@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
-import uk.gov.hmrc.ngrdashboardfrontend.views.html.components.hyperLinkComponent
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.hyperLinkComponent
 
 class hyperLinkComponentSpec extends ViewBaseSpec {
   val injectedView: hyperLinkComponent = injector.instanceOf[hyperLinkComponent]

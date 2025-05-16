@@ -17,7 +17,8 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
 import play.twirl.api.Html
-import uk.gov.hmrc.ngrdashboardfrontend.views.html.FullWidthLayout
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.FullWidthLayout
 
 class FullWidthLayoutSpec extends ViewBaseSpec  {
 

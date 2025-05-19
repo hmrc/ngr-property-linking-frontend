@@ -20,7 +20,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.helpers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Address, FeatureMap, HasGarage, Postcode, Rooms, ScatCode}
 
 trait TestData {
-  val testScatCode:ScatCode  = ScatCode("204")
+  val testScatCode:ScatCode  = ScatCode(204)
   val testAddress:Address = Address(postcode = Postcode("BN110AA"))
   val testFeatureMap: FeatureMap = 
     FeatureMap.empty

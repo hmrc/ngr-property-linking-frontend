@@ -31,7 +31,7 @@ class PropertySpec extends TestSupport {
   )
 
   val testPropertyJsonResponse: JsValue = Json.parse(
-    """{"scatCode":{"value":"204"},
+    """{"scatCode":{"value":204},
       |"address":{"postcode":{"value":"BN110AA"}},
       |"status":"ActionNeeded",
       |"features":{"HasGarage":true, "Rooms":10}}""".stripMargin)

@@ -16,17 +16,22 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.i18n.{Messages}
-import play.api.libs.json.{Json, OFormat}
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
-case class ScatCode(value: Int) {
-  def decode()(implicit messages:Messages): Option[String] = {
-    val key:String = s"scat.$value"
-    if (messages.isDefinedAt(key)) Some(messages(key)) else None //e.g. don't return the key if it is missing
+class ScatCodeSpec extends TestSupport {
+  implicit lazy val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
+  lazy val messagesApi: MessagesApi = inject[MessagesApi]
+
+  "decode" should {
+    "Return None when given a non existent code" in {
+      ScatCode(0).decode() mustBe None
+      ScatCode(2).decode() mustBe None
+    }
+
+    "Return the message value when given an existing code" in {
+      ScatCode(218).decode() mustBe Some("Pottery")
+    }
   }
-}
 
-object ScatCode {
-  implicit val format: OFormat[ScatCode] = Json.format[ScatCode]
 }
-

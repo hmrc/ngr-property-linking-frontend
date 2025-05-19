@@ -23,7 +23,6 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.auth.AuthJourney
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.AddPropertyToYourAccountView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
@@ -33,7 +32,7 @@ class AddPropertyToYourAccountController @Inject()(
                                                     authenticate: AuthJourney,
                                                     mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
-  def show(): Action[AnyContent] =
+  def show: Action[AnyContent] =
     authenticate.authWithUserDetails.async { implicit request =>
       Future.successful(Ok(addPropertyToYourAccountView(createDefaultNavBar)))
     }
@@ -41,6 +40,6 @@ class AddPropertyToYourAccountController @Inject()(
   def submit(): Action[AnyContent] =
     authenticate.authWithUserDetails.async { _ =>
       //TODO: Direct to What you need
-      Future.successful(Redirect(routes.FindAPropertyController.show().url))
+      Future.successful(Redirect(routes.WhatYouNeedController.show))
     }
 }

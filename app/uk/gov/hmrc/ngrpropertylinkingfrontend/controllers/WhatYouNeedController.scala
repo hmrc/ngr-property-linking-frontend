@@ -16,39 +16,39 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.auth.AuthJourney
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty.form
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.FindAPropertyView
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.WhatYouNeedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class FindAPropertyController @Inject()(
-                                         findAPropertyView: FindAPropertyView,
-                                         authenticate: AuthJourney,
-                                         mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
-  extends FrontendController(mcc) with I18nSupport {
+class WhatYouNeedController @Inject()(authenticate: AuthJourney,
+                                      view: WhatYouNeedView, mcc: MessagesControllerComponents)(implicit appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
-  def show: Action[AnyContent] =
+  def show: Action[AnyContent] = 
     authenticate.authWithUserDetails.async { implicit request =>
-      Future.successful(Ok(findAPropertyView(form(), createDefaultNavBar)))
+      Future.successful(Ok(view(createDefaultNavBar, createLink)))
     }
+  
 
-  def submit(): Action[AnyContent] =
-    authenticate.authWithUserDetails.async { implicit request =>
-      form()
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(findAPropertyView(formWithErrors, createDefaultNavBar))),
-          findAProperty => {
-            Future.successful(Redirect(routes.AddPropertyToYourAccountController.show))
-          }
-        )
+  def next: Action[AnyContent] = {
+    Action.async {
+      Future.successful(Redirect(routes.AddPropertyToYourAccountController.show))
     }
+  }
+
+  private def createLink(implicit messages: Messages): String = {
+    val text = messages("whatYouNeed.p2")
+    val linkText = messages("whatYouNeed.link")
+    val link = s"""<a href="https://www.gov.uk/contact-your-local-council-about-business-rates" target="_blank">$linkText</a>"""
+    val content = text.replace(linkText, link)
+    s"""<p class="govuk-body">$content</p>"""
+  }
+
 }

@@ -30,3 +30,11 @@ findAProperty.button = Find address
 findAProperty.postcode.empty.error=Enter postcode
 findAProperty.postcode.invalid.error=Enter a full UK postcode
 findAProperty.property.invalid.error=Property name or number must be 100 characters or less
+
+#WhatYouNeed
+whatYouNeed.title=What you need
+whatYouNeed.p1=You need your most recent business rates bill to prove you are the current ratepayer. Your council will send you a business rates bill even if you get relief such as small business rates relief.
+whatYouNeed.p2=If you have lost or cannot find your bill, contact your local council (opens in new tab).
+whatYouNeed.link=contact your local council (opens in new tab)
+whatYouNeed.p3=If you became the ratepayer on or after the 1 April 2026, you need to give us the exact date you became the ratepayer.
+whatYouNeed.p4=We can usually give you a decision on your request to add a property within 15 working days.

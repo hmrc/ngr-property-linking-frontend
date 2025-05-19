@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
+import org.mockito.Mockito.when
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.RequestHeader
 import play.api.test.DefaultAwaitTimeout
@@ -33,11 +34,13 @@ class RedirectControllerSpec extends ControllerSpecSupport with DefaultAwaitTime
     "redirect user to ngr dashboard signout" when {
       "logout() is called it" should {
         "return status code 303" in {
+          when(mockAppConfig.logoutUrl).thenReturn(expectedLogoutUrl)
           val result = controller().signout()(authenticatedFakeRequest)
           status(result) mustBe SEE_OTHER
         }
 
         "return the ngr dashboard sign out url" in {
+          when(mockAppConfig.logoutUrl).thenReturn(expectedLogoutUrl)
           val result = controller().signout()(authenticatedFakeRequest)
           redirectLocation(result) mustBe Some(expectedLogoutUrl)
         }
@@ -46,9 +49,11 @@ class RedirectControllerSpec extends ControllerSpecSupport with DefaultAwaitTime
 
     "method dashboard" must {
       "Return SEE_OTHER and redirect to dashboard home page" in {
+        val expectedUrl = "http://localhost:1503/ngr-dashboard-frontend/dashboard"
+        when(mockAppConfig.dashboardUrl).thenReturn(expectedUrl)
         val result = controller().dashboard()(authenticatedFakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("http://localhost:1503/ngr-dashboard-frontend/dashboard")
+        redirectLocation(result) mustBe Some(expectedUrl)
       }
     }
   }

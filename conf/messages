@@ -1,4 +1,4 @@
-service.name = ngr-property-linking-frontend
+service.name = Manage your business rates valuation
 service.text = This is your new service
 service.base.title = Manage your business rates valuation
 service.continue = Continue
@@ -9,15 +9,6 @@ nav.signOut=Sign out
 nav.messages=Messages
 nav.actionNeeded=Action needed
 nav.profileAndSettings=Profile and settings
-
-#BeforeYouGo
-beforeYouGo.title=You have signed out
-beforeYouGo.signin=Sign in to the service
-beforeYouGo.h2=Before you go
-beforeYouGo.p1=We will save your answers for 28 days.
-beforeYouGo.p2=Your feedback helps us make our service better.
-beforeYouGo.feedback=Take a short survey
-beforeYouGo.p3= to share your feedback on this service.
 
 #AddpropertyToYourAccount
 addpropertyToYourAccount.title=Add a property to your account

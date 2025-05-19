@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.i18n.{Messages}
+import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
 
 case class ScatCode(value: Int) {
   def decode()(implicit messages:Messages): Option[String] = {
-    val key:String = s"scat.$value"
+    val key: String = s"scat.$value"
     if (messages.isDefinedAt(key)) Some(messages(key)) else None //e.g. don't return the key if it is missing
   }
 }

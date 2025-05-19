@@ -17,15 +17,16 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.helpers
 
 
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, Rooms, ScatCode}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
 
 trait TestData {
-  lazy val testScatCode:ScatCode  = ScatCode("204")
+  val testScatCode:ScatCode  = ScatCode("204")
   lazy val credId: CredId = CredId("1234")
-  lazy val testAddress: Address =
+  val testAddress: Address =
     Address(
       line1 = "99",
       line2 = Some("Wibble Rd"),
@@ -33,12 +34,12 @@ trait TestData {
       county = Some("West Sussex"),
       postcode = Postcode("BN110AA")
     )
-  lazy val testFeatureMap: FeatureMap =
+  val testFeatureMap: FeatureMap =
     FeatureMap.empty
     .add(HasGarage, true)
     .add(Rooms, 10)
 
-  lazy val testRegistrationModel: RatepayerRegistration = RatepayerRegistration(
+  val testRegistrationModel: RatepayerRegistration = RatepayerRegistration(
           userType = Some(Individual),
           agentStatus = Some(AgentStatus.Agent),
           name = Some(Name("John Doe")),
@@ -57,4 +58,30 @@ trait TestData {
         trnReferenceNumber = Some(TRNReferenceNumber(TRN, "12345")),
         isRegistered = Some(false)
       )
+
+  val regResponseJson: JsValue = Json.parse(
+    """{"userType":"Individual","agentStatus":"Agent","name":{"value":"John Doe"},"tradingName":{"value":"CompanyLTD"},"email":{"value":"JohnDoe@digital.hmrc.gov.uk"},"contactNumber":{"value":"07123456789"},"secondaryNumber":{"value":"07123456789"},"address":{"line1":"99","line2":"Wibble Rd","town":"Worthing","county":"West Sussex","postcode":{"value":"BN110AA"}},"trnReferenceNumber":{"referenceType":"TRN","value":"12345"},"isRegistered":false}
+      |""".stripMargin)
+
+
+  val minRegResponseJson: JsValue = Json.parse(
+    """{"userType":"Individual","agentStatus":"Agent","name":{"value":"John Doe"},"email":{"value":"JohnDoe@digital.hmrc.gov.uk"},"contactNumber":{"value":"07123456789"},"address":{"line1":"99","line2":"Wibble Rd","town":"Worthing","county":"West Sussex","postcode":{"value":"BN110AA"}},"trnReferenceNumber":{"referenceType":"TRN","value":"12345"},"isRegistered":false}
+      |""".stripMargin)
+
+  val minRegResponseModel: RatepayerRegistration = testRegistrationModel.copy(tradingName = None, secondaryNumber = None)
+
+  val regValuationModel: RatepayerRegistrationValuation = RatepayerRegistrationValuation(credId = credId, Some(testRegistrationModel))
+  val regValuationJson: JsValue = Json.parse(
+    """
+      |{"credId":{"value":"1234"},"ratepayerRegistration":{"name":{"value":"John Doe"},"email":{"value":"JohnDoe@digital.hmrc.gov.uk"},"secondaryNumber":{"value":"07123456789"},"agentStatus":"Agent","trnReferenceNumber":{"referenceType":"TRN","value":"12345"},"userType":"Individual","contactNumber":{"value":"07123456789"},"address":{"postcode":{"value":"BN110AA"},"line1":"99","county":"West Sussex","line2":"Wibble Rd","town":"Worthing"},"tradingName":{"value":"CompanyLTD"},"isRegistered":false}}
+      |""".stripMargin
+  )
+
+  val minRegValuationModel: RatepayerRegistrationValuation = RatepayerRegistrationValuation(credId = credId, None)
+  val minRegValuationJson: JsValue = Json.parse(
+    """
+      |{"credId":{"value":"1234"}}
+      |""".stripMargin
+  )
+
 }

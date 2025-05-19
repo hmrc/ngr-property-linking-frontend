@@ -16,25 +16,28 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsString, JsValue, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyStatus.ActionNeeded
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
 
-class AddressSpec extends TestSupport {
 
-  val testAddressJsonResponse: JsValue = Json.parse(
-    """{"line1":"99","line2":"Wibble Rd", "town":"Worthing", "county":"West Sussex", "postcode":{"value":"BN110AA"}}""".stripMargin)
+class NinoSpec extends TestSupport {
 
-  "Address" should {
+  val nino: Nino = Nino("AA055075C")
+
+  val ninoJson: JsValue = Json.parse(
+    """
+      |{
+      |"nino": "AA055075C"
+      |}
+      |""".stripMargin
+  )
+
+  "Nino" should {
     "deserialize to json" in {
-      Json.toJson(testAddress) mustBe testAddressJsonResponse
+      Json.toJson(nino) mustBe JsString("AA055075C")
     }
     "serialize to json" in {
-      testAddressJsonResponse.as[Address] mustBe testAddress
-    }
-    "address .toString method should return an address model as a string" in {
-      testAddress.toString mustBe "99, Wibble Rd, Worthing, West Sussex, BN110AA"
+      ninoJson.as[Nino] mustBe nino
     }
   }
 }

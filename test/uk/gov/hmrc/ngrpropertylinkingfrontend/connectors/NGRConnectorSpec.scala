@@ -28,7 +28,7 @@ class NGRConnectorSpec extends MockHttpV2 {
   val ngrConnector: NGRConnector = new NGRConnector(mockHttpClientV2, mockConfig)
   val email: Email = Email("hello@me.com")
   val trn: TRNReferenceNumber = TRNReferenceNumber(TRN, "1234")
-  val credId: CredId = CredId("1234")
+  override lazy val credId: CredId = CredId("1234")
   
 
   "getRatepayer" when {

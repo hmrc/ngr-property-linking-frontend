@@ -21,7 +21,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 
 class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
   override val welshLanguageSupportEnabled: Boolean = false
-  override val nextGenerationRatesUrl: String = "https://localhost:1500"
-  override val ngrLoginRegistrationUrl: String = "https://localhost:1502"
+  override val nextGenerationRatesHost: String = "https://localhost:1500"
+  override val ngrLoginRegistrationHost: String = "https://localhost:1502"
 }
 

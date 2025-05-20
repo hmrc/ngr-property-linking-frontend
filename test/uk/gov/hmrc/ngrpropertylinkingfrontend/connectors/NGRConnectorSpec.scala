@@ -35,13 +35,13 @@ class NGRConnectorSpec extends MockHttpV2 {
     "Successfully return a Ratepayer" in {
       val ratepayer: RatepayerRegistration = RatepayerRegistration()
       val response: RatepayerRegistrationValuation = RatepayerRegistrationValuation(credId, Some(ratepayer))
-      setupMockHttpV2Get(s"${mockConfig.nextGenerationRatesUrl}/next-generation-rates/get-ratepayer")(Some(response))
+      setupMockHttpV2Get(s"${mockConfig.nextGenerationRatesHost}/next-generation-rates/get-ratepayer")(Some(response))
       val result: Future[Option[RatepayerRegistrationValuation]] = ngrConnector.getRatepayer(credId)
       result.futureValue.get.credId mustBe credId
       result.futureValue.get.ratepayerRegistration mustBe Some(ratepayer)
     }
     "ratepayer not found" in {
-      setupMockHttpV2Get(s"${mockConfig.nextGenerationRatesUrl}/next-generation-rates/get-ratepayer")(None)
+      setupMockHttpV2Get(s"${mockConfig.nextGenerationRatesHost}/next-generation-rates/get-ratepayer")(None)
       val result: Future[Option[RatepayerRegistrationValuation]] = ngrConnector.getRatepayer(credId)
       result.futureValue mustBe None
     }

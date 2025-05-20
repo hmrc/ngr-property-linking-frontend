@@ -33,7 +33,7 @@ class NGRConnector @Inject()(http: HttpClientV2,
                              appConfig: AppConfig)
                             (implicit ec: ExecutionContext){
 
-  private def url(path: String): URL = url"${appConfig.nextGenerationRatesUrl}/next-generation-rates/$path"
+  private def url(path: String): URL = url"${appConfig.nextGenerationRatesHost}/next-generation-rates/$path"
 
   def getRatepayer(credId: CredId)(implicit hc: HeaderCarrier): Future[Option[RatepayerRegistrationValuation]] = {
     implicit val rds: HttpReads[RatepayerRegistrationValuation] = readFromJson

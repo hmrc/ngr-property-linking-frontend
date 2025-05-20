@@ -21,7 +21,6 @@ lazy val microservice = Project("ngr-property-linking-frontend", file("."))
     Compile / scalacOptions -= "utf8",
     PlayKeys.playDefaultPort := 1504,
   )
-  .settings(resolvers += Resolver.jcenterRepo)
 //  .settings(WartRemoverSettings.wartRemoverSettings *)
   .settings(CodeCoverageSettings.settings *)
   .disablePlugins(JUnitXmlReportPlugin)

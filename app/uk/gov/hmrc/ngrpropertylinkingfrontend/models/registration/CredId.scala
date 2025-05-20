@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration
 
-import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
+import play.api.libs.json.{Format, Json}
 
-case class Property(
-                      scatCode: ScatCode,
-                      address: Address,
-                      status:  PropertyStatus,
-                      features: FeatureMap
-                   )
+final case class CredId(value: String)
 
-object Property {
-  implicit val format: OFormat[Property] = Json.format[Property]
+object CredId {
+  implicit val format: Format[CredId] = Json.format[CredId]
 }

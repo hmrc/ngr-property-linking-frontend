@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration
 
-import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-case class Property(
-                      scatCode: ScatCode,
-                      address: Address,
-                      status:  PropertyStatus,
-                      features: FeatureMap
-                   )
+sealed trait AgentStatus extends EnumEntry
 
-object Property {
-  implicit val format: OFormat[Property] = Json.format[Property]
+object AgentStatus extends Enum[AgentStatus] with PlayJsonEnum[AgentStatus]  {
+
+  val values = findValues
+
+  case object Agent  extends AgentStatus
+  case object Autonomous extends AgentStatus
+
 }

@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration
 
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
 
-case class Property(
-                      scatCode: ScatCode,
-                      address: Address,
-                      status:  PropertyStatus,
-                      features: FeatureMap
-                   )
+final case class Address(line1: String,
+                         line2: Option[String],
+                         town: String,
+                         county: Option[String],
+                         postcode: Postcode,
+                        ) {
+  override def toString: String = Seq(line1, line2.getOrElse(""), town, county.getOrElse(""), postcode.toString).filter(_.nonEmpty).mkString(", ")
+}
 
-object Property {
-  implicit val format: OFormat[Property] = Json.format[Property]
+object Address {
+
+  implicit val format: OFormat[Address] = Json.format[Address]
+
+
 }

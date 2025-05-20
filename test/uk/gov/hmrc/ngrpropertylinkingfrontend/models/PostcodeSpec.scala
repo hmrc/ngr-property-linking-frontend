@@ -16,16 +16,23 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
+import play.api.libs.json.{JsValue, Json, JsString}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
-case class Property(
-                      scatCode: ScatCode,
-                      address: Address,
-                      status:  PropertyStatus,
-                      features: FeatureMap
-                   )
+class PostcodeSpec extends TestSupport {
 
-object Property {
-  implicit val format: OFormat[Property] = Json.format[Property]
+  lazy val postcodeModel: Postcode = Postcode("E20 1HZ")
+  lazy val postcodeJson: JsValue = Json.parse(
+    """
+      |{"value":"E20 1HZ"}
+      |""".stripMargin)
+
+  "Postcode model" should {
+    "serialise into json" in {
+      Json.toJson(postcodeModel) mustBe postcodeJson
+    }
+    "deserialize from json" in {
+      postcodeJson.as[Postcode] mustBe postcodeModel
+    }
+  }
 }

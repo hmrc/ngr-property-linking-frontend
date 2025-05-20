@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
+import play.api.libs.json.{Reads, Writes}
+import uk.gov.hmrc.domain.{SimpleObjectReads, SimpleObjectWrites, TaxIdentifier}
 
-case class Property(
-                      scatCode: ScatCode,
-                      address: Address,
-                      status:  PropertyStatus,
-                      features: FeatureMap
-                   )
+final case class Nino(nino: String) extends TaxIdentifier {
+  def value: String = nino
+}
 
-object Property {
-  implicit val format: OFormat[Property] = Json.format[Property]
+object Nino {
+
+  implicit val ninoWrite: Writes[Nino] = new SimpleObjectWrites[Nino](_.value)
+  implicit val ninoRead: Reads[Nino] = new SimpleObjectReads[Nino]("nino", Nino.apply)
+
 }

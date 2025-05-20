@@ -18,9 +18,18 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.config
 
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
+trait AppConfig {
+  val welshLanguageSupportEnabled: Boolean
+  val nextGenerationRatesHost: String
+  val ngrLoginRegistrationHost: String
+}
 
 @Singleton
-class AppConfig @Inject()(config: Configuration) {
-  val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
+class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) extends AppConfig {
+  override val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
+  override val nextGenerationRatesHost: String = servicesConfig.baseUrl("next-generation-rates")
+  override val ngrLoginRegistrationHost : String = servicesConfig.baseUrl("ngr-login-register-frontend")
 
 }

@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration
 
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
 
-case class Property(
-                      scatCode: ScatCode,
-                      address: Address,
-                      status:  PropertyStatus,
-                      features: FeatureMap
-                   )
+case class RatepayerRegistrationValuation(credId: CredId,
+                                          ratepayerRegistration: Option[RatepayerRegistration] = None)
 
-object Property {
-  implicit val format: OFormat[Property] = Json.format[Property]
+object RatepayerRegistrationValuation {
+  implicit val format: OFormat[RatepayerRegistrationValuation] = Json.format[RatepayerRegistrationValuation]
 }

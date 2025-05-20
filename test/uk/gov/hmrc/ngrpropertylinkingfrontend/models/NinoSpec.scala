@@ -16,16 +16,28 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
+import play.api.libs.json.{JsString, JsValue, Json}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
-case class Property(
-                      scatCode: ScatCode,
-                      address: Address,
-                      status:  PropertyStatus,
-                      features: FeatureMap
-                   )
 
-object Property {
-  implicit val format: OFormat[Property] = Json.format[Property]
+class NinoSpec extends TestSupport {
+
+  val nino: Nino = Nino("AA055075C")
+
+  val ninoJson: JsValue = Json.parse(
+    """
+      |{
+      |"nino": "AA055075C"
+      |}
+      |""".stripMargin
+  )
+
+  "Nino" should {
+    "deserialize to json" in {
+      Json.toJson(nino) mustBe JsString("AA055075C")
+    }
+    "serialize to json" in {
+      ninoJson.as[Nino] mustBe nino
+    }
+  }
 }

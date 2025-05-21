@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration
+package uk.gov.hmrc.ngrpropertylinkingfrontend.logging
 
-import enumeratum.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
-sealed trait UserType extends EnumEntry
-
-object UserType extends Enum[UserType] with PlayJsonEnum[UserType]  {
-
-  val values = findValues
-
-  case object Individual  extends UserType
-  case object Organisation extends UserType
-
+class NGRLoggerSpec extends TestSupport {
+  val logger: NGRLogger = inject[NGRLogger]
+  // TODO: Figure out how to check logs
+  "NGRLogger" must {
+    logger.debug("")
+    logger.debug("", new RuntimeException(""))
+    logger.info("")
+    logger.info("", new RuntimeException(""))
+    logger.warn("")
+    logger.warn("", new RuntimeException(""))
+    logger.error("")
+    logger.error("", new RuntimeException(""))
+  }
 }

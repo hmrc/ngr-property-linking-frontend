@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import org.mockito.Mockito.when
 import play.api.http.Status.OK
 import play.api.mvc.RequestHeader
-import play.api.test.Helpers.{contentAsString, status}
 import play.api.test.DefaultAwaitTimeout
+import play.api.test.Helpers.{contentAsString, status}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.NoResultsFoundView
 

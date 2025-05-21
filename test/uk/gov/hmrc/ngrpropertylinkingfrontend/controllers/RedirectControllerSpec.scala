@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import org.mockito.Mockito.when
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.SEE_OTHER
 import play.api.mvc.RequestHeader
 import play.api.test.DefaultAwaitTimeout
-import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import play.api.test.Helpers.{redirectLocation, status}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 
 class RedirectControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsString, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyStatus.ActionNeeded
 

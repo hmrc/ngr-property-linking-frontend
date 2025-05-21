@@ -26,11 +26,11 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
-import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel, Nino}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
+import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockAppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, Postcode}
 
 import scala.concurrent.ExecutionContext
 
@@ -67,6 +67,7 @@ trait TestSupport extends PlaySpec
   lazy val testEmail: String = "user@test.com"
   lazy val testAffinityGroup: AffinityGroup = AffinityGroup.Individual
   lazy val testName: Name = Name(name = Some("testUser"), lastName = Some("testUserLastName"))
+  lazy val testNoResultsFoundPostCode: Postcode = Postcode("LS1 6RE")
   lazy implicit val mockConfig: MockAppConfig = new MockAppConfig(app.configuration)
 
     lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =

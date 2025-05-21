@@ -18,10 +18,11 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.helpers
 
 
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, Rooms, ScatCode}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.Properties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, Rooms, ScatCode}
 
 trait TestData {
   val testScatCode:ScatCode  = ScatCode("204")
@@ -83,5 +84,16 @@ trait TestData {
       |{"credId":{"value":"1234"}}
       |""".stripMargin
   )
+
+  val noResultsFoundJson: JsValue = Json.parse(
+    """
+      |{
+      |    "total": 0,
+      |    "properties": []
+      |  }
+      |""".stripMargin
+  )
+  
+  val noResultsFoundProperty: Properties = Properties(0, List.empty)
 
 }

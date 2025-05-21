@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.config
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.features.Features
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
+import javax.inject.{Inject, Singleton}
 
 trait AppConfig {
   val features: Features

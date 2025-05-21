@@ -1,8 +1,4 @@
-import play.sbt.routes.RoutesKeys.routes
-import sbt.*
-import sbt.Keys.*
-import wartremover.Wart
-import wartremover.WartRemover.autoImport._
+
 
 object WartRemoverSettings {
 //  val wartRemoverSettings =

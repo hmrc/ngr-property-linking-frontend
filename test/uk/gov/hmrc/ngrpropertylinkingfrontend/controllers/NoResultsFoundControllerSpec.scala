@@ -47,7 +47,7 @@ class NoResultsFoundControllerSpec extends ControllerSpecSupport with DefaultAwa
         content must include("href=\"http://localhost:1503/ngr-dashboard-frontend/dashboard\"")
       }
       "Search again link is presented" in {
-        content must include(routes.FindAPropertyController.show().url)
+        content must include(routes.FindAPropertyController.show.url)
       }
     }
   }

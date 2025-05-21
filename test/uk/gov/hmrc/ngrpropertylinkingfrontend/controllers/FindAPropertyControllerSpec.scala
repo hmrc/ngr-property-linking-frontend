@@ -57,35 +57,35 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
     "method submit" must {
       "Successfully submit valid postcode and redirect to no results found page" in {
         when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future.successful(Right(Properties(0, List.empty))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit())
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA00 0AA"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino=true, Some(""))))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.NoResultsFoundController.show().url)
+        redirectLocation(result) mustBe Some(routes.NoResultsFoundController.show.url)
       }
 
       "Successfully submit valid postcode and redirect to results page" in {
         when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future.successful(Right(Properties(0, List(testVmvProperty)))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit())
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA00 0AA"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
         //TODO: redirect to result page
-        redirectLocation(result) mustBe Some(routes.AddPropertyToYourAccountController.show().url)
+        redirectLocation(result) mustBe Some(routes.AddPropertyToYourAccountController.show.url)
       }
 
       "Successfully submit valid postcode without space in between and redirect to no results found page" in {
         when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future.successful(Right(Properties(0, List.empty))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit())
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA000AA"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.NoResultsFoundController.show().url)
+        redirectLocation(result) mustBe Some(routes.NoResultsFoundController.show.url)
       }
 
       "Successfully submit valid postcode  throws a BadRequestException" in {
         when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future(Left(ErrorResponse(400, "Bad request"))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit())
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA000AA"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
@@ -93,7 +93,7 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
 
       "Submit with no postcode and display error message" in {
         when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future(Left(ErrorResponse(400, "Bad request"))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit())
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", ""))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST

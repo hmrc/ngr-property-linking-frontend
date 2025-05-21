@@ -18,12 +18,12 @@
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
-@import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.hyperLinkComponent
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.LinkComponent
 
 @this(
 layout: Layout,
 formHelper: FormWithCSRF,
-hyperLinkComponent: hyperLinkComponent
+linkComponent: LinkComponent
 )
 
 @(navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
@@ -36,8 +36,8 @@ hyperLinkComponent: hyperLinkComponent
         <p class="govuk-body">
             @messages("noResultsFound.p1")
         </p>
-        @hyperLinkComponent(label = messages("noResultsFound.search.link"), hrefUrl = searchAgainUrl, beforeLinkContent = messages("noResultsFound.p2"),  afterLinkContent = ".")
-        @hyperLinkComponent(label = messages("noResultsFound.returnHome.link"), hrefUrl = dashboardUrl)
+        @linkComponent(label = messages("noResultsFound.search.link"), hrefUrl = searchAgainUrl, beforeLinkContent = messages("noResultsFound.p2"), afterLinkContent = ".")
+        @linkComponent(label = messages("noResultsFound.returnHome.link"), hrefUrl = dashboardUrl)
     </div>
 </div>
 }

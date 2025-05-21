@@ -38,12 +38,12 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
                                         mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  def show(): Action[AnyContent] =
+  def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       Future.successful(Ok(findAPropertyView(form(), createDefaultNavBar)))
     }
 
-  def submit(): Action[AnyContent] =
+  def submit: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       form()
         .bindFromRequest()
@@ -54,10 +54,10 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
               case Left(error) =>
                 Future.successful(Status(error.code)(Json.toJson(error)))
               case Right(properties) if properties.properties.isEmpty =>
-                Future.successful(Redirect(routes.NoResultsFoundController.show().url))
+                Future.successful(Redirect(routes.NoResultsFoundController.show.url))
               case Right(properties) =>
                 //TODO: Redirect to search results
-                Future.successful(Redirect(routes.AddPropertyToYourAccountController.show().url))
+                Future.successful(Redirect(routes.AddPropertyToYourAccountController.show.url))
             }
           })
     }

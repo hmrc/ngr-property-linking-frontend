@@ -16,11 +16,11 @@
 
 @this()
 
-@(label: String, hrefUrl: String, beforeLinkContent:String = "", afterLinkContent: String = "")
+@(label: String, hrefUrl: String, beforeLinkContent:String = "", afterLinkContent: String = "", target: String = "")
 
 <p class="govuk-body">
     @beforeLinkContent
-    <a href="@hrefUrl" class="govuk-link">
+    <a href="@hrefUrl" class="govuk-link" target=@target>
         @label
     </a>@afterLinkContent
 </p>

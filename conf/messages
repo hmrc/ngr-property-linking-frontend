@@ -19,3 +19,21 @@ addpropertyToYourAccount.p4=You are the current ratepayer if you get a business 
 addpropertyToYourAccount.p5.bullet1=you pay business rates for all or part of the property
 addpropertyToYourAccount.p5.bullet2=you do not pay business rates because you get relief such as small business rates relief
 addpropertyToYourAccount.p6=You are not the current ratepayer if someone else pays the business rates. For example, you own the property and a tenant pays the business rates.
+
+#FindAProperty
+findAProperty.title=Find a property
+findAProperty.postcode.label=Postcode
+findAProperty.manual=Enter the address manually
+findAProperty.propertyName=Property name or number (optional)
+findAProperty.propertyName.hint = For example, 116, The Mill, or Suite 10
+findAProperty.button = Find address
+findAProperty.postcode.empty.error=Enter postcode
+findAProperty.postcode.invalid.error=Enter a full UK postcode
+findAProperty.property.invalid.error=Property name or number must be 100 characters or less
+
+#NoResultsFound
+noResultsFound.title=No results found
+noResultsFound.p1=Check the detail you entered are correct.
+noResultsFound.p2=You can try different ways of searching for your property, for example by rateable value or council property reference.
+noResultsFound.search.link=Search again
+noResultsFound.returnHome.link=Return to account home

@@ -21,6 +21,7 @@ import play.api.mvc.*
 import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,6 +30,7 @@ trait ControllerSpecSupport extends TestSupport {
 
   val mockIsRegisteredCheck: RegistrationAction = mock[RegistrationAction]
   val mockAuthJourney: AuthRetrievals = mock[AuthRetrievals]
+  val mockFindAPropertyConnector: FindAPropertyConnector = mock[FindAPropertyConnector]
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   mockRequest()
 

@@ -24,6 +24,8 @@ trait AppConfig {
   val welshLanguageSupportEnabled: Boolean
   val nextGenerationRatesHost: String
   val ngrLoginRegistrationHost: String
+  val ngrDashboardUrl: String
+  val ngrLogoutUrl: String
 }
 
 @Singleton
@@ -31,5 +33,15 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
   override val nextGenerationRatesHost: String = servicesConfig.baseUrl("next-generation-rates")
   override val ngrLoginRegistrationHost : String = servicesConfig.baseUrl("ngr-login-register-frontend")
+  override val ngrDashboardUrl: String = s"$dashboardHost/ngr-dashboard-frontend/dashboard"
+  override val ngrLogoutUrl: String = s"$dashboardHost/ngr-dashboard-frontend/signout"
+
+  def getString(key: String): String =
+    config.getOptional[String](key).filter(!_.isBlank).getOrElse(throwConfigNotFoundError(key))
+
+  private def throwConfigNotFoundError(key: String): String =
+    throw new RuntimeException(s"Could not find config key '$key'")
+
+  lazy val dashboardHost: String = getString("microservice.services.ngr-dashboard-frontend.host")
 
 }

@@ -23,5 +23,7 @@ class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
   override val welshLanguageSupportEnabled: Boolean = false
   override val nextGenerationRatesHost: String = "https://localhost:1500"
   override val ngrLoginRegistrationHost: String = "https://localhost:1502"
+  override val ngrDashboardUrl: String = "http://localhost:1503/ngr-dashboard-frontend/dashboard"
+  override val ngrLogoutUrl: String = "http://localhost:1503/ngr-dashboard-frontend/signout"
 }
 

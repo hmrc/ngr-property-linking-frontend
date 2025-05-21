@@ -14,18 +14,8 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-@import uk.gov.hmrc.govukfrontend.views.html.components.Text
+@this()
 
-@this(layout: Layout)
+@()
 
-@(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
-
-@layout(pageTitle = Some(pageTitle)) {
-    <h1 class="govuk-heading-xl">@{Text(heading).asHtml}</h1>
-    <p class="govuk-body">@{Text(message).asHtml}</p>
-}
-
-@{
-    //$COVERAGE-OFF$
-}
+<link href='@routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" />

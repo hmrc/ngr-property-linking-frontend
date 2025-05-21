@@ -24,12 +24,13 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.MessagesControllerComponents
-import play.api.test.Injecting
-import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel}
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
+import play.api.test.{FakeRequest, Injecting}
+import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel, Nino}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockAppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 
 import scala.concurrent.ExecutionContext
 
@@ -68,5 +69,9 @@ trait TestSupport extends PlaySpec
   lazy val testName: Name = Name(name = Some("testUser"), lastName = Some("testUserLastName"))
   lazy implicit val mockConfig: MockAppConfig = new MockAppConfig(app.configuration)
 
+    lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+        FakeRequest("", "").withHeaders(HeaderNames.authorisation -> "Bearer 1")
+    lazy val authenticatedFakeRequest: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
+        AuthenticatedUserRequest(fakeRequest, None, None, None, None, None, None, nino = Nino(true, Some("")))
 }
 

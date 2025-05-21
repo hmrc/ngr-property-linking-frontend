@@ -24,8 +24,7 @@ object Properties {
   implicit val format: OFormat[Properties] = Json.format[Properties]
 }
 
-case class VMVProperty(uarn: String,
-                    addressFull: String)
+case class VMVProperty(uarn: Long, addressFull: String)
 
 object VMVProperty {
   implicit val format: OFormat[VMVProperty] = Json.format[VMVProperty]

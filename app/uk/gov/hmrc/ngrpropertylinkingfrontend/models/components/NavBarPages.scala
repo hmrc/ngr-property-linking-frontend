@@ -61,12 +61,6 @@ object NavBarPageContents {
     notifications = Some(1)
   )
 
-  def createHomeNavBar(implicit appConfig: AppConfig): NavigationBarContent = CreateNavBar(
-    contents = navBarContents,
-    currentPage = NavBarCurrentPage(homePage = true),
-    notifications = Some(1)
-  )
-
   def CreateNavBar(contents: NavBarContents, currentPage: NavBarCurrentPage, notifications: Option[Int] = None)(implicit appConfig: AppConfig): NavigationBarContent = {
 
     // Define buttons

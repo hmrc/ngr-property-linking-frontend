@@ -59,5 +59,10 @@ class FindAPropertyConnectorSpec extends MockHttpV2 with TestData {
         result.futureValue mustBe Left(ErrorResponse(BAD_REQUEST, "Json Validation Error: List((/properties,List(JsonValidationError(List(error.path.missing),ArraySeq()))), (/total,List(JsonValidationError(List(error.path.missing),ArraySeq()))))"))
       }
     }
+    "the GET call has failed" in {
+      setupMockFailedHttpV2Get(s"${mockConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=LS1")
+      val result = findAPropertyConnector.findAProperty(testNoResultsFoundPostCode)
+      result.futureValue mustBe Left(ErrorResponse(INTERNAL_SERVER_ERROR,"Call to VMV find a property failed"))
+    }
   }
 }

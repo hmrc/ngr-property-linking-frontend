@@ -116,7 +116,6 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
       val form = FindAProperty
         .form()
         .fillAndValidate(FindAProperty(Postcode("TQ59BW"), None))
-      val findAPropertyView = view(form, content)
       val htmlApply = view.apply(form, content).body
       val htmlRender = view.render(form, content, request, messages, mockConfig).body
       lazy val htmlF = view.f(form, content)
@@ -128,7 +127,6 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
       val form = FindAProperty
         .form()
         .fillAndValidate(FindAProperty(Postcode("TQ5 9BW"), Some("5")))
-      val findAPropertyView = view(form, content)
       val htmlApply = view.apply(form, content).body
       val htmlRender = view.render(form, content, request, messages, mockConfig).body
       lazy val htmlF = view.f(form, content)

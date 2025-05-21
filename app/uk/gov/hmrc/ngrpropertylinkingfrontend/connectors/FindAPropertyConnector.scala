@@ -57,7 +57,7 @@ class FindAPropertyConnector @Inject()(http: HttpClientV2,
       } recover {
       case _ =>
         logger.error(s"Error received from vmv find a property service")
-        Left(ErrorResponse(Status.INTERNAL_SERVER_ERROR, s"Call to VMV find a property failed"))
+        Left(ErrorResponse(Status.INTERNAL_SERVER_ERROR, "Call to VMV find a property failed"))
       }
   }
 }

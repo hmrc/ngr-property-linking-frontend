@@ -18,11 +18,11 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.helpers
 
 
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, Rooms, ScatCode}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.Properties
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, Rooms, ScatCode}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{Properties, VMVProperty}
 
 trait TestData {
   val testScatCode:ScatCode  = ScatCode("204")
@@ -35,6 +35,7 @@ trait TestData {
       county = Some("West Sussex"),
       postcode = Postcode("BN110AA")
     )
+  val testVmvProperty: VMVProperty = VMVProperty(11905603000l, "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, LS13 1HU")
   val testFeatureMap: FeatureMap =
     FeatureMap.empty
     .add(HasGarage, true)
@@ -93,7 +94,7 @@ trait TestData {
       |  }
       |""".stripMargin
   )
-  
+
   val noResultsFoundProperty: Properties = Properties(0, List.empty)
 
 }

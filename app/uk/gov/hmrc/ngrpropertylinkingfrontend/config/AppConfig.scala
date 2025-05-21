@@ -27,6 +27,8 @@ trait AppConfig {
   val ngrLoginRegistrationHost: String
   val ngrDashboardUrl: String
   val ngrLogoutUrl: String
+  val ngrStubHost: String
+  def getString(key: String): String
 }
 
 @Singleton
@@ -36,6 +38,7 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val ngrLoginRegistrationHost : String = servicesConfig.baseUrl("ngr-login-register-frontend")
   override val ngrDashboardUrl: String = s"$dashboardHost/ngr-dashboard-frontend/dashboard"
   override val ngrLogoutUrl: String = s"$dashboardHost/ngr-dashboard-frontend/signout"
+  override val ngrStubHost: String = getString("microservice.services.ngr-stub.host")
 
   def getString(key: String): String =
     config.getOptional[String](key).filter(!_.isBlank).getOrElse(throwConfigNotFoundError(key))

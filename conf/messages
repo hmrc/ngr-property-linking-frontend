@@ -1,6 +1,14 @@
 service.name = Manage your business rates valuation
 service.text = This is your new service
 service.base.title = {0} - GOV.UK
+service.continue = Continue
+
+#NavigationBar
+nav.home=Account home
+nav.signOut=Sign out
+nav.messages=Messages
+nav.actionNeeded=Action needed
+nav.profileAndSettings=Profile and settings
 
 #AddpropertyToYourAccount
 addpropertyToYourAccount.title=Add a property to your account

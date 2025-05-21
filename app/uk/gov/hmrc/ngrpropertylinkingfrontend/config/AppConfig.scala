@@ -23,7 +23,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 trait AppConfig {
   val features: Features
-//  val welshLanguageSupportEnabled: Boolean
   val nextGenerationRatesHost: String
   val ngrLoginRegistrationHost: String
   val ngrDashboardUrl: String
@@ -33,7 +32,6 @@ trait AppConfig {
 @Singleton
 class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) extends AppConfig {
   override val features = new Features()(config)
-//  override val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
   override val nextGenerationRatesHost: String = servicesConfig.baseUrl("next-generation-rates")
   override val ngrLoginRegistrationHost : String = servicesConfig.baseUrl("ngr-login-register-frontend")
   override val ngrDashboardUrl: String = s"$dashboardHost/ngr-dashboard-frontend/dashboard"

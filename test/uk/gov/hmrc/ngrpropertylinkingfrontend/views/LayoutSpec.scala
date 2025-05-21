@@ -18,7 +18,6 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Mockito.when
 import play.twirl.api.Html
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{Layout, Stylesheets}
@@ -36,6 +35,7 @@ class LayoutSpec extends ViewBaseSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
+    mockConfig.features.welshLanguageSupportEnabled(false)
   }
 
 
@@ -52,25 +52,26 @@ class LayoutSpec extends ViewBaseSpec {
     "injected into the view" should {
 
       "show the nav title" in {
-        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request, messages, mockConfig)
+        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request,messages,mockConfig)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         elementText(Selectors.navTitle) mustBe navTitle
       }
 
       "should not display the language selector" in {
-        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request, messages, mockConfig)
+        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request,messages,mockConfig)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         elementExtinct(Selectors.languageSelector)
       }
 
       "the language selector feature switch is turned on" in {
-        when(mockConfig.welshLanguageSupportEnabled).thenReturn(true)
-        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request, messages, mockConfig)
+        mockConfig.features.welshLanguageSupportEnabled(true)
+        lazy val view = injectedView(pageTitle = Some("Title of page"))(Html("Test"))(request,messages,  mockConfig)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         elementText(Selectors.languageSelector) mustBe "English"
+        mockConfig.features.welshLanguageSupportEnabled(false)
       }
     }
   }

@@ -60,7 +60,7 @@ navigationBarContent: Option[NavigationBarContent] = None
     @if(navigationBarContent != None){
         @navBar
     }
-    @if(appConfig.welshLanguageSupportEnabled) {
+    @if(appConfig.features.welshLanguageSupportEnabled()) {
         @languageSelector
     }
     @contentBlock

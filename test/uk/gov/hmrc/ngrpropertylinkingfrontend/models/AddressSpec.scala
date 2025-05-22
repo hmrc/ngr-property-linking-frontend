@@ -18,7 +18,6 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyStatus.ActionNeeded
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
 
 class AddressSpec extends TestSupport {

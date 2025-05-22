@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import org.scalatest.TestData
 import play.api.libs.json.Json
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.RatepayerRegistration

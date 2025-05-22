@@ -18,10 +18,16 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.mocks
 
 import play.api.Configuration
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.config.features.Features
 
 class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
-  override val welshLanguageSupportEnabled: Boolean = false
+  override val features: Features = new Features()(runModeConfiguration)
   override val nextGenerationRatesHost: String = "https://localhost:1500"
   override val ngrLoginRegistrationHost: String = "https://localhost:1502"
+  override val ngrDashboardUrl: String = "http://localhost:1503/ngr-dashboard-frontend/dashboard"
+  override val ngrLogoutUrl: String = "http://localhost:1503/ngr-dashboard-frontend/signout"
+  override val ngrStubHost: String = "http://localhost:1501"
+
+  override def getString(key: String): String = ???
 }
 

@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockHttpV2
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
 
 import scala.concurrent.Future
 

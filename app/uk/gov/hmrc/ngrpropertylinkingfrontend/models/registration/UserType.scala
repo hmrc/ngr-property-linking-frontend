@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration
 
-import enumeratum._
+import enumeratum.*
 
 sealed trait UserType extends EnumEntry
 

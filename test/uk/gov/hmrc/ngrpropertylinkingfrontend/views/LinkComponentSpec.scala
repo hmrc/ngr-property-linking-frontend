@@ -17,16 +17,16 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.hyperLinkComponent
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.LinkComponent
 
-class hyperLinkComponentSpec extends ViewBaseSpec {
-  val injectedView: hyperLinkComponent = injector.instanceOf[hyperLinkComponent]
+class LinkComponentSpec extends ViewBaseSpec {
+  val injectedView: LinkComponent = injector.instanceOf[LinkComponent]
 
   "hyper link" when {
     "produce the same output for apply() and render()" in {
-      val htmlApply = injectedView.apply("label", "/some-href", "before link content", "after link content").body
-      val htmlRender = injectedView.render("label", "/some-href", "before link content", "after link content").body
-      val htmlF = injectedView.f("label", "/some-href", "before link content", "after link content").body
+      val htmlApply = injectedView.apply("label", "/some-href", "before link content", "after link content", "_blank").body
+      val htmlRender = injectedView.render("label", "/some-href", "before link content", "after link content", "_blank").body
+      val htmlF = injectedView.f("label", "/some-href", "before link content", "after link content", "_blank").body
       htmlApply must not be empty
       htmlRender must not be empty
       htmlF must not be empty

@@ -21,20 +21,27 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.NoResultsFoundView
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.WhatYouNeedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class NoResultsFoundController @Inject()(noResultsFoundView: NoResultsFoundView,
-                                         authenticate: AuthRetrievals,
-                                         isRegisteredCheck: RegistrationAction,
-                                         mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
+class WhatYouNeedController @Inject()(view: WhatYouNeedView,
+                                      authenticate: AuthRetrievals,
+                                      isRegisteredCheck: RegistrationAction,
+                                      mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
+
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      Future.successful(Ok(noResultsFoundView(createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)))
+      Future.successful(Ok(view(createDefaultNavBar, "https://www.gov.uk/contact-your-local-council-about-business-rates")))
     }
+
+  def next: Action[AnyContent] = {
+    (authenticate andThen isRegisteredCheck).async { _ =>
+      Future.successful(Redirect(routes.FindAPropertyController.show.url))
+    }
+  }
 }

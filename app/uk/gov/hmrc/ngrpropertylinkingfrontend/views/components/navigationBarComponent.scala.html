@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavButton
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukBackLink
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.backlink.BackLink
@@ -22,6 +23,13 @@
 
 @(navigationBar: NavigationBarContent, showBackLink: Boolean = false)(implicit request: RequestHeader, messages: Messages)
 
+@hrefLinkClass(button: NavButton) = {
+    @if(button.fieldName.equals("SignOutPage")){
+        "hmrc-account-menu__link2 hmrc-account-menu__link@if(button.selected != false){--active}"
+    }else{
+        "hmrc-account-menu__link hmrc-account-menu__link@if(button.selected != false){--active}"
+    }
+}
 
 <div class="govuk-width-container" style="margin-top: -45px; margin-bottom: @if(showBackLink) {10px} else {30px};">
     <nav id="secondary-nav" class="hmrc-account-menu">
@@ -39,7 +47,7 @@
             @buttons.map{ button =>
             <li>
                 <a href=@button.call.url
-                   class=@if(button.fieldName.equals("SignOutPage")){"hmrc-account-menu__link2 hmrc-account-menu__link@if(button.selected != false){--active}"}else{"hmrc-account-menu__link hmrc-account-menu__link@if(button.selected != false){--active}"}>
+                   class=@hrefLinkClass(button)>
                     @button.notification.map{ notification =>
                     <span class="hmrc-notification-badge">@notification</span>
                     }

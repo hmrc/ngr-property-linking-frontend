@@ -32,7 +32,7 @@ class NoResultsFoundViewSpec extends ViewBaseSpec {
   val searchLink = "Search again"
   val returnHomeLink = "Return to account home"
 
-  val searchUrl: String = routes.FindAPropertyController.show().url
+  val searchUrl: String = routes.FindAPropertyController.show.url
   val dashboardUrl: String = mockConfig.ngrDashboardUrl
 
   val content: NavigationBarContent = NavBarPageContents.CreateNavBar(

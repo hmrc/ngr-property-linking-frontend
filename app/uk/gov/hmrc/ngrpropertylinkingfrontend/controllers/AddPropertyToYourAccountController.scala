@@ -40,6 +40,6 @@ class AddPropertyToYourAccountController @Inject()(addPropertyToYourAccountView:
 
   def submit: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      Future.successful(Redirect(""))
+      Future.successful(Redirect(routes.WhatYouNeedController.show.url))
     }
 }

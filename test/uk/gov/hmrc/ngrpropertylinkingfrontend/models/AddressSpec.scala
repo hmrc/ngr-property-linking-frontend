@@ -18,12 +18,12 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyStatus.ActionNeeded
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Address
 
 class AddressSpec extends TestSupport {
 
   val testAddressJsonResponse: JsValue = Json.parse(
-    """{"postcode":{"value":"BN110AA"}}""".stripMargin)
+    """{"line1":"99","line2":"Wibble Rd", "town":"Worthing", "county":"West Sussex", "postcode":{"value":"BN110AA"}}""".stripMargin)
 
   "Address" should {
     "deserialize to json" in {
@@ -31,6 +31,9 @@ class AddressSpec extends TestSupport {
     }
     "serialize to json" in {
       testAddressJsonResponse.as[Address] mustBe testAddress
+    }
+    "address .toString method should return an address model as a string" in {
+      testAddress.toString mustBe "99, Wibble Rd, Worthing, West Sussex, BN110AA"
     }
   }
 }

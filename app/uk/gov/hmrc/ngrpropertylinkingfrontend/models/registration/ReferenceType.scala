@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration
 
-import play.api.libs.json.{Json, OFormat}
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-case class Address(
-                    postcode:Postcode
-                  )
+sealed trait ReferenceType extends EnumEntry
 
+object ReferenceType extends Enum[ReferenceType] with PlayJsonEnum[ReferenceType]  {
 
-object Address {
-  // $COVERAGE-OFF$
-  implicit val format: OFormat[Address] = Json.format[Address]
-  // $COVERAGE-ON$
+  val values: IndexedSeq[ReferenceType] = findValues
+
+  case object TRN  extends ReferenceType
+  case object NINO extends ReferenceType
+  case object SAUTR  extends ReferenceType
 }
-

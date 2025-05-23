@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsString, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyStatus.ActionNeeded
 
@@ -31,10 +31,10 @@ class PropertySpec extends TestSupport {
   )
 
   val testPropertyJsonResponse: JsValue = Json.parse(
-    """{"scatCode":{"value":204},
-      |"address":{"postcode":{"value":"BN110AA"}},
-      |"status":"ActionNeeded",
-      |"features":{"HasGarage":true, "Rooms":10}}""".stripMargin)
+    """{"scatCode":{"value": 204},
+      | "address":{"line1":"99","line2":"Wibble Rd", "town":"Worthing", "county":"West Sussex", "postcode":{"value":"BN110AA"}},
+      | "status":"ActionNeeded",
+      | "features":{"HasGarage":true, "Rooms":10}}""".stripMargin)
   
   "Property" should {
     "deserialize to json" in {

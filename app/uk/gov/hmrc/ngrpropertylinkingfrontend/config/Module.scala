@@ -17,11 +17,13 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.config
 
 import com.google.inject.AbstractModule
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, AuthRetrievalsImpl, RegistrationAction, RegistrationActionImpl}
 
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
-
-    bind(classOf[AppConfig]).asEagerSingleton()
+    bind(classOf[AppConfig]).to(classOf[FrontendAppConfig]).asEagerSingleton()
+    bind(classOf[AuthRetrievals]).to(classOf[AuthRetrievalsImpl]).asEagerSingleton()
+    bind(classOf[RegistrationAction]).to(classOf[RegistrationActionImpl]).asEagerSingleton()
   }
 }

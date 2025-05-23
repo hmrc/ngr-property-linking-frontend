@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.libs.json.{Format, JsValue, Json, Reads, Writes}
+import play.api.libs.json.*
 
 //Add features here with type
 sealed trait FeatureKey[A] {

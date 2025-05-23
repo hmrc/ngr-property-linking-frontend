@@ -22,9 +22,19 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.test.Injecting
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
+import play.api.test.{FakeRequest, Injecting}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
+import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel, Nino}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockAppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, Postcode}
 
-class TestSupport extends PlaySpec 
+import scala.concurrent.ExecutionContext
+
+trait TestSupport extends PlaySpec
   with TestData
   with GuiceOneAppPerSuite
   with Matchers
@@ -33,6 +43,36 @@ class TestSupport extends PlaySpec
   with BeforeAndAfterEach
   with ScalaFutures
   with IntegrationPatience {
+
+  protected def localGuiceApplicationBuilder(): GuiceApplicationBuilder =
+    GuiceApplicationBuilder()
+      .overrides()
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+  }
+
+  override implicit lazy val app: Application = localGuiceApplicationBuilder().build()
   
+
+  lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
+
+  implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+
+
+  lazy val testCredId: Credentials = Credentials(providerId = "0000000022", providerType = "Government-Gateway")
+  lazy val testNino: String = "AA000003D"
+  lazy val testConfidenceLevel: ConfidenceLevel = ConfidenceLevel.L250
+  lazy val testEmail: String = "user@test.com"
+  lazy val testAffinityGroup: AffinityGroup = AffinityGroup.Individual
+  lazy val testName: Name = Name(name = Some("testUser"), lastName = Some("testUserLastName"))
+  lazy val testNoResultsFoundPostCode: Postcode = Postcode("LS1 6RE")
+  lazy implicit val mockConfig: MockAppConfig = new MockAppConfig(app.configuration)
+
+    lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+        FakeRequest("", "").withHeaders(HeaderNames.authorisation -> "Bearer 1")
+    lazy val authenticatedFakeRequest: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
+        AuthenticatedUserRequest(fakeRequest, None, None, None, None, None, None, nino = Nino(true, Some("")))
 }
 

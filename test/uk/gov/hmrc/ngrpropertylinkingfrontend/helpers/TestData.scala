@@ -25,7 +25,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{Properties, VMVProperty}
 
 trait TestData {
-  val testScatCode:ScatCode  = ScatCode("204")
+
+  val testScatCode:ScatCode  = ScatCode(204)
   lazy val credId: CredId = CredId("1234")
   val testAddress: Address =
     Address(
@@ -37,6 +38,7 @@ trait TestData {
     )
   val testVmvProperty: VMVProperty = VMVProperty(11905603000l, "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, LS13 1HU")
   val testFeatureMap: FeatureMap =
+
     FeatureMap.empty
     .add(HasGarage, true)
     .add(Rooms, 10)

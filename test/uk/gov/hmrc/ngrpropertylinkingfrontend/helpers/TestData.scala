@@ -22,7 +22,9 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, Roo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{Properties, VMVProperty}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProperty, Valuations}
+
+import java.time.{Instant, LocalDate}
 
 trait TestData {
 
@@ -36,7 +38,72 @@ trait TestData {
       county = Some("West Sussex"),
       postcode = Postcode("BN110AA")
     )
-  val testVmvProperty: VMVProperty = VMVProperty(11905603000l, "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, LS13 1HU")
+  val testVmvProperty: VMVProperty = VMVProperty(
+    localAuthorityReference = "2191322564521",
+    uarn = 11905603000L,
+    addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 1HU",
+    localAuthorityCode = "4720",
+    valuations = List(
+      Valuations(
+        assessmentStatus = "CURRENT",
+        assessmentRef = 20351392000L,
+        rateableValue = 7300,
+        scatCode = "249",
+        currentFromDate = LocalDate.of(2019, 2, 12),
+        effectiveDate = LocalDate.of(2018, 4, 1),
+        descriptionText = "SHOP AND PREMISES",
+        listYear = "2017",
+        primaryDescription = "CS",
+        allowedActions = List(
+          "challenge",
+          "viewDetailedValuation",
+          "propertyLink",
+          "similarProperties"
+        ),
+        propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
+        listType = "previous"
+      ),
+      Valuations(
+        assessmentStatus = "CURRENT",
+        assessmentRef = 25141561000L,
+        rateableValue = 9300,
+        scatCode = "249",
+        currentFromDate = LocalDate.of(2023, 4, 1),
+        effectiveDate = LocalDate.of(2023, 4, 1),
+        descriptionText = "SHOP AND PREMISES",
+        listYear = "2023",
+        primaryDescription = "CS",
+        allowedActions = List(
+          "check",
+          "challenge",
+          "viewDetailedValuation",
+          "propertyLink",
+          "similarProperties"
+        ),
+        propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
+        listType = "current"
+      ),
+      Valuations(
+        assessmentStatus = "CURRENT",
+        assessmentRef = 29775650000L,
+        rateableValue = 9300,
+        scatCode = "249",
+        currentFromDate = LocalDate.of(2026, 4, 1),
+        effectiveDate = LocalDate.of(2026, 4, 1),
+        descriptionText = "SHOP AND PREMISES",
+        listYear = "2026",
+        primaryDescription = "CS",
+        allowedActions = List(
+          "viewDetailedValuation",
+          "propertyLink",
+          "similarProperties",
+          "enquiry",
+          "businessRatesEstimator"
+        ),
+        propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
+        listType = "current"
+      ),
+    ))
   val testFeatureMap: FeatureMap =
 
     FeatureMap.empty
@@ -97,6 +164,6 @@ trait TestData {
       |""".stripMargin
   )
 
-  val noResultsFoundProperty: Properties = Properties(0, List.empty)
+  val noResultsFoundProperty: VMVProperties = VMVProperties(0, List.empty)
 
 }

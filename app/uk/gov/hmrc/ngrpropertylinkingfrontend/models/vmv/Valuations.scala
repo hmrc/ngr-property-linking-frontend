@@ -23,9 +23,9 @@ import java.time.LocalDate
 
 case class Valuations(
                        assessmentStatus: String,
-                       assessmentRef: Int,
-                       rateableValue: Int,
-                       scatCode: ScatCode,
+                       assessmentRef: Long,
+                       rateableValue: Long,
+                       scatCode: String,
                        currentFromDate: LocalDate,
                        effectiveDate: LocalDate,
                        descriptionText: String,

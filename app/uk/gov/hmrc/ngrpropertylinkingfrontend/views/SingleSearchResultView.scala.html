@@ -39,7 +39,7 @@
   propertySearchResultTable: Table,
 )(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
-@heading = @{messages("noResultsFound.title")}
+@heading = @{messages("singleSearchResultPage.title", postcode)}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">

@@ -450,4 +450,3 @@ whatYouNeed.p4=We can usually give you a decision on your request to add a prope
 
 #SingleSearchResultPage
 singleSearchResultPage.title = Search results for {0}
-singleSearchResultPage.hint  = Showing {0} to {1} of {2} items.

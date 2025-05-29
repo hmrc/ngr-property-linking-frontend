@@ -23,7 +23,7 @@ import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLoca
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, Postcode}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProperty, Valuations}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProperty, Valuation}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 
 import java.time.LocalDate
@@ -53,7 +53,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -86,7 +86,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -114,7 +114,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -142,7 +142,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -170,7 +170,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -198,7 +198,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -226,7 +226,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -254,7 +254,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -282,7 +282,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -310,7 +310,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -338,7 +338,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
@@ -366,7 +366,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
         localAuthorityCode = "4720",
         valuations = List(
-          Valuations(
+          Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,

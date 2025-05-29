@@ -21,7 +21,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.ScatCode
 
 import java.time.LocalDate
 
-case class Valuations(
+case class Valuation(
                        assessmentStatus: String,
                        assessmentRef: Long,
                        rateableValue: Long,
@@ -36,8 +36,8 @@ case class Valuations(
                        listType: String
                      )
 
-object Valuations {
+object Valuation {
 
-  implicit val format:Format[Valuations] = Json.format[Valuations]
+  implicit val format:Format[Valuation] = Json.format[Valuation]
 
 }

@@ -22,7 +22,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, Roo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProperty, Valuations}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProperty, Valuation}
 
 import java.time.{Instant, LocalDate}
 
@@ -44,7 +44,7 @@ trait TestData {
     addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 1HU",
     localAuthorityCode = "4720",
     valuations = List(
-      Valuations(
+      Valuation(
         assessmentStatus = "CURRENT",
         assessmentRef = 20351392000L,
         rateableValue = 7300,
@@ -63,7 +63,7 @@ trait TestData {
         propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
         listType = "previous"
       ),
-      Valuations(
+      Valuation(
         assessmentStatus = "CURRENT",
         assessmentRef = 25141561000L,
         rateableValue = 9300,
@@ -83,7 +83,7 @@ trait TestData {
         propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
         listType = "current"
       ),
-      Valuations(
+      Valuation(
         assessmentStatus = "CURRENT",
         assessmentRef = 29775650000L,
         rateableValue = 9300,

@@ -26,11 +26,11 @@ object VMVProperties {
   implicit val format: Format[VMVProperties] = Json.format[VMVProperties]
 }
 
-case class VMVProperty( uarn: Long,
-                        addressFull: String,
-                        localAuthorityCode: String,
-                        localAuthorityReference: String,
-                        valuations: List[Valuations],
+case class VMVProperty(uarn: Long,
+                       addressFull: String,
+                       localAuthorityCode: String,
+                       localAuthorityReference: String,
+                       valuations: List[Valuation],
                       )
 
 object VMVProperty {

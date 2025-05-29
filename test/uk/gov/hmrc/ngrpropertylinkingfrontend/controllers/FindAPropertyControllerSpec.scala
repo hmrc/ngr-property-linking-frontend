@@ -25,7 +25,7 @@ import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.Properties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperties
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, ErrorResponse}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.FindAPropertyView
 
@@ -56,7 +56,7 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
 
     "method submit" must {
       "Successfully submit valid postcode and redirect to no results found page" in {
-        when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future.successful(Right(Properties(0, List.empty))))
+        when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future.successful(Right(VMVProperties(0, List.empty))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA00 0AA"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino=true, Some(""))))
@@ -65,17 +65,17 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
       }
 
       "Successfully submit valid postcode and redirect to results page" in {
-        when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future.successful(Right(Properties(0, List(testVmvProperty)))))
+        when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future.successful(Right(VMVProperties(0, List(testVmvProperty)))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA00 0AA"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
         //TODO: redirect to result page
-        redirectLocation(result) mustBe Some(routes.AddPropertyToYourAccountController.show.url)
+        redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(page = 1).url)
       }
 
       "Successfully submit valid postcode without space in between and redirect to no results found page" in {
-        when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future.successful(Right(Properties(0, List.empty))))
+        when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future.successful(Right(VMVProperties(0, List.empty))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA000AA"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))

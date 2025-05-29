@@ -56,8 +56,7 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
               case Right(properties) if properties.properties.isEmpty =>
                 Future.successful(Redirect(routes.NoResultsFoundController.show.url))
               case Right(properties) =>
-                //TODO: Redirect to search results
-                Future.successful(Redirect(routes.AddPropertyToYourAccountController.show.url))
+                Future.successful(Redirect(routes.SingleSearchResultController.show(page = 1).url))
             }
           })
     }

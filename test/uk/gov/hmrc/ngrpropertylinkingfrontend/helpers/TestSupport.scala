@@ -23,6 +23,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
@@ -69,7 +70,8 @@ trait TestSupport extends PlaySpec
   lazy val testName: Name = Name(name = Some("testUser"), lastName = Some("testUserLastName"))
   lazy val testNoResultsFoundPostCode: Postcode = Postcode("LS1 6RE")
   lazy implicit val mockConfig: MockAppConfig = new MockAppConfig(app.configuration)
-
+  lazy val messagesApi: MessagesApi = inject[MessagesApi]
+  implicit lazy val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
     lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
         FakeRequest("", "").withHeaders(HeaderNames.authorisation -> "Bearer 1")
     lazy val authenticatedFakeRequest: AuthenticatedUserRequest[AnyContentAsEmpty.type] =

@@ -20,13 +20,15 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{Assertion, BeforeAndAfterEach}
+import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.inject.Injector
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.{AnyContentAsEmpty, RequestHeader}
 import play.api.test.{FakeRequest, Injecting}
 import play.twirl.api.Html
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockAppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.Email
 
@@ -34,6 +36,9 @@ trait ViewBaseSpec extends PlaySpec with GuiceOneAppPerSuite with Injecting with
   def injector: Injector = app.injector
   implicit lazy val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
   lazy val messagesApi: MessagesApi             = inject[MessagesApi]
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val requestHeader: RequestHeader = mock[RequestHeader]
+  
 
   def element(cssSelector: String)(implicit document: Document): Element = {
     val elements = document.select(cssSelector)
@@ -63,7 +68,7 @@ trait ViewBaseSpec extends PlaySpec with GuiceOneAppPerSuite with Injecting with
       fail(s"Element with selector '$cssSelector' was found!")
     }
   }
-
+  
   lazy implicit val mockConfig: MockAppConfig = new MockAppConfig(app.configuration)
   val testEmail: String = Email("test@test.co.uk").toString
 

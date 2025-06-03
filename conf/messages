@@ -433,6 +433,12 @@ findAProperty.postcode.empty.error=Enter postcode
 findAProperty.postcode.invalid.error=Enter a full UK postcode
 findAProperty.property.invalid.error=Property name or number must be 100 characters or less
 
+#PropertySelected
+propertySelected.title= Property selected
+propertySelected.heading= Do you want to add this property to your account?
+propertySelected.returnToAccountHome= Return to account home
+
+
 #NoResultsFound
 noResultsFound.title=No results found
 noResultsFound.p1=Check the detail you entered are correct.

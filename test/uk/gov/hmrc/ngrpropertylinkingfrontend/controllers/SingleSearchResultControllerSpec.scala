@@ -478,7 +478,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
     "Return SEE OTHER and pass chosen property index to confirm your address page with mode as check your answers" in {
       val result = controller().selectedProperty(1)(authenticatedFakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(1).url)
+      redirectLocation(result) mustBe Some(routes.PropertySelectedController.show(1).url)
     }
   }
 

@@ -33,7 +33,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockAppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, Postcode}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Await}
 
 trait TestSupport extends PlaySpec
   with TestData

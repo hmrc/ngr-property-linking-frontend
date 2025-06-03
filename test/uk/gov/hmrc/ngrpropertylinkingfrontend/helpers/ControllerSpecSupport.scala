@@ -23,6 +23,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.{FindAPropertyConnector, UpscanConnector}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,6 +35,7 @@ trait ControllerSpecSupport extends TestSupport {
   val mockUpscanConnector: UpscanConnector = mock[UpscanConnector]
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   mockRequest()
+  val mockFindAPropertyRepo: FindAPropertyRepo = mock[FindAPropertyRepo]
 
   def mockRequest(hasCredId: Boolean = false, hasNino: Boolean = true): Unit =
     when(mockAuthJourney andThen mockIsRegisteredCheck) thenReturn new ActionBuilder[AuthenticatedUserRequest, AnyContent] {

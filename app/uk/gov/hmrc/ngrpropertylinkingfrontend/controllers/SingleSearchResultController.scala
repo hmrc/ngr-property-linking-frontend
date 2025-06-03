@@ -48,7 +48,7 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
   def selectedProperty(index: Int): Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck) async { _ =>
       //TODO ROUTE TO PAGE WHEN PROPERTY SELECTED
-      Future.successful(Redirect(routes.SingleSearchResultController.show(index)))
+      Future.successful(Redirect(routes.PropertySelectedController.show(index)))
     }
   }
 

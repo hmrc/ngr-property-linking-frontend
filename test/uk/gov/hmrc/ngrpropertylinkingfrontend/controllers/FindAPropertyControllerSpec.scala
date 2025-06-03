@@ -25,11 +25,14 @@ import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperties
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, ErrorResponse}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.FindAPropertyView
 
 import scala.concurrent.Future
+import scala.runtime.CharRef
 
 class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
   implicit val requestHeader: RequestHeader = mock[RequestHeader]
@@ -41,7 +44,8 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
     mockFindAPropertyConnector,
     mockAuthJourney,
     mockIsRegisteredCheck,
-    mcc
+    mcc,
+    mockFindAPropertyRepo
   )(mockConfig)
 
   "FinAPropertyController" must {
@@ -68,7 +72,7 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
         when(mockFindAPropertyConnector.findAProperty(any())(any())).thenReturn(Future.successful(Right(VMVProperties(0, List(testVmvProperty)))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA00 0AA"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, Some("1234"), None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
         //TODO: redirect to result page
         redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(page = 1).url)

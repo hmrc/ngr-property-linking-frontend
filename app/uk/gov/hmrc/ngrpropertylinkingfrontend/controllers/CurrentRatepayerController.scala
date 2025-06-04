@@ -52,11 +52,8 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(currentRatepayerView(createDefaultNavBar, formWithErrors, buildRadios(formWithErrors, ngrRadio)))),
-          currentRatepayerForm => if (currentRatepayerForm.radioValue.equals("Before"))
+          currentRatepayerForm =>
             Future.successful(Redirect(routes.WhatYouNeedController.show.url))
-            else 
-            Future.successful(Redirect(routes.WhatYouNeedController.show.url))
-          
         )
     }
 }

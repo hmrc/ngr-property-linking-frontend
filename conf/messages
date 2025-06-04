@@ -447,3 +447,8 @@ whatYouNeed.p2=If you have lost or cannot find your bill,
 whatYouNeed.link=contact your local council (opens in new tab)
 whatYouNeed.p3=If you became the ratepayer on or after the 1 April 2026, you need to give us the exact date you became the ratepayer.
 whatYouNeed.p4=We can usually give you a decision on your request to add a property within 15 working days.
+
+#UploadBusinessRatesBill
+uploadBusinessRatesBill.title=Upload your business rates bill
+uploadBusinessRatesBill.p1=1 Mulholland Drive, LA, 6BH 4PE
+uploadBusinessRatesBill.p2=The file must be a Word document, PDF or image (PNG or JPG) and be less than 25MB.

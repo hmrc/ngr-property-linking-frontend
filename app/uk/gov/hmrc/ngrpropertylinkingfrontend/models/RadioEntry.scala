@@ -16,19 +16,12 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
+trait RadioEntry
 
-class ScatCodeSpec extends TestSupport {
-  "decode" should {
-    "Return None when given a non existent code" in {
-      ScatCode(0).decode() mustBe None
-      ScatCode(2).decode() mustBe None
-    }
+sealed trait YesNoItem extends RadioEntry
+case object Yes extends YesNoItem
+case object No extends YesNoItem
 
-    "Return the message value when given an existing code" in {
-      ScatCode(218).decode() mustBe Some("Pottery")
-    }
-  }
-
-}
+sealed trait BeforeAfter extends RadioEntry
+case object Before extends BeforeAfter
+case object After extends BeforeAfter

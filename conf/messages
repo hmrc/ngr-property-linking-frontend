@@ -460,3 +460,15 @@ singleSearchResultPage.details.telephoneNumber = 03000 501501
 singleSearchResultPage.details.england = (England)
 singleSearchResultPage.details.telephoneNumber.welsh = 03000 505505
 singleSearchResultPage.details.wales = (Wales / Cymru)
+
+#CurrentRatepayer
+currentRatepayer.title = When did you become the current ratepayer?
+currentRatepayer.p1 = This tells us when your responsibilities started under business rates reform. The earliest this can be is 1 April 2026.
+currentRatepayer.details.summary = How to tell if you are the current rate payer
+currentRatepayer.details.content.p1 = You are the current ratepayer if you get a business rates bill and (either of these apply):
+currentRatepayer.details.content.L1 = you pay business rates for all or part of the property
+currentRatepayer.details.content.L2 = you do not pay business rates because you get relief such as small business rates relief
+currentRatepayer.details.content.p2 = You are not the current ratepayer if someone else pays the business rates.
+currentRatepayer.details.content.p3 = For example, you own the property and a tenant pays the business rates.
+currentRatepayer.radio.1 = Before 1 April 2026
+currentRatepayer.radio.2 = On or after 1 April 2026

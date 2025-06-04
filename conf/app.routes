@@ -1,14 +1,16 @@
 # microservice specific routes
 
-->         /hmrc-frontend              hmrcfrontend.Routes
-GET        /assets/*file               controllers.Assets.versioned(path = "/public", file: Asset)
-GET        /dashboard                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RedirectController.dashboard
-GET        /signout                    uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RedirectController.signout
-GET        /add-a-property             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyToYourAccountController.show
-POST       /add-a-property             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyToYourAccountController.submit
-GET        /property-search            uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.FindAPropertyController.show
-POST       /property-search            uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.FindAPropertyController.submit
-GET        /no-results                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.NoResultsFoundController.show
-GET        /what-you-need              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.WhatYouNeedController.show
-POST       /what-you-need              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.WhatYouNeedController.next
-GET        /upload-business-rates-bill uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show
+->         /hmrc-frontend                       hmrcfrontend.Routes
+GET        /assets/*file                        controllers.Assets.versioned(path = "/public", file: Asset)
+GET        /dashboard                           uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RedirectController.dashboard
+GET        /signout                             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RedirectController.signout
+GET        /add-a-property                      uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyToYourAccountController.show
+POST       /add-a-property                      uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyToYourAccountController.submit
+GET        /property-search                     uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.FindAPropertyController.show
+POST       /property-search                     uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.FindAPropertyController.submit
+GET        /no-results                          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.NoResultsFoundController.show
+GET        /what-you-need                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.WhatYouNeedController.show
+POST       /what-you-need                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.WhatYouNeedController.next
+GET        /results                             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.show(page: Int)
+GET        /select-property/:index              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.selectedProperty(index: Int)
+GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show

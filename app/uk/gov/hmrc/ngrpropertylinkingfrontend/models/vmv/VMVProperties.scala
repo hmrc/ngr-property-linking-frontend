@@ -16,16 +16,23 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 
-case class Properties(total: Int, properties: List[VMVProperty])
+import java.time.Instant
 
-object Properties {
-  implicit val format: OFormat[Properties] = Json.format[Properties]
+case class VMVProperties(total: Int, properties: List[VMVProperty])
+
+object VMVProperties {
+  implicit val format: Format[VMVProperties] = Json.format[VMVProperties]
 }
 
-case class VMVProperty(uarn: Long, addressFull: String)
+case class VMVProperty(uarn: Long,
+                       addressFull: String,
+                       localAuthorityCode: String,
+                       localAuthorityReference: String,
+                       valuations: List[Valuation],
+                      )
 
 object VMVProperty {
-  implicit val format: OFormat[VMVProperty] = Json.format[VMVProperty]
+  implicit val format: Format[VMVProperty] = Json.format[VMVProperty]
 }

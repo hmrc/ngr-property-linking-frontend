@@ -25,7 +25,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestData
 import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockHttpV2
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.ErrorResponse
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.Properties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperties
 
 import scala.concurrent.Future
 
@@ -41,7 +41,7 @@ class FindAPropertyConnectorSpec extends MockHttpV2 with TestData {
       "return a 404(NOT FOUND)" in {
         val notFoundResponse = HttpResponse(status = NOT_FOUND, json = noResultsFoundJson, headers = Map.empty)
         setupMockHttpV2Get(s"${mockConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=LS1")(notFoundResponse)
-        val result: Future[Either[ErrorResponse, Properties]] = findAPropertyConnector.findAProperty(testNoResultsFoundPostCode)
+        val result: Future[Either[ErrorResponse, VMVProperties]] = findAPropertyConnector.findAProperty(testNoResultsFoundPostCode)
         result.futureValue mustBe Right(noResultsFoundProperty)
       }
       "return a 500" in {

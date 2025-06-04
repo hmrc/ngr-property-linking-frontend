@@ -1,3 +1,3 @@
 # Add all the application routes to the app.routes file
 ->         /ngr-property-linking-frontend              app.Routes
-->         /                          health.Routes
+->         /                                           health.Routes

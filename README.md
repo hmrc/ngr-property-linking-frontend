@@ -24,6 +24,9 @@ sm2 --stop  NGR_PROPERTY_LINKING_FRONTEND
     *  run the shell script `runMainPolicyJsonGenerator.sh` found in the `centralised-authorisation-policy-config` repo
     *  stop `CENTRALISED_AUTHORISATION_POLICY_SERVER` in `service manager`
     *  start `CENTRALISED_AUTHORISATION_POLICY_SERVER` in `service manager`
+* `Using Stub` 
+* BH1 -> will return two properties
+* LS1 -> will return No results found
 
 ### Running the test suite
 ```

@@ -26,7 +26,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.lookUpVMVProperties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.LookUpVMVProperties
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.FindAPropertyView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -61,7 +61,7 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
               case Right(properties) if properties.properties.isEmpty =>
                 Future.successful(Redirect(routes.NoResultsFoundController.show.url))
               case Right(properties) =>
-                findAPropertyRepo.upsertProperty(lookUpVMVProperties(CredId(request.credId.getOrElse(throw new NotFoundException("No CredId found on account"))),properties))
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
                 Future.successful(Redirect(routes.SingleSearchResultController.show(page = 1).url))
             }
           })

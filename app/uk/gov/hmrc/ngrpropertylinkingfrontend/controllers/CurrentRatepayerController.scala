@@ -17,15 +17,17 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm.*
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{After, Before, NGRRadio, NGRRadioButtons, NGRRadioName}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
@@ -34,6 +36,7 @@ import scala.concurrent.Future
 class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepayerView,
                                           authenticate: AuthRetrievals,
                                           isRegisteredCheck: RegistrationAction,
+                                          propertyLinkingRepo: PropertyLinkingRepo,
                                           mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
   
@@ -51,8 +54,13 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(currentRatepayerView(createDefaultNavBar, formWithErrors, buildRadios(formWithErrors, ngrRadio)))),
+          formWithErrors => Future.successful(BadRequest(currentRatepayerView(
+            createDefaultNavBar, formWithErrors, buildRadios(formWithErrors, ngrRadio)))),
           currentRatepayerForm =>
+            propertyLinkingRepo.insertCurrentRatepayer(
+              credId = CredId(request.credId.getOrElse("")),
+              currentRatepayer = currentRatepayerForm.radioValue
+            )
             Future.successful(Redirect(routes.WhatYouNeedController.show.url))
         )
     }

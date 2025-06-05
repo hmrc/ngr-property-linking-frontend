@@ -29,7 +29,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.FrontendAppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, lookUpVMVProperties}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, LookUpVMVProperties}
 
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -41,10 +41,10 @@ import scala.util.{Failure, Success}
 case class FindAPropertyRepo @Inject()(mongo: MongoComponent,
                                        config: FrontendAppConfig
                                       )(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[lookUpVMVProperties](
+  extends PlayMongoRepository[LookUpVMVProperties](
     collectionName = "findAProperty",
     mongoComponent = mongo,
-    domainFormat = lookUpVMVProperties.format,
+    domainFormat = LookUpVMVProperties.format,
     indexes = Seq(
       IndexModel(
         descending("createdAt"),
@@ -66,9 +66,7 @@ case class FindAPropertyRepo @Inject()(mongo: MongoComponent,
 
   override lazy val requiresTtlIndex: Boolean = false
 
-  private def filterByCredId(credId: CredId): Bson = equal("credId.value", credId.value)
-
-  def upsertProperty(lookUpVMVproperties: lookUpVMVProperties): Future[Boolean] = {
+  def upsertProperty(lookUpVMVproperties: LookUpVMVProperties): Future[Boolean] = {
     val errorMsg = s"Property has not been inserted"
 
     collection.replaceOne(
@@ -85,15 +83,8 @@ case class FindAPropertyRepo @Inject()(mongo: MongoComponent,
         Future.failed(new IllegalStateException(s"$errorMsg: ${exception.getMessage} ${exception.getCause}"))
     }
   }
-
-  def findAndUpdateByCredId(credId: CredId, updates: Bson*): Future[Option[lookUpVMVProperties]] = {
-    collection.findOneAndUpdate(filterByCredId(credId),
-        combine(updates :+ Updates.set("createdAt", Instant.now()): _*),
-        FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER))
-      .toFutureOption()
-  }
-
-  def findByCredId(credId: CredId): Future[Option[lookUpVMVProperties]] = {
+  
+  def findByCredId(credId: CredId): Future[Option[LookUpVMVProperties]] = {
     collection.find(
       equal("credId.value", credId.value)
     ).headOption()

@@ -38,7 +38,7 @@ class FindAPropertyConnector @Inject()(http: HttpClientV2,
   def findAProperty(postcode: Postcode)(implicit headerCarrier: HeaderCarrier): Future[Either[ErrorResponse, VMVProperties]] = {
 
     val urlEndpoint =  if(appConfig.features.vmvPropertyLookupTestEnabled()){
-      url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${postcode.value.toUpperCase().take(3).trim}"
+      url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
     }else{
       //TODO Actual call to vmv
       url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode="

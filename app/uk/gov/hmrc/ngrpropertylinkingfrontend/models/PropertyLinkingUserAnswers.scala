@@ -20,7 +20,10 @@ import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProperty}
 
-case class PropertyLinkingUserAnswers (credId: CredId, vmvProperty: VMVProperty)
+case class PropertyLinkingUserAnswers (credId: CredId,
+                                       vmvProperty: VMVProperty,
+                                       currentRatepayer: Option[String] = None
+                                      )
 
 object PropertyLinkingUserAnswers {
   

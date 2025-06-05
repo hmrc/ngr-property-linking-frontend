@@ -36,8 +36,8 @@ object VMVProperty {
   implicit val format: Format[VMVProperty] = Json.format[VMVProperty]
 }
 
-case class lookUpVMVProperties(credId: CredId, vmvProperties: VMVProperties)
+case class LookUpVMVProperties(credId: CredId, vmvProperties: VMVProperties)
 
-object lookUpVMVProperties {
-  implicit val format: Format[lookUpVMVProperties] = Json.format[lookUpVMVProperties]
+object LookUpVMVProperties {
+  implicit val format: Format[LookUpVMVProperties] = Json.format[LookUpVMVProperties]
 }

@@ -20,8 +20,8 @@ import org.mockito.Mockito.verify
 import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.mvc.RequestHeader
-import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport

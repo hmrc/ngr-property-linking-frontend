@@ -17,7 +17,6 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv
 
 import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.ScatCode
 
 import java.time.LocalDate
 

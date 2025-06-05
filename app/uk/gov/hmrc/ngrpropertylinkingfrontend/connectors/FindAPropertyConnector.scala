@@ -29,7 +29,6 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, Postcode}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Right as valid
 
 class FindAPropertyConnector @Inject()(http: HttpClientV2,
                                        appConfig: AppConfig,

@@ -18,11 +18,10 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import org.mockito.Mockito.when
 import play.api.http.Status.OK
-import play.api.test.Helpers.{contentAsString, status}
+import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanFileReference
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadBusinessRatesBillView
-import play.api.test.Helpers.defaultAwaitTimeout
 
 import scala.concurrent.Future
 

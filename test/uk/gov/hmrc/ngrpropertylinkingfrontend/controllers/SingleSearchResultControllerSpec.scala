@@ -22,8 +22,8 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, Postcode}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProperty, Valuation}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, Postcode}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 
 import java.time.LocalDate
@@ -57,6 +57,39 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
             rateableValue = 9300,
+            scatCode = "249",
+            currentFromDate = LocalDate.of(2023, 4, 1),
+            effectiveDate = LocalDate.of(2023, 4, 1),
+            descriptionText = "SHOP AND PREMISES",
+            listYear = "2023",
+            primaryDescription = "CS",
+            allowedActions = List(
+              "check",
+              "challenge",
+              "viewDetailedValuation",
+              "propertyLink",
+              "similarProperties"
+            ),
+            propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
+            listType = "current"
+          )
+        )
+      )
+    )
+  )
+
+  val properties1WithMillionsPoundRateableValue: VMVProperties = VMVProperties(total = 1,
+    properties = List(
+      VMVProperty(
+        uarn = 11905603000L,
+        localAuthorityReference = "2191322564521",
+        addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
+        localAuthorityCode = "4720",
+        valuations = List(
+          Valuation(
+            assessmentStatus = "CURRENT",
+            assessmentRef = 25141561000L,
+            rateableValue = 2109300,
             scatCode = "249",
             currentFromDate = LocalDate.of(2023, 4, 1),
             effectiveDate = LocalDate.of(2023, 4, 1),
@@ -402,6 +435,15 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         status(result) mustBe OK
         val content = contentAsString(result)
         content must include("Showing <strong>1</strong> to <strong>1</strong> of <strong>1</strong> items.")
+      }
+      "Return OK and the correct view with correct rateable value format" in {
+        mockConfig.features.vmvPropertyLookupTestEnabled(true)
+        when(mockFindAPropertyConnector.findAProperty(any[Postcode]())(any[HeaderCarrier]()))
+          .thenReturn(Future.successful(Right(properties1WithMillionsPoundRateableValue)))
+        val result = controller().show(page = 1)(authenticatedFakeRequest)
+        status(result) mustBe OK
+        val content = contentAsString(result)
+        content must include("£2,109,300")
       }
       "Return Ok and the correct view with paginate on page 1" in {
         mockConfig.features.vmvPropertyLookupTestEnabled(true)

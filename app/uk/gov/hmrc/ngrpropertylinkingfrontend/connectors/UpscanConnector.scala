@@ -17,16 +17,15 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
-import uk.gov.hmrc.http.client.HttpClientV2
+import play.api.libs.ws.writeableOf_JsValue
 import play.mvc.Http.HeaderNames
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{PreparedUpload, UpscanInitiateRequest}
-import play.api.libs.ws.writeableOf_JsValue
 
-import java.net.URL
-import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpscanConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig)(implicit ec: ExecutionContext) {

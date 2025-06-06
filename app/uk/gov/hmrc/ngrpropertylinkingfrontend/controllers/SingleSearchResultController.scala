@@ -127,7 +127,7 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
                   propertySearchResultTable = generateTable(properties.vmvProperties.properties),
                 ))
               )
-        case None => Future.successful(Redirect(routes.NoResultsFoundController.show))
+        case None => Future.successful(Redirect(routes.FindAPropertyController.show))
       }
     }
 }

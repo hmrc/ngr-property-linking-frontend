@@ -21,9 +21,9 @@ import org.mockito.Mockito.when
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
+import play.api.test.Helpers.{await, contentAsString, defaultAwaitTimeout, redirectLocation, status}
 import uk.gov.hmrc.auth.core.Nino
-import uk.gov.hmrc.http.HeaderNames
+import uk.gov.hmrc.http.{HeaderNames, NotFoundException}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
@@ -68,6 +68,15 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
         content must include("(INCL STORE R/O 5 & 5A) 5B, WEST LANE, WEST KEY, BOURNEMOUTH, BH1 7EY")
         content must include("SHOP AND PREMISES")
       }
+      "Return NotFoundException when mongo fails to find property by credId" in{
+        mockConfig.features.vmvPropertyLookupTestEnabled(true)
+        when(mockFindAPropertyRepo.findByCredId(any[CredId]))
+          .thenReturn(Future.successful(None))
+        val exception = intercept[NotFoundException] {
+          await(controller().show(index = 1)(authenticatedFakeRequest))
+        }
+        exception.getMessage contains "Unable to find matching postcode" mustBe true
+      }
     }
     "method submit" must {
       "Return See Other to the correct location when yes is selected" in {
@@ -110,6 +119,23 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include("This field is required")
+      }
+      "Return NotFoundException when mongo fails to find property by credId" in {
+        def requestWithFormValue(value: String): AuthenticatedUserRequest[AnyContentAsFormUrlEncoded] = AuthenticatedUserRequest(
+          FakeRequest(
+            routes.PropertySelectedController.submit(index = 0))
+            .withFormUrlEncodedBody(("confirm-property-radio", value))
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some("")))
+
+        when(mockFindAPropertyRepo.findByCredId(any[CredId]))
+          .thenReturn(Future.successful(None))
+        when(mockPropertyLinkingRepo.upsertProperty(any())).thenReturn(Future.successful(true))
+        mockRequest()
+        val result = controller().submit(index = 0)(requestWithFormValue("Yes"))
+        val exception = intercept[NotFoundException] {
+          await(controller().submit(index = 0)(requestWithFormValue("Yes")))
+        }
+        exception.getMessage contains "No properties found on account" mustBe true
       }
     }
   }

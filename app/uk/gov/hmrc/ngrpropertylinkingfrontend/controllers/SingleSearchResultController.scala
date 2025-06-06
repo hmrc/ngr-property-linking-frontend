@@ -19,7 +19,6 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Table
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
@@ -29,6 +28,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProp
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
 
@@ -127,8 +127,7 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
                   propertySearchResultTable = generateTable(properties.vmvProperties.properties),
                 ))
               )
-
-        case None => Future.failed(throw new Exception("Unable to find matching postcode"))
+        case None => Future.successful(Redirect(routes.NoResultsFoundController.show))
       }
     }
 }

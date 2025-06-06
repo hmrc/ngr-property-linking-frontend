@@ -71,7 +71,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
             radios = buildRadios(form, ngrRadio),
             summaryList = SummaryList(createSummaryRows(property = selectedProperty)),
             navigationBarContent = createDefaultNavBar(), index = index, dashboardUrl = appConfig.ngrDashboardUrl)))
-        case None => Future.failed(throw new Exception("Unable to find matching postcode"))
+        case None => Future.failed(throw new NotFoundException("Unable to find matching postcode"))
       }
     }
   }
@@ -95,7 +95,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
                   appConfig.ngrDashboardUrl
                 )
               ))
-            case None => Future.failed(throw new Exception("Unable to find matching postcode"))
+            case None => Future.successful(Redirect(routes.NoResultsFoundController.show))
           }
         },
           propertySelectedForm => {

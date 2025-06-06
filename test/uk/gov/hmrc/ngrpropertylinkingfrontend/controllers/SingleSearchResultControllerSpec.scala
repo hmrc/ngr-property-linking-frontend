@@ -82,6 +82,14 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         content must include("Showing <strong>11</strong> to <strong>11</strong> of <strong>11</strong> items.")
         content must include("Previous")
       }
+      "Redirect to no results found if mongo fails to find property by credId" in{
+        mockConfig.features.vmvPropertyLookupTestEnabled(true)
+        when(mockFindAPropertyRepo.findByCredId(any())).thenReturn(Future.successful(None))
+          .thenReturn(Future.successful(Right(properties11)))
+        val result = controller().show(page = 2)(authenticatedFakeRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.NoResultsFoundController.show.url)
+      }
     }
     "Return SEE OTHER and pass chosen property index to confirm your address page with mode as check your answers" in {
       val result = controller().selectedProperty(1)(authenticatedFakeRequest)

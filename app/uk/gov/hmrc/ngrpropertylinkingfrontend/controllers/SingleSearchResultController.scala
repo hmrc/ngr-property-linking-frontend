@@ -19,17 +19,18 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Table
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProperty}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.{PaginationData, TableData, TableHeader, TableRowLink, TableRowText}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProperty}
 
+import java.text.NumberFormat
+import java.util.Locale
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -91,7 +92,7 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
             val length = input.length
             val middle = if (length > 8) lowerInput.slice(1, length - 7) else ""
             val lastSeven = lowerInput.takeRight(7).toUpperCase
-            firstChar + middle + lastSeven
+            s"$firstChar$middle$lastSeven"
           }
 
           def generateTable(propertyList: List[VMVProperty]): Table = {
@@ -106,10 +107,15 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
                   TableRowText(capitalizeEnds(stringValue._1.addressFull)),
                   TableRowText(stringValue._1.localAuthorityReference),
                   TableRowText(stringValue._1.valuations.last.descriptionText.toLowerCase.capitalize),
-                  TableRowText(stringValue._1.valuations.last.rateableValue.toString),
-                  TableRowLink(stringValue._2, "Select Property")
+                  TableRowText(formatRateableValue(stringValue._1.valuations.last.rateableValue)),
+                  TableRowLink(stringValue._2, "Select property")
                 ))
             ).toTable
+          }
+
+          def formatRateableValue(rateableValue: Long): String = {
+            val ukFormatter = NumberFormat.getCurrencyInstance(Locale.UK)
+            ukFormatter.format(rateableValue).replaceAll("[.][0-9]{2}", "")
           }
 
           Future.successful(

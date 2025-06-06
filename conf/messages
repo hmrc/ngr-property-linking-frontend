@@ -460,6 +460,8 @@ singleSearchResultPage.details.telephoneNumber = 03000 501501
 singleSearchResultPage.details.england = (England)
 singleSearchResultPage.details.telephoneNumber.welsh = 03000 505505
 singleSearchResultPage.details.wales = (Wales / Cymru)
+singleSearchResultPage.details.openTime = Opening times:
+singleSearchResultPage.details.openDaysAndTime = Monday to Friday: 9:00am to 4:30pm
 
 #CurrentRatepayer
 currentRatepayer.title = When did you become the current ratepayer?

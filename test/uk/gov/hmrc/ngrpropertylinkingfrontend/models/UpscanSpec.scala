@@ -19,10 +19,10 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
-import Reference.{referenceReader, referenceWrites}
-import PreparedUpload.{format, uploadFormFormat}
-import UpscanInitiateRequest.format
-import UpscanInitiateResponse.{format, refFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PreparedUpload.{format, uploadFormFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.Reference.{referenceReader, referenceWrites}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateRequest.format
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateResponse.{format, refFormat}
 
 class UpscanSpec extends TestSupport {
   val testReference: Reference = Reference("testReference")

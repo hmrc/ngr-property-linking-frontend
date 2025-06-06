@@ -18,8 +18,6 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv
 
 import play.api.libs.json.{Format, Json, OFormat}
 
-import java.time.Instant
-
 case class VMVProperties(total: Int, properties: List[VMVProperty])
 
 object VMVProperties {

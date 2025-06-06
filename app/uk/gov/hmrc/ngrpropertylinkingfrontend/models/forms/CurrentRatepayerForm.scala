@@ -19,7 +19,6 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.RadioEntry
 
 final case class CurrentRatepayerForm(radioValue: String)
 

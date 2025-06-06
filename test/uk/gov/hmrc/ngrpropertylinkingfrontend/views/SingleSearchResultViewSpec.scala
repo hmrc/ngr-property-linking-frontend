@@ -19,11 +19,11 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import uk.gov.hmrc.govukfrontend.views.Aliases.Table
+import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccountView, SingleSearchResultView}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.PaginationData
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.SingleSearchResultView
 
 class SingleSearchResultViewSpec extends ViewBaseSpec {
   lazy val view: SingleSearchResultView = inject[SingleSearchResultView]
@@ -34,6 +34,7 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
   val detailsP1 = "Check the details you entered are correct"
   val detailsP2 = "You can try different ways of searching for your property, for example by rateable value or property reference Search again"
   val detailsP3 = "Telephones:03000 501501(England)03000 505505(Wales / Cymru)"
+  val openTime = "Opening times: Monday to Friday: 9:00am to 4:30pm"
   val searchLink = "Search again"
   val returnHomeLink = "Return to account home"
 
@@ -59,6 +60,7 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
     val detailsP1 = "#help-if-you-cannot-find-your-property > div > p:nth-child(1)"
     val detailsP2 = "#help-if-you-cannot-find-your-property > div > p:nth-child(3)"
     val detailsP3 = "#help-if-you-cannot-find-your-property > div > p:nth-child(6)"
+    val opentime = "#help-if-you-cannot-find-your-property > div > p:nth-child(8)"
     val searchLink = "#main-content > div > div > div.govuk-grid-row > div > p:nth-child(3) > a"
     val returnHomeLink = "#main-content > div > div > div.govuk-grid-row > div > p:nth-child(4) > a"
   }
@@ -114,11 +116,17 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
     "show correct details summary" in {
       elementText(Selectors.detailsSummary) mustBe detailsSummary
     }
+
     "show correct details description p1" in {
       elementText(Selectors.detailsP1) mustBe detailsP1
     }
+
     "show correct details description p2" in {
       elementText(Selectors.detailsP2) mustBe detailsP2
+    }
+
+    "show correct details open time" in {
+      elementText(Selectors.opentime) mustBe openTime
     }
   }
 }

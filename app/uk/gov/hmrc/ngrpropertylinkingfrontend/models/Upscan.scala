@@ -16,11 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.libs.json.{Format, JsError, JsValue, Json, OFormat, Reads, Writes}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.HttpUrlFormat
-
-import java.time.Instant
-import java.net.URL
+import play.api.libs.json.*
 
 case class Reference(reference: String)
 

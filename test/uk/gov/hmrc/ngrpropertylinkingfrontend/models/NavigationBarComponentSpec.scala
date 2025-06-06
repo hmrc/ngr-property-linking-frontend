@@ -21,7 +21,7 @@ import org.jsoup.nodes.Document
 import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.mvc.Call
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavButton, NavigationBarContent}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.navigationBarComponent
 
 class NavigationBarComponentSpec extends ViewBaseSpec {

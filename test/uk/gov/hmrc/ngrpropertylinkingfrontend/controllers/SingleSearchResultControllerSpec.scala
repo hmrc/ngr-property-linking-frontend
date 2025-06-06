@@ -55,12 +55,12 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
       }
       "Return OK and the correct view with correct rateable value format" in {
         mockConfig.features.vmvPropertyLookupTestEnabled(true)
-        when(mockFindAPropertyConnector.findAProperty(any[Postcode]())(any[HeaderCarrier]()))
-          .thenReturn(Future.successful(Right(properties1WithMillionsPoundRateableValue)))
+        when(mockFindAPropertyRepo.findByCredId(any[CredId]))
+          .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties11))))
         val result = controller().show(page = 1)(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)
-        content must include("£2,109,300")
+        content must include("£9,300")
       }
       "Return Ok and the correct view with paginate on page 1" in {
         mockConfig.features.vmvPropertyLookupTestEnabled(true)

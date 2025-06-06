@@ -17,6 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv
 
 import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 
 case class VMVProperties(total: Int, properties: List[VMVProperty])
 
@@ -33,4 +34,10 @@ case class VMVProperty(uarn: Long,
 
 object VMVProperty {
   implicit val format: Format[VMVProperty] = Json.format[VMVProperty]
+}
+
+case class LookUpVMVProperties(credId: CredId, vmvProperties: VMVProperties)
+
+object LookUpVMVProperties {
+  implicit val format: Format[LookUpVMVProperties] = Json.format[LookUpVMVProperties]
 }

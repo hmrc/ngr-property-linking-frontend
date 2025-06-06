@@ -22,12 +22,15 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Table
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProperty}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
 
 import java.text.NumberFormat
 import java.util.Locale
@@ -38,7 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SingleSearchResultController @Inject( singleSearchResultView: SingleSearchResultView,
                                             errorView: ErrorTemplate,
                                             authenticate: AuthRetrievals,
-                                            connector: FindAPropertyConnector,
+                                            findAPropertyRepo: FindAPropertyRepo,
                                             isRegisteredCheck: RegistrationAction,
                                             mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
@@ -47,43 +50,35 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
 
   def selectedProperty(index: Int): Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck) async { _ =>
-      //TODO ROUTE TO PAGE WHEN PROPERTY SELECTED
-      Future.successful(Redirect(routes.SingleSearchResultController.show(index)))
+      Future.successful(Redirect(routes.PropertySelectedController.show(index)))
     }
   }
 
   def show(page: Int = 1): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
+      findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
+        case Some(properties) =>
+          val postcode:String = properties.vmvProperties.properties.head.addressFull.takeRight(8)
+              val totalProperties = properties.vmvProperties.total
+              val currentPage = page
+              val pageSize = defaultPageSize
+              val pageTop = PaginationData.pageTop(currentPage = currentPage, pageSize = pageSize, totalLength = totalProperties)
+              val pageBottom = PaginationData.pageBottom(currentPage = currentPage, pageSize = pageSize) + (if (pageTop == 0) 0 else 1)
 
-      //TODO we need to grab from the mongo the postcode which they entered in the page before.
-      connector.findAProperty(Postcode("BH1 7EY")).flatMap {
-        case Left(errorResponse) =>
-          Future.successful(
-            Ok(errorView("There is a problem","There is a problem","There is a problem"))  // Assuming you have an error view to display
-          )
-        case Right(potentialProperties) =>
-          val totalProperties = potentialProperties.total
-          val currentPage = page
-          val pageSize = defaultPageSize
+              def totalPages: Int = math.ceil(properties.vmvProperties.properties.length.toFloat / defaultPageSize.toFloat).toInt
 
-          val pageTop = PaginationData.pageTop(currentPage = currentPage, pageSize = pageSize, totalLength = totalProperties)
-          val pageBottom = PaginationData.pageBottom(currentPage = currentPage, pageSize = pageSize) + (if (pageTop == 0) 0 else 1)
-          def totalPages: Int = math.ceil(potentialProperties.properties.length.toFloat / defaultPageSize.toFloat).toInt
+              def splitAddressByPage(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[VMVProperty] = {
+                PaginationData.getPage(currentPage = currentPage, pageSize = pageSize, list = address)
+              }
 
-
-          def splitAddressByPage(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[VMVProperty] = {
-            PaginationData.getPage(currentPage = currentPage, pageSize = pageSize, list = address)
-          }
-
-          def zipWithIndex(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[(VMVProperty, String)] = {
-            val url = (i: Int) => if (page > 1) {
-              //TODO ROUTE TO SELECTED PROPERTY
-              routes.SingleSearchResultController.selectedProperty(i + defaultPageSize).url
-            } else {
-              routes.SingleSearchResultController.selectedProperty(i).url
-            }
-            splitAddressByPage(currentPage, pageSize, address).zipWithIndex.map(x => (x._1, url(x._2)))
-          }
+              def zipWithIndex(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[(VMVProperty, String)] = {
+                val url = (i: Int) => if (page > 1) {
+                  routes.SingleSearchResultController.selectedProperty(i + defaultPageSize).url
+                } else {
+                  routes.SingleSearchResultController.selectedProperty(i).url
+                }
+                splitAddressByPage(currentPage, pageSize, address).zipWithIndex.map(x => (x._1, url(x._2)))
+              }
 
           def capitalizeEnds(input: String): String = {
             if (input.isEmpty) return input
@@ -101,7 +96,8 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
                 TableHeader("Address", "govuk-table__caption--s"),
                 TableHeader("Property reference", "govuk-table__caption--s"),
                 TableHeader("Description", "govuk-table__caption--s"),
-                TableHeader("Relatable Value", "govuk-table__caption--s")),
+                TableHeader("Relatable Value", "govuk-table__caption--s"),
+                TableHeader("", "")),
               rows = zipWithIndex(page, defaultPageSize, propertyList)
                 .map(stringValue => Seq(
                   TableRowText(capitalizeEnds(stringValue._1.addressFull)),
@@ -118,19 +114,20 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
             ukFormatter.format(rateableValue).replaceAll("[.][0-9]{2}", "")
           }
 
-          Future.successful(
-            Ok(singleSearchResultView(
-              navigationBarContent = createDefaultNavBar,
-              searchAgainUrl = routes.FindAPropertyController.show.url,
-              postcode = "BH1 7ST",  // Check if this needs to remain as is
-              totalProperties = totalProperties,
-              pageTop = pageTop,
-              pageBottom = pageBottom,
-              paginationData = PaginationData(totalPages = totalPages, currentPage = page, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = defaultPageSize),
-              propertySearchResultTable = generateTable(potentialProperties.properties),
-            ))
-          )
-      }
 
+          Future.successful(
+                Ok(singleSearchResultView(
+                  navigationBarContent = createDefaultNavBar,
+                  searchAgainUrl = routes.FindAPropertyController.show.url,
+                  postcode = "BH1 7ST", // Check if this needs to remain as is
+                  totalProperties = totalProperties,
+                  pageTop = pageTop,
+                  pageBottom = pageBottom,
+                  paginationData = PaginationData(totalPages = totalPages, currentPage = page, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = defaultPageSize),
+                  propertySearchResultTable = generateTable(properties.vmvProperties.properties),
+                ))
+              )
+        case None => Future.successful(Redirect(routes.FindAPropertyController.show))
+      }
     }
-  }
+}

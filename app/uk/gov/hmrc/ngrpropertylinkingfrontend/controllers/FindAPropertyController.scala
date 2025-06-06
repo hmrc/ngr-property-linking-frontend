@@ -19,11 +19,15 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty.form
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.LookUpVMVProperties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.FindAPropertyView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -35,7 +39,8 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
                                         findAPropertyConnector: FindAPropertyConnector,
                                         authenticate: AuthRetrievals,
                                         isRegisteredCheck: RegistrationAction,
-                                        mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                        mcc: MessagesControllerComponents,
+                                        findAPropertyRepo: FindAPropertyRepo)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
@@ -56,6 +61,7 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
               case Right(properties) if properties.properties.isEmpty =>
                 Future.successful(Redirect(routes.NoResultsFoundController.show.url))
               case Right(properties) =>
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
                 Future.successful(Redirect(routes.SingleSearchResultController.show(page = 1).url))
             }
           })

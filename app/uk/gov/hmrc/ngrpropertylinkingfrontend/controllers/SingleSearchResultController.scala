@@ -96,7 +96,8 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
                 TableHeader("Address", "govuk-table__caption--s"),
                 TableHeader("Property reference", "govuk-table__caption--s"),
                 TableHeader("Description", "govuk-table__caption--s"),
-                TableHeader("Relatable Value", "govuk-table__caption--s")),
+                TableHeader("Relatable Value", "govuk-table__caption--s"),
+                TableHeader("", "")),
               rows = zipWithIndex(page, defaultPageSize, propertyList)
                 .map(stringValue => Seq(
                   TableRowText(capitalizeEnds(stringValue._1.addressFull)),

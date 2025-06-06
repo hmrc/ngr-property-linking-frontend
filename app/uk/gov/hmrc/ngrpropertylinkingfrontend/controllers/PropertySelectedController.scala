@@ -35,6 +35,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.PropertySelectedForm.
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperty, LookUpVMVProperties}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo}
+import java.text.NumberFormat
+import java.util.Locale
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -51,13 +53,18 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
   private val noButton: NGRRadioButtons = NGRRadioButtons("No",No)
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("confirm-property-radio"), Seq(yesButton, noButton))
 
+  def formatRateableValue(rateableValue: Long): String = {
+    val ukFormatter = NumberFormat.getCurrencyInstance(Locale.UK)
+    ukFormatter.format(rateableValue).replaceAll("[.][0-9]{2}", "")
+  }
+  
   private def createSummaryRows(property: VMVProperty)(implicit messages: Messages): Seq[SummaryListRow] = {
     Seq(
       NGRSummaryListRow(messages("Address"), None, Seq(property.addressFull), None),
       NGRSummaryListRow(messages("Property Reference"), None, Seq(property.localAuthorityReference), None),
       NGRSummaryListRow(messages("Local Council"), None, Seq("Torbay"), None),
       NGRSummaryListRow(messages("Description"), None, Seq(property.valuations.map(_.descriptionText).head), None),
-      NGRSummaryListRow(messages("Rateable value"), None, Seq(property.valuations.map(_.rateableValue).head.toString), None),
+      NGRSummaryListRow(messages("Rateable value"), None, Seq(formatRateableValue(property.valuations.last.rateableValue)), None),
     ).map(summarise)
   }
 

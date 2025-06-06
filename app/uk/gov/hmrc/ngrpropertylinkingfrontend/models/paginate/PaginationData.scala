@@ -30,7 +30,7 @@ final case class PaginationData(
     val items = (1 to totalPages).map { pageNumber =>
 
       PaginationItem(
-        href = s"$baseUrl/$pageNumber",
+        href = s"$baseUrl/?page=$pageNumber",
         number = Some(pageNumber.toString),
         current = if (pageNumber == currentPage) Some(true) else None
       )
@@ -38,8 +38,8 @@ final case class PaginationData(
 
     Pagination(
       items = Some(items),
-      previous = if (currentPage > 1) Some(PaginationLink(href = s"$baseUrl/${currentPage - 1}")) else None,
-      next = if (currentPage < totalPages) Some(PaginationLink(href = s"$baseUrl/${currentPage + 1}")) else None
+      previous = if (currentPage > 1) Some(PaginationLink(href = s"$baseUrl/?page=${currentPage - 1}")) else None,
+      next = if (currentPage < totalPages) Some(PaginationLink(href = s"$baseUrl/?page=${currentPage + 1}")) else None
     )
   }
 }

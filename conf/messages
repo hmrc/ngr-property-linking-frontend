@@ -457,9 +457,9 @@ whatYouNeed.p4=We can usually give you a decision on your request to add a prope
 #SingleSearchResultPage
 singleSearchResultPage.title = Search results for {0}
 singleSearchResultPage.details.summary = Help if you cannot find your property
-singleSearchResultPage.details.content.1 = Check the details you entered are correct
+singleSearchResultPage.details.content.1 = Check the details you entered are correct.
 singleSearchResultPage.details.content.2 = You can try different ways of searching for your property, for example by
-singleSearchResultPage.details.content.3 = rateable value or property reference
+singleSearchResultPage.details.content.3 = rateable value or property reference.
 singleSearchResultPage.details.link = Search again
 singleSearchResultPage.details.telephone = Telephones:
 singleSearchResultPage.details.telephoneNumber = 03000 501501

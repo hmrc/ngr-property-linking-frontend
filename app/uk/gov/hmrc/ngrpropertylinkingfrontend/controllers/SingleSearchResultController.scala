@@ -119,11 +119,11 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
                 Ok(singleSearchResultView(
                   navigationBarContent = createDefaultNavBar,
                   searchAgainUrl = routes.FindAPropertyController.show.url,
-                  postcode = "BH1 7ST", // Check if this needs to remain as is
+                  postcode = properties.vmvProperties.properties.head.addressFull.takeRight(8),
                   totalProperties = totalProperties,
                   pageTop = pageTop,
                   pageBottom = pageBottom,
-                  paginationData = PaginationData(totalPages = totalPages, currentPage = page, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = defaultPageSize),
+                  paginationData = PaginationData(totalPages = totalPages, currentPage = page, baseUrl = "/ngr-property-linking-frontend/results", pageSize = defaultPageSize),
                   propertySearchResultTable = generateTable(properties.vmvProperties.properties),
                 ))
               )

@@ -28,7 +28,10 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccou
 
 class CurrentRatepayerViewSpec extends ViewBaseSpec {
   lazy val view: CurrentRatepayerView = inject[CurrentRatepayerView]
+  val address = "5 Brixham Marina, Berry Head Road, Brixham, Devon, TQ5 9BW"
+
   val title = "When did you become the current ratepayer? - GOV.UK"
+  val addressCaption = address
   val heading = "When did you become the current ratepayer?"
   val p1 = "This tells us when your responsibilities started under business rates reform. The earliest this can be is 1 April 2026."
   val detailsSummary = "How to tell if you are the current rate payer"
@@ -59,6 +62,7 @@ class CurrentRatepayerViewSpec extends ViewBaseSpec {
   object Selectors {
     val navTitle = "head > title"
     val heading = "#main-content > div > div > form > div > h1"
+    val addressCaption = "#main-content > div > div > form > div > span"
     val p1 = "#main-content > div > div > form > div > p"
     val detailsSummary = "#how-to-tell-if-you-are-the-current-rate-payer > summary > span"
     val contentP1 = "#how-to-tell-if-you-are-the-current-rate-payer > div > p:nth-child(1)"
@@ -71,11 +75,11 @@ class CurrentRatepayerViewSpec extends ViewBaseSpec {
 
   "CurrentRatepayerView" must {
 
-    val currentRatepayerView = view(content, form, radio)
+    val currentRatepayerView = view(content, form, radio, address)
     lazy implicit val document: Document = Jsoup.parse(currentRatepayerView.body)
-    val htmlApply = view.apply(content, form , radio ).body
-    val htmlRender = view.render(content, form , radio , request, messages, mockConfig).body
-    lazy val htmlF = view.f(content, form , radio )
+    val htmlApply = view.apply(content, form , radio, address).body
+    val htmlRender = view.render(content, form , radio , address, request, messages, mockConfig).body
+    lazy val htmlF = view.f(content, form , radio , address)
 
     "htmlF is not empty" in {
       htmlF.toString() must not be empty
@@ -95,6 +99,10 @@ class CurrentRatepayerViewSpec extends ViewBaseSpec {
 
     "show correct heading" in {
       elementText(Selectors.heading) mustBe heading
+    }
+
+    "show correct address caption" in {
+      elementText(Selectors.addressCaption) mustBe addressCaption
     }
 
     "show correct p1" in {

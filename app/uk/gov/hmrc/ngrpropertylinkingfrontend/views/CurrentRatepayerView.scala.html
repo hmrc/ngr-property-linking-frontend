@@ -31,7 +31,7 @@
   saveAndContinueButton: saveAndContinueButton,
 )
 
-@(navigationBarContent: NavigationBarContent, form: Form[CurrentRatepayerForm], ngrRadio: Radios)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+@(navigationBarContent: NavigationBarContent, form: Form[CurrentRatepayerForm], ngrRadio: Radios,  address: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @dropDownContent = {
   <p class="govuk-body">@messages("currentRatepayer.details.content.p1")</p>
@@ -57,7 +57,8 @@
     @govukErrorSummary(ErrorSummaryViewModel(form))
     }
     <div class="govuk-grid-row">
-      <h1 class="govuk-heading-l">@messages("currentRatepayer.title")</h1>
+        <span class="govuk-caption-m">@address</span>
+        <h1 class="govuk-heading-l">@messages("currentRatepayer.title")</h1>
         <P class = "govuk-body"> @messages("currentRatepayer.p1")</P>
       @govukDetails(Details(
         id = Some("how-to-tell-if-you-are-the-current-rate-payer"),

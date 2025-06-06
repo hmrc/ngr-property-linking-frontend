@@ -48,6 +48,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
   "CurrentRatepayerController" must {
     "method show" must {
       "Return OK and the correct view" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty))))
         val result = controller().show()(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)
@@ -57,6 +58,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
 
     "method submit" must {
       "Successfully submit when selected Before and redirect to correct page" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty,currentRatepayer =  Some("Before")))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
           .withFormUrlEncodedBody(("confirm-address-radio", "Before"))
@@ -79,6 +81,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         redirectLocation(result) shouldBe Some(routes.WhatYouNeedController.show.url)
       }
       "Submit with radio buttons unselected and display error message" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
           .withFormUrlEncodedBody(("confirm-address-radio", ""))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))

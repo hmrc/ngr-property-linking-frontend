@@ -16,10 +16,14 @@
 
 @this()
 
-@(label: String, hrefUrl: String, beforeLinkContent:String = "", afterLinkContent: String = "", target: String = "")
+@(label: String, hrefUrl: String, beforeLinkContent:String = "",content:Option[String] = None, afterLinkContent: String = "", target: String = "")
 
 <p class="govuk-body">
     @beforeLinkContent
+    @if(!content.isEmpty){
+        <br>
+        @content.get
+    }
     <a href="@hrefUrl" class="govuk-link" target=@target>
         @label
     </a>@afterLinkContent

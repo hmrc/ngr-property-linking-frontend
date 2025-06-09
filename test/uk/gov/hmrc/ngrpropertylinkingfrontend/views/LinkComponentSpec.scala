@@ -24,9 +24,9 @@ class LinkComponentSpec extends ViewBaseSpec {
 
   "hyper link" when {
     "produce the same output for apply() and render()" in {
-      val htmlApply = injectedView.apply("label", "/some-href", "before link content", "after link content", "_blank").body
-      val htmlRender = injectedView.render("label", "/some-href", "before link content", "after link content", "_blank").body
-      val htmlF = injectedView.f("label", "/some-href", "before link content", "after link content", "_blank").body
+      val htmlApply = injectedView.apply("label", "/some-href", "before link content",Some("content"), "after link content", "_blank").body
+      val htmlRender = injectedView.render("label", "/some-href", "before link content",Some("content"), "after link content", "_blank").body
+      val htmlF = injectedView.f("label", "/some-href", "before link content",Some("content"), "after link content", "_blank").body
       htmlApply must not be empty
       htmlRender must not be empty
       htmlF must not be empty

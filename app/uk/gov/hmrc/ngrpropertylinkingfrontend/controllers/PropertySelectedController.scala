@@ -63,7 +63,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
       NGRSummaryListRow(messages("Address"), None, Seq(property.addressFull), None),
       NGRSummaryListRow(messages("Property Reference"), None, Seq(property.localAuthorityReference), None),
       NGRSummaryListRow(messages("Local Council"), None, Seq("Torbay"), None),
-      NGRSummaryListRow(messages("Description"), None, Seq(property.valuations.map(_.descriptionText).head), None),
+      NGRSummaryListRow(messages("Description"), None, Seq(property.valuations.map(_.descriptionText).last), None),
       NGRSummaryListRow(messages("Rateable value"), None, Seq(formatRateableValue(property.valuations.last.rateableValue)), None),
     ).map(summarise)
   }
@@ -117,7 +117,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
                 _ <- propertyLinkingRepo.upsertProperty(userAnswers)
               } yield Redirect(routes.CurrentRatepayerController.show)
             } else {
-              Future.successful(Redirect(routes.FindAPropertyController.show))
+              Future.successful(Redirect(routes.SingleSearchResultController.show(1)))
             }
         }
       )

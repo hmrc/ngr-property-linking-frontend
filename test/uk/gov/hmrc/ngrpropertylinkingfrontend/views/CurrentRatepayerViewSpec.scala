@@ -66,9 +66,9 @@ class CurrentRatepayerViewSpec extends ViewBaseSpec {
     val p1 = "#main-content > div > div > form > div > p"
     val detailsSummary = "#how-to-tell-if-you-are-the-current-rate-payer > summary > span"
     val contentP1 = "#how-to-tell-if-you-are-the-current-rate-payer > div > p:nth-child(1)"
-    val contentL1 = "#how-to-tell-if-you-are-the-current-rate-payer > div > li:nth-child(2)"
-    val contentL2 = "#how-to-tell-if-you-are-the-current-rate-payer > div > li:nth-child(3)"
-    val contentP2 = "#how-to-tell-if-you-are-the-current-rate-payer > div > p:nth-child(5)"
+    val contentL1 = "#how-to-tell-if-you-are-the-current-rate-payer > div > ul > li:nth-child(1)"
+    val contentL2 = "#how-to-tell-if-you-are-the-current-rate-payer > div > ul > li:nth-child(2)"
+    val contentP2 = "#how-to-tell-if-you-are-the-current-rate-payer > div > p:nth-child(3)"
     val radio1 = "#main-content > div > div > form > div > div > div > div:nth-child(1) > label"
     val radio2 = "#main-content > div > div > form > div > div > div > div:nth-child(2) > label"
   }

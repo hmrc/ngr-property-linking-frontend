@@ -43,9 +43,13 @@
 @dropDownContent = {
     <p class="govuk-body">@messages("singleSearchResultPage.details.content.1")<p>
     <p class="govuk-body">
-        @messages("singleSearchResultPage.details.content.2") <br>
-        @messages("singleSearchResultPage.details.content.3")
-        <a href= @searchAgainUrl class="govuk-link">@messages("singleSearchResultPage.details.link")</a><p>
+        @linkComponent(
+            label = messages("singleSearchResultPage.details.link"),
+            hrefUrl = searchAgainUrl,
+            beforeLinkContent = messages("singleSearchResultPage.details.content.2"),
+            content = Some(messages("singleSearchResultPage.details.content.3")),
+            afterLinkContent = "."
+        )
     <p class="govuk-body">
     <p class="govuk-body">
         @messages("singleSearchResultPage.details.telephone")<br>

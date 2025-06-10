@@ -34,20 +34,18 @@
 @(navigationBarContent: NavigationBarContent, form: Form[CurrentRatepayerForm], ngrRadio: Radios,  address: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @dropDownContent = {
-  <p class="govuk-body">@messages("currentRatepayer.details.content.p1")</p>
-    <li>
-      @messages("currentRatepayer.details.content.L1")
-    </li>
-    <li>
-        @messages("currentRatepayer.details.content.L2")
-    </li>
-  <p>
-      <p class="govuk-body">
+    <p class="govuk-body">
+        @messages("currentRatepayer.details.content.p1")
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("currentRatepayer.details.content.L1")</li>
+        <li>@messages("currentRatepayer.details.content.L2")</li>
+    </ul>
+    <p class="govuk-body">
         @messages("currentRatepayer.details.content.p2")
         <br>
         @messages("currentRatepayer.details.content.p3")
-      </p>
-  </p>
+    </p>
 }
 
 @heading = @{messages("currentRatepayer.title")}

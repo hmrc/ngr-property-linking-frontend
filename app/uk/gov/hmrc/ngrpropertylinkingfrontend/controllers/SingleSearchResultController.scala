@@ -58,27 +58,26 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
         case Some(properties) =>
-          val postcode:String = properties.vmvProperties.properties.head.addressFull.takeRight(8)
-              val totalProperties = properties.vmvProperties.total
-              val currentPage = page
-              val pageSize = defaultPageSize
-              val pageTop = PaginationData.pageTop(currentPage = currentPage, pageSize = pageSize, totalLength = totalProperties)
-              val pageBottom = PaginationData.pageBottom(currentPage = currentPage, pageSize = pageSize) + (if (pageTop == 0) 0 else 1)
+          val totalProperties = properties.vmvProperties.total
+          val currentPage = page
+          val pageSize = defaultPageSize
+          val pageTop = PaginationData.pageTop(currentPage = currentPage, pageSize = pageSize, totalLength = totalProperties)
+          val pageBottom = PaginationData.pageBottom(currentPage = currentPage, pageSize = pageSize) + (if (pageTop == 0) 0 else 1)
 
-              def totalPages: Int = math.ceil(properties.vmvProperties.properties.length.toFloat / defaultPageSize.toFloat).toInt
+          def totalPages: Int = math.ceil(properties.vmvProperties.properties.length.toFloat / defaultPageSize.toFloat).toInt
 
-              def splitAddressByPage(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[VMVProperty] = {
-                PaginationData.getPage(currentPage = currentPage, pageSize = pageSize, list = address)
-              }
+          def splitAddressByPage(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[VMVProperty] = {
+            PaginationData.getPage(currentPage = currentPage, pageSize = pageSize, list = address)
+          }
 
-              def zipWithIndex(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[(VMVProperty, String)] = {
-                val url = (i: Int) => if (page > 1) {
-                  routes.SingleSearchResultController.selectedProperty(i + defaultPageSize).url
-                } else {
-                  routes.SingleSearchResultController.selectedProperty(i).url
-                }
-                splitAddressByPage(currentPage, pageSize, address).zipWithIndex.map(x => (x._1, url(x._2)))
-              }
+          def zipWithIndex(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[(VMVProperty, String)] = {
+            val url = (i: Int) => if (page > 1) {
+              routes.SingleSearchResultController.selectedProperty(i + defaultPageSize).url
+            } else {
+              routes.SingleSearchResultController.selectedProperty(i).url
+            }
+            splitAddressByPage(currentPage, pageSize, address).zipWithIndex.map(x => (x._1, url(x._2)))
+          }
 
           def capitalizeEnds(input: String): String = {
             if (input.isEmpty) return input

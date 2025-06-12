@@ -20,22 +20,22 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
 import play.api.libs.json.{Json, OFormat}
 
-final case class CurrentRatepayerForm(radioValue: String)
+final case class BusinessRatesBillForm(radioValue: String)
 
-object CurrentRatepayerForm extends CommonFormValidators {
-  implicit val format: OFormat[CurrentRatepayerForm] = Json.format[CurrentRatepayerForm]
+object BusinessRatesBillForm extends CommonFormValidators {
+  implicit val format: OFormat[BusinessRatesBillForm] = Json.format[BusinessRatesBillForm]
 
   private lazy val radioUnselectedError = "confirmAddress.radio.unselected.error"
-  private val currentRatepayerRadio       = "current-ratepayer-radio"
+  private val businessRatesBillRadio       = "business-rates-bill-radio"
   
-  def unapply(currentRatepayerForm: CurrentRatepayerForm): Option[String] = Some(CurrentRatepayerForm.currentRatepayerRadio)
+  def unapply(currentRatepayerForm: BusinessRatesBillForm): Option[String] = Some(BusinessRatesBillForm.businessRatesBillRadio)
   
-  def form: Form[CurrentRatepayerForm] = {
+  def form: Form[BusinessRatesBillForm] = {
     Form(
       mapping(
-        currentRatepayerRadio -> text()
-          .verifying(isNotEmpty(currentRatepayerRadio, radioUnselectedError))
-      )(CurrentRatepayerForm.apply)(CurrentRatepayerForm.unapply)
+        businessRatesBillRadio -> text()
+          .verifying(isNotEmpty(businessRatesBillRadio, radioUnselectedError))
+      )(BusinessRatesBillForm.apply)(BusinessRatesBillForm.unapply)
     )
   }
 

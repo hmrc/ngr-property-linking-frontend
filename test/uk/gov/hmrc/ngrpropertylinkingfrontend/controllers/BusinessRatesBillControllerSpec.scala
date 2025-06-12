@@ -28,16 +28,16 @@ import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, PropertyLinkingUserAnswers}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccountView, CurrentRatepayerView}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccountView, BusinessRatesBillView, CurrentRatepayerView}
 
 import scala.concurrent.Future
 
-class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
+class BusinessRatesBillControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
   implicit val requestHeader: RequestHeader = mock[RequestHeader]
-  lazy val currentRatepayerView: CurrentRatepayerView = inject[CurrentRatepayerView]
-  val pageTitle = "When did you become the current ratepayer?"
+  lazy val currentRatepayerView: BusinessRatesBillView = inject[BusinessRatesBillView]
+  val pageTitle = "Do you have a business rates bill for the property?"
 
-  def controller() = new CurrentRatepayerController(
+  def controller() = new BusinessRatesBillController(
     currentRatepayerView,
     mockAuthJourney,
     mockIsRegisteredCheck,
@@ -45,7 +45,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
     mcc
   )(appConfig = mockConfig)
 
-  "CurrentRatepayerController" must {
+  "BusinessRatesBillController" must {
     "method show" must {
       "Return OK and the correct view" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty))))
@@ -57,33 +57,33 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
     }
 
     "method submit" must {
-      "Successfully submit when selected Before and redirect to correct page" in {
+      "Successfully submit when selected Yes and redirect to correct page" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty,currentRatepayer =  Some("Before")))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
-          .withFormUrlEncodedBody(("current-ratepayer-radio", "Before"))
+          .withFormUrlEncodedBody(("business-rates-bill-radio", "Yes"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show.url)
+        redirectLocation(result) shouldBe Some(routes.WhatYouNeedController.show.url)
       }
-      "Successfully submit when selected After and redirect to correct page" in {
+      "Successfully submit when selected No and redirect to correct page" in {
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some("After")))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
-          .withFormUrlEncodedBody(("current-ratepayer-radio", "After"))
+          .withFormUrlEncodedBody(("business-rates-bill-radio", "No"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show.url)
+        redirectLocation(result) shouldBe Some(routes.WhatYouNeedController.show.url)
       }
       "Submit with radio buttons unselected and display error message" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
-          .withFormUrlEncodedBody(("current-ratepayer-radio", ""))
+          .withFormUrlEncodedBody(("confirm-address-radio", ""))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)

@@ -43,7 +43,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
   
   private val beforeButton: NGRRadioButtons = NGRRadioButtons("Before 1 April 2026", Before)
   private val afterButton: NGRRadioButtons = NGRRadioButtons("On or after 1 April 2026", After)
-  private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("confirm-address-radio"), Seq(beforeButton, afterButton))
+  private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("current-ratepayer-radio"), Seq(beforeButton, afterButton))
   
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
@@ -68,7 +68,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
               credId = CredId(request.credId.getOrElse("")),
               currentRatepayer = currentRatepayerForm.radioValue
             )
-            Future.successful(Redirect(routes.WhatYouNeedController.show.url))
+            Future.successful(Redirect(routes.BusinessRatesBillController.show.url))
         )
     }
 }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.{Fieldset, Legend, RadioItem, Text}
+import uk.gov.hmrc.govukfrontend.views.Aliases.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.Radios
 
@@ -26,7 +26,7 @@ case class NGRRadioName(key: String)
 case class NGRRadioButtons(radioContent: String, radioValue: RadioEntry)
 case class NGRRadioHeader(title: String, classes: String , isPageHeading: Boolean)
 
-case class NGRRadio (radioGroupName: NGRRadioName, NGRRadioButtons: Seq[NGRRadioButtons], ngrTitle: Option[NGRRadioHeader] = None)
+case class NGRRadio (radioGroupName: NGRRadioName, NGRRadioButtons: Seq[NGRRadioButtons], ngrTitle: Option[NGRRadioHeader] = None, hint: Option[String] = None)
 
 object NGRRadio {
 
@@ -42,8 +42,10 @@ object NGRRadio {
             classes = header.classes,
             isPageHeading = header.isPageHeading
           ))
-        )
-      ),
+        )),
+      hint = NGRRadios.hint.map { hint =>
+        Hint(content = Text(Messages(hint)))
+      },
       idPrefix = Some(NGRRadios.radioGroupName.key),
       name = NGRRadios.radioGroupName.key,
       items = NGRRadios.NGRRadioButtons.map { item =>

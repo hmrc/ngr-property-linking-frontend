@@ -49,7 +49,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
     "method show" must {
       "Return OK and the correct view" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty))))
-        val result = controller().show()(authenticatedFakeRequest)
+        val result = controller().show(mode = "")(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)
         content must include(pageTitle)
@@ -60,7 +60,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
       "Successfully submit when selected Before and redirect to correct page" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty,currentRatepayer =  Some("Before")))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
+        val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("current-ratepayer-radio", "Before"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
@@ -71,7 +71,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
       }
       "Successfully submit when selected After and redirect to correct page" in {
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some("After")))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
+        val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("current-ratepayer-radio", "After"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
@@ -82,7 +82,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
       }
       "Submit with radio buttons unselected and display error message" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
+        val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("current-ratepayer-radio", ""))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST

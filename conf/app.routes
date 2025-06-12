@@ -15,8 +15,10 @@ GET        /results                             uk.gov.hmrc.ngrpropertylinkingfr
 GET        /select-property/:index              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.selectedProperty(index: Int)
 GET        /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.show(index: Int)
 POST       /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.submit(index: Int)
-GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.show
-POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit
+GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.show(mode: String)
+POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit(mode: String)
 GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show
 POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.submit
 GET        /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.show
+POST       /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.submit
+GET        /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.show

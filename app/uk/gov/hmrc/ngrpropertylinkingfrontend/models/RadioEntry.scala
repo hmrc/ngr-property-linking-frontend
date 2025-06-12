@@ -25,3 +25,8 @@ case object No extends YesNoItem
 sealed trait BeforeAfter extends RadioEntry
 case object Before extends BeforeAfter
 case object After extends BeforeAfter
+
+sealed trait ConnectionAPropertyItem extends RadioEntry
+case object Owner extends ConnectionAPropertyItem
+case object Occupier extends ConnectionAPropertyItem
+case object OwnerAndOccupier extends ConnectionAPropertyItem

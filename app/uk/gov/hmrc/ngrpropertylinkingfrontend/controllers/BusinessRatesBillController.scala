@@ -45,7 +45,7 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
   private val ngrRadio: NGRRadio = NGRRadio(
     NGRRadioName("business-rates-bill-radio"),
     Seq(yesButton, noButton),
-    hint = Some("You need the most recent bill you have for the property."))
+    hint = Some("uploadBusinessRatesBill.hint"))
 
 
   def show: Action[AnyContent] =

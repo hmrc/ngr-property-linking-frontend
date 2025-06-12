@@ -32,7 +32,7 @@ class BusinessRatesBillViewSpec extends ViewBaseSpec {
   val title = "Do you have a business rates bill for the property? - GOV.UK"
   val addressCaption = address
   val heading = "Do you have a business rates bill for the property?"
-  val hine = "You need the most recent bill you have for the property."
+  val hint = "You need the most recent bill you have for the property."
   val radio1 = "Yes"
   val radio2 = "No"
 

@@ -44,7 +44,7 @@ object NGRRadio {
           ))
         )),
       hint = NGRRadios.hint.map { hint =>
-        Hint(content = Text(hint))
+        Hint(content = Text(Messages(hint)))
       },
       idPrefix = Some(NGRRadios.radioGroupName.key),
       name = NGRRadios.radioGroupName.key,

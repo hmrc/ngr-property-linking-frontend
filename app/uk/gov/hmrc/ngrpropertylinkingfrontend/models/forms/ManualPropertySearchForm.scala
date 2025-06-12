@@ -17,24 +17,66 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
 import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
+import play.api.data.Forms.{mapping, optional, text}
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.Postcode
 
-final case class ManualPropertySearchForm(radioValue: String)
+final case class ManualPropertySearchForm(line1: String,
+                                          line2: Option[String],
+                                          town: String,
+                                          county: Option[String],
+                                          postcode: Postcode)
 
 object ManualPropertySearchForm extends CommonFormValidators {
   implicit val format:OFormat[ManualPropertySearchForm] = Json.format[ManualPropertySearchForm]
 
-  private lazy val radioUnselectedError = "Please select an option"
-  private val confirmPropertyRadio = "confirm-property-radio"
+  private val maxLineLength: Int = 100
 
-  def unapply(manualPropertySearchForm: ManualPropertySearchForm): Option[String] = Some(ManualPropertySearchForm.confirmPropertyRadio)
+  def unapply(manualPropertySearchForm: ManualPropertySearchForm): Option[(String, Option[String], String, Option[String], Postcode)] =
+    Some(manualPropertySearchForm.line1, manualPropertySearchForm.line2, manualPropertySearchForm.town, manualPropertySearchForm.county, manualPropertySearchForm.postcode)
 
   def form: Form[ManualPropertySearchForm] = {
     Form(
       mapping(
-        confirmPropertyRadio -> text()
-          .verifying(isNotEmpty(confirmPropertyRadio, radioUnselectedError))
+        "addressLine1" -> text()
+          .verifying(
+            firstError(
+              isNotEmpty("addressLine1", "manualSearchProperty.line1.required.error"),
+              maxLength(maxLineLength, "manualSearchProperty.line1.maxLength.error")
+            )
+          ),
+        "addressLine2" -> optional(
+          text()
+            .verifying(
+              firstError(
+                maxLength(maxLineLength, "manualSearchProperty.line2.maxLength.error")
+              )
+            )
+        ),
+        "city" -> text()
+          .verifying(
+            firstError(
+              isNotEmpty("city", "manualSearchProperty.city.required.error"),
+              maxLength(maxLineLength, "manualSearchProperty.city.maxLength.error")
+            )
+          ),
+        "county" -> optional(
+          text()
+            .verifying(
+              firstError(
+                maxLength(maxLineLength, "manualSearchProperty.county.maxLength.error")
+              )
+            )
+        ),
+        "postcode" ->
+          text()
+            .transform[String](_.strip(), identity)
+            .verifying(
+              firstError(
+                isNotEmpty("postcode", "manualSearchProperty.postcode.required.error"),
+                regexp(postcodeRegexPattern.pattern(), "manualSearchProperty.postcode.invalid.error")
+              )
+            ) .transform[Postcode](Postcode.apply, _.value)
       )(ManualPropertySearchForm.apply)(ManualPropertySearchForm.unapply)
     )
   }

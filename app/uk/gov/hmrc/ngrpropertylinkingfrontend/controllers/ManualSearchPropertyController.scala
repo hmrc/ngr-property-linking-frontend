@@ -23,7 +23,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, Registrat
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty.form
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ManualPropertySearchForm
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ManualPropertySearchForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.LookUpVMVProperties
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo}
@@ -44,25 +45,18 @@ class ManualSearchPropertyController @Inject()(manualPropertySearchView: ManualP
 
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      Future.successful(Ok(manualPropertySearchView(form(), createDefaultNavBar)))
+      Future.successful(Ok(manualPropertySearchView(form, createDefaultNavBar)))
     }
-
+    
   def submit: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      form()
+      form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(manualPropertySearchView(formWithErrors, createDefaultNavBar))),
-          findAProperty => {
-            findAPropertyConnector.findAProperty(findAProperty.postcode).flatMap {
-              case Left(error) =>
-                Future.successful(Status(error.code)(Json.toJson(error)))
-              case Right(properties) if properties.properties.isEmpty =>
-                Future.successful(Redirect(routes.NoResultsFoundController.show.url))
-              case Right(properties) =>
-                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
-                Future.successful(Redirect(routes.SingleSearchResultController.show(page = 1).url))
-            }
-          })
+          manualPropertySearch => {
+            Future.successful(Redirect(routes.NoResultsFoundController.show.url))
+          }
+        )
     }
 }

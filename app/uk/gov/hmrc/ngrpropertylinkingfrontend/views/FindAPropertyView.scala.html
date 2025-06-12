@@ -26,6 +26,7 @@ layout: Layout,
 formHelper: FormWithCSRF,
 govukErrorSummary: GovukErrorSummary,
 inputText: components.InputText,
+linkComponent: LinkComponent,
 saveAndContinueButton: saveAndContinueButton
 )
 
@@ -48,7 +49,7 @@ saveAndContinueButton: saveAndContinueButton
         isVisible = true,
         classes = Some("govuk-!-width-one-third govuk-!-font-weight-bold")
         )
-        <p class="govuk-body"><a class="govuk-link" href="#">@messages("findAProperty.manual")</a></p>
+        @linkComponent(label = messages("findAProperty.manual"), hrefUrl = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ManualSearchPropertyController.show.url)
 
         @inputText(
         form  =   form,

@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.viewmodels.govuk.all._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ManualPropertySearchForm
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
 
 @this(
@@ -29,11 +29,11 @@ inputText: components.InputText,
 saveAndContinueButton: saveAndContinueButton
 )
 
-@(form: Form[FindAProperty], navigationBarContent: NavigationBarContent)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+@(form: Form[ManualPropertySearchForm], navigationBarContent: NavigationBarContent)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("manualSearchProperty.title")}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
-@formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.FindAPropertyController.submit, Symbol("autoComplete") -> "off") {
+@formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ManualSearchPropertyController.submit, Symbol("autoComplete") -> "off") {
 @if(form.errors.nonEmpty) {
 @govukErrorSummary(ErrorSummaryViewModel(form))
 }

@@ -24,11 +24,13 @@ import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.http.StringContextOps
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
+import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
 
 import scala.concurrent.Future
 
 trait MockHttpV2 extends TestSupport with BeforeAndAfterEach {
 
+  lazy val mockNgrLogger: NGRLogger = mock[NGRLogger]
   lazy val mockHttpClientV2: HttpClientV2 = Mockito.mock(classOf[HttpClientV2])
   lazy val mockRequestBuilder: RequestBuilder = Mockito.mock(classOf[RequestBuilder])
 

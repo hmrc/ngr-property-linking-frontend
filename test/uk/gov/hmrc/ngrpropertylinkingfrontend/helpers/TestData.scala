@@ -30,7 +30,7 @@ trait TestData {
 
   val testPostcode = Postcode(value = "BH1 7EY")
   val time = Instant.now()
-  
+
   val properties1: VMVProperties = VMVProperties(total = 1,
     properties = List(
       VMVProperty(

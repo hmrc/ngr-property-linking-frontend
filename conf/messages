@@ -2,6 +2,7 @@ service.name = Manage your business rates valuation
 service.text = This is your new service
 service.base.title = {0} - GOV.UK
 service.continue = Continue
+service.change = Change
 
 scat.1 = AA/RAC Service Centre Or Box
 scat.3 = Advertising Right
@@ -489,3 +490,14 @@ uploadBusinessRatesBill.p2=The file must be a Word document, PDF or image (PNG o
 #BusinessRatesBill
 businessRatesBill.title = Do you have a business rates bill for the property?
 uploadBusinessRatesBill.hint = You need the most recent bill you have for the property.
+
+#CheckYourAnswers
+checkYourAnswers.title = Check and confirm your details
+checkYourAnswers.property.title = Property to add to account
+checkYourAnswers.propertyReference.title = Property reference
+checkYourAnswers.currentRatepayer.title = When did you become the current ratepayer?
+checkYourAnswers.businessRatesBill = Do you have a business rates bill for this property?
+checkYourAnswers.EvidenceDocument = Evidence document
+checkYourAnswers.PropertyConnection = What is your connection to the property
+checkYourAnswers.currentRatepayer.before = Before 1 April 2026
+checkYourAnswers.currentRatepayer.after = On or after 1 April 2026

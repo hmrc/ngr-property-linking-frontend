@@ -22,7 +22,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperties, VMVProp
 
 case class PropertyLinkingUserAnswers (credId: CredId,
                                        vmvProperty: VMVProperty,
-                                       currentRatepayer: Option[String] = None
+                                       currentRatepayer: Option[String] = None,
+                                       businessRatesBill: Option[String] = None
                                       )
 
 object PropertyLinkingUserAnswers {

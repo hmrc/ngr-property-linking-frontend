@@ -48,22 +48,27 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
     hint = Some("uploadBusinessRatesBill.hint"))
 
 
-  def show: Action[AnyContent] =
+  def show(mode: String): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
-        case Some(property) =>  Future.successful(Ok(businessRatesBillView(createDefaultNavBar, form, buildRadios(form, ngrRadio), address = property.vmvProperty.addressFull)))
+        case Some(property) =>  Future.successful(Ok(businessRatesBillView(createDefaultNavBar, form, buildRadios(form, ngrRadio), address = property.vmvProperty.addressFull, mode)))
         case None => throw new NotFoundException("failed to find property from mongo")
       }
 
     }
 
-  def submit: Action[AnyContent] =
+  def submit(mode: String): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
           formWithErrors => propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
-            case Some(property) =>  Future.successful(BadRequest(businessRatesBillView(createDefaultNavBar, formWithErrors, buildRadios(formWithErrors, ngrRadio), address = property.vmvProperty.addressFull)))
+            case Some(property) =>  Future.successful(BadRequest(businessRatesBillView(
+              createDefaultNavBar,
+              formWithErrors,
+              buildRadios(formWithErrors, ngrRadio),
+              address = property.vmvProperty.addressFull,
+              mode)))
             case None => throw new NotFoundException("failed to find property from mongo")
           },
           businessRatesBillForm =>
@@ -71,7 +76,7 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
               credId = CredId(request.credId.getOrElse("")),
               businessRatesBill = businessRatesBillForm.radioValue
             )
-            Future.successful(Redirect(routes.WhatYouNeedController.show.url))
+            if(mode == "CYA") Future.successful(Redirect(routes.CheckYourAnswersController.show.url)) else Future.successful(Redirect(routes.WhatYouNeedController.show.url))
         )
     }
 }

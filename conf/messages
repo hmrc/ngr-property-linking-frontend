@@ -549,3 +549,8 @@ addPropertyRequestSent.h2 = What happens next
 addPropertyRequestSent.p2 = We can usually give you a decision on your request to add a property within 15 working days. We will email you with our decision
 addPropertyRequestSent.p3 = When we approve your request, you can report a change to your property, rent or lease.
 addPropertyRequestSent.goHome = Go to your account home
+
+#Declaration
+declaration.title = Declaration
+declaration.p1 = By submitting this request to add a property, you declare that to the best of your knowledge, the information given is correct and complete.
+declaration.accept = Accept and send

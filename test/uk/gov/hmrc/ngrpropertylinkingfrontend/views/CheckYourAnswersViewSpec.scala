@@ -55,73 +55,23 @@ class CheckYourAnswersViewSpec extends ViewBaseSpec{
     val continue = "#continue"
   }
 
-  val cyaSummary: Seq[SummaryListRow] = Seq(
+  val summary: Seq[SummaryListRow] = Seq(
     NGRSummaryListRow(
-      messages("Property to add to account"),
+      messages("checkYourAnswers.property.title"),
       None,
-      Seq("(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7ST"),
+      Seq("(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY"),
       changeLink = Some(Link(href = routes.FindAPropertyController.show, linkId = "property-address", messageKey = "service.change", visuallyHiddenMessageKey = Some("property-address")))
     ),
     NGRSummaryListRow(
-      messages("Property reference"),
+      messages("checkYourAnswers.currentRatepayer.title"),
       None,
       Seq("2191322564521"),
       None
     ),
     NGRSummaryListRow(
-      messages("When did you become the current ratepayer?"),
+      messages("checkYourAnswers.currentRatepayer.title"),
       None,
-      Seq("Before 1 April 2026"),
-      changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "current-ratepayer", messageKey = "service.change", visuallyHiddenMessageKey = Some("current-ratepayer")))
-    ), //TODO CHANGE CURRENT RATEPAYER
-    NGRSummaryListRow(
-      messages("checkYourAnswers.businessRatesBill"),
-      None,
-      Seq("userAnswers.credId.value.toString"),
-      changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
-    ), //TODO CHANGE CURRENT RATEPAYER
-    NGRSummaryListRow(
-      messages("checkYourAnswers.EvidenceDocument"),
-      None,
-      Seq("userAnswers.credId.value.toString"),
-      changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "evidence-document", messageKey = "service.change", visuallyHiddenMessageKey = Some("evidence-document")))
-    ), //TODO CHANGE CURRENT RATEPAYER
-    NGRSummaryListRow(
-      messages("checkYourAnswers.PropertyConnection"),
-      None,
-      Seq("userAnswers.credId.value.toString"),
-      changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "property-connection", messageKey = "service.change", visuallyHiddenMessageKey = Some("property-connection")))
-    ) //TODO CHANGE CURRENT RATEPAYER
-  ).map(summarise)
-
-  val content: NavigationBarContent = NavBarPageContents.CreateNavBar(
-    contents = NavBarContents(
-      homePage = Some(true),
-      messagesPage = Some(false),
-      profileAndSettingsPage = Some(false),
-      signOutPage = Some(true)
-    ),
-    currentPage = NavBarCurrentPage(homePage = true),
-    notifications = Some(1)
-  )
-
-  val summary: Seq[SummaryListRow] =  Seq(
-    NGRSummaryListRow(
-      messages("Property to add to account"),
-      None,
-      Seq("(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7ST"),
-      changeLink = Some(Link(href = routes.FindAPropertyController.show, linkId = "property-address", messageKey = "service.change", visuallyHiddenMessageKey = Some("property-address")))
-    ),
-    NGRSummaryListRow(
-      messages("Property reference"),
-      None,
-      Seq("2191322564521"),
-      None
-    ),
-    NGRSummaryListRow(
-      messages("When did you become the current ratepayer?"),
-      None,
-      Seq("Before 1 April 2026"),
+      Seq("checkYourAnswers.currentRatepayer.before"),
       changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "current-ratepayer", messageKey = "service.change", visuallyHiddenMessageKey = Some("current-ratepayer")))
     ), //TODO CHANGE CURRENT RATEPAYER
     NGRSummaryListRow(

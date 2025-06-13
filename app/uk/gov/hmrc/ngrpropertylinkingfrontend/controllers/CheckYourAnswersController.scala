@@ -97,12 +97,16 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
 
   def submit: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
+      val credId = CredId(request.credId.getOrElse(""))
       for {
-        response <- ngrConnector.upsertPropertyLinkingUserAnswers(
-            propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap( result => result.)
-        )
+        maybeAnswers <- propertyLinkingRepo.findByCredId(credId)
+        userAnswers <- maybeAnswers match {
+          case Some(result) => Future.successful(result)
+          case None => Future.failed(new NotFoundException("Failed to find the user answers"))
+        }
+        response <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
         result <- if (response.status == CREATED) {
-          Future.successful(Redirect(routes.WhatYouNeedController.show)
+          Future.successful(Redirect(routes.WhatYouNeedController.show))
         } else {
           Future.failed(new Exception("Failed upsert to backend"))
         }

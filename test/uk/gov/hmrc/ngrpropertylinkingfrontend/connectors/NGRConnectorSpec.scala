@@ -23,7 +23,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.
 import scala.concurrent.Future
 
 class NGRConnectorSpec extends MockHttpV2 {
-  val ngrConnector: NGRConnector = new NGRConnector(mockHttpClientV2, mockConfig)
+  val ngrConnector: NGRConnector = new NGRConnector(mockHttpClientV2, mockConfig, mockNgrLogger)
   val email: Email = Email("hello@me.com")
   val trn: TRNReferenceNumber = TRNReferenceNumber(TRN, "1234")
   override lazy val credId: CredId = CredId("1234")

@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController
 
 @this(
 layout: Layout,
@@ -31,7 +32,7 @@ saveAndContinueButton: saveAndContinueButton
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
  <h1 class="govuk-heading-l">@messages("declaration.title")</h1>
  <p class="govuk-body">@messages("declaration.p1")</p>
- <a href="@uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.accept()" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+ <a href="@uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.DeclarationController.accept" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
   @messages("declaration.accept")
  </a>
 }

@@ -20,16 +20,26 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryListRow
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
-import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CheckYourAnswersView
 
 class CheckYourAnswersViewSpec extends ViewBaseSpec{
   lazy val view: CheckYourAnswersView = inject[CheckYourAnswersView]
+
+  val content: NavigationBarContent = NavBarPageContents.CreateNavBar(
+    contents = NavBarContents(
+      homePage = Some(true),
+      messagesPage = Some(false),
+      profileAndSettingsPage = Some(false),
+      signOutPage = Some(true)
+    ),
+    currentPage = NavBarCurrentPage(homePage = true),
+    notifications = Some(1)
+  )
 
   object Strings {
     val navTitle = "Check and confirm your details - GOV.UK"
@@ -47,7 +57,7 @@ class CheckYourAnswersViewSpec extends ViewBaseSpec{
     val navTitle = "head > title"
     val heading = "#main-content > div > div > form > h1"
     val summaryRow1 = "#main-content > div > div > form > dl > div:nth-child(1) > dt"
-    val summaryRow2 = "#main-content > div > div > form > dl > div:nth-child(2) > dt"
+    val summaryRow2 = "#main-content > div > div > form > dl > div.govuk-summary-list__row.govuk-summary-list__row--no-actions > dt"
     val summaryRow3 = "#main-content > div > div > form > dl > div:nth-child(3) > dt"
     val summaryRow4 = "#main-content > div > div > form > dl > div:nth-child(4) > dt"
     val summaryRow5 = "#main-content > div > div > form > dl > div:nth-child(5) > dt"
@@ -63,7 +73,7 @@ class CheckYourAnswersViewSpec extends ViewBaseSpec{
       changeLink = Some(Link(href = routes.FindAPropertyController.show, linkId = "property-address", messageKey = "service.change", visuallyHiddenMessageKey = Some("property-address")))
     ),
     NGRSummaryListRow(
-      messages("checkYourAnswers.currentRatepayer.title"),
+      messages("checkYourAnswers.propertyReference.title"),
       None,
       Seq("2191322564521"),
       None

@@ -49,7 +49,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
     "method show" must {
       "Return OK and the correct view" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty))))
-        val result = controller().show()(authenticatedFakeRequest)
+        val result = controller().show("")(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)
         content must include(pageTitle)
@@ -60,7 +60,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
       "Successfully submit when selected Yes and redirect to correct page" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty,currentRatepayer =  Some("Before")))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
+        val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
           .withFormUrlEncodedBody(("business-rates-bill-radio", "Yes"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
@@ -71,7 +71,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
       }
       "Successfully submit when selected No and redirect to correct page" in {
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some("After")))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
+        val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
           .withFormUrlEncodedBody(("business-rates-bill-radio", "No"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
@@ -80,9 +80,20 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.WhatYouNeedController.show.url)
       }
+      "Successfully submit when use has come from cya page, selected No and redirect to correct page" in {
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some("After")))))
+        val result = controller().submit("CYA")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
+          .withFormUrlEncodedBody(("business-rates-bill-radio", "No"))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
+        result.map(result => {
+          result.header.headers.get("Location") shouldBe Some(routes.CheckYourAnswersController.show.url)
+        })
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.show.url)
+      }
       "Submit with radio buttons unselected and display error message" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit)
+        val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
           .withFormUrlEncodedBody(("confirm-address-radio", ""))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST

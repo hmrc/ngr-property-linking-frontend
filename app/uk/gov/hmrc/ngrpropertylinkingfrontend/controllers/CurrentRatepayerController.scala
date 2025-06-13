@@ -71,7 +71,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
             if(mode == "CYA")
               Future.successful(Redirect(routes.CheckYourAnswersController.show))
             else
-              Future.successful(Redirect(routes.BusinessRatesBillController.show.url))
+              Future.successful(Redirect(routes.BusinessRatesBillController.show("")))
         )
     }
 }

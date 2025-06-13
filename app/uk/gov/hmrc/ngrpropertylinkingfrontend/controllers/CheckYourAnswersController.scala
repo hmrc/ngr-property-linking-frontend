@@ -68,8 +68,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
       NGRSummaryListRow(
         messages("checkYourAnswers.businessRatesBill"),
         None,
-        Seq(userAnswers.credId.value.toString),
-        changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
+        Seq(userAnswers.businessRatesBill.getOrElse(throw new NotFoundException("Could not find business rates bill"))),
+        changeLink = Some(Link(href = routes.BusinessRatesBillController.show("CYA"), linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
       ), //TODO CHANGE CURRENT RATEPAYER
       NGRSummaryListRow(
         messages("checkYourAnswers.EvidenceDocument"),

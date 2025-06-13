@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData with DefaultAwaitTimeout{
   lazy val view: CheckYourAnswersView = inject[CheckYourAnswersView]
-  lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some("Before"))
+  lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some("Before"), businessRatesBill = Some("Yes"))
 
   def controller() = new CheckYourAnswersController(
     view,
@@ -66,7 +66,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
     NGRSummaryListRow(
       messages("checkYourAnswers.businessRatesBill"),
       None,
-      Seq("userAnswers.credId.value.toString"),
+      Seq("Yes"),
       changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
     ), //TODO CHANGE CURRENT RATEPAYER
     NGRSummaryListRow(
@@ -109,8 +109,8 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
       content must include("(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY")
       content must include("Property reference")
       content must include("2191322564521")
-      content must include("Property reference")
-      content must include("2191322564521")
+      content must include("Do you have a business rates bill for this property?")
+      content must include("Yes")
     }
     "Calling the submit function return a 303 and the correct redirect location" in {
       mockRequest()

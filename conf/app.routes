@@ -20,3 +20,5 @@ POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfr
 GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show
 POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.submit
 GET        /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.show
+GET        /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.show
+POST       /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.accept

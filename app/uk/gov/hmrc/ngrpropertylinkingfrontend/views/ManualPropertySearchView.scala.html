@@ -26,10 +26,44 @@ layout: Layout,
 formHelper: FormWithCSRF,
 govukErrorSummary: GovukErrorSummary,
 inputText: components.InputText,
+govukDetails : GovukDetails,
+govukSelect : GovukSelect,
 saveAndContinueButton: saveAndContinueButton
 )
 
-@(form: Form[ManualPropertySearchForm], navigationBarContent: NavigationBarContent)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+@(form: Form[ManualPropertySearchForm], navigationBarContent: NavigationBarContent, councilSelect: Select)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+
+@dropDownContent = {
+  @inputText(
+    form = form,
+    id = "propertyReference",
+    name = "propertyReference",
+    isVisible = true,
+    label = "manualSearchProperty.propertyReference.label",
+    classes = Some("govuk-!-width-three-quarters")
+  )
+  @govukSelect(councilSelect)
+  @inputText(
+    form = form,
+    id = "miniRateableValue",
+    name = "miniRateableValue",
+    isVisible = true,
+    label = "manualSearchProperty.miniRateableValue.label",
+    classes = Some("govuk-input--width-10"),
+    hint = Some(Hint(content = Text(messages("manualSearchProperty.miniRateableValue.hint")))),
+    prefix = Some(PrefixOrSuffix(content = Text("£")))
+  )
+  @inputText(
+    form = form,
+    id = "maxRateableValue",
+    name = "maxRateableValue",
+    isVisible = true,
+    label = "manualSearchProperty.maxRateableValue.label",
+    classes = Some("govuk-input--width-10"),
+    hint = Some(Hint(content = Text(messages("manualSearchProperty.maxRateableValue.hint")))),
+    prefix = Some(PrefixOrSuffix(content = Text("£")))
+  )
+}
 
 @heading = @{messages("manualSearchProperty.title")}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
@@ -60,8 +94,8 @@ saveAndContinueButton: saveAndContinueButton
 
         @inputText(
         form = form,
-        id = "city",
-        name = "city",
+        id = "town",
+        name = "town",
         isVisible = true,
         label = "manualSearchProperty.city.label",
         classes = Some("govuk-!-width-two-thirds"),
@@ -87,6 +121,12 @@ saveAndContinueButton: saveAndContinueButton
         classes = Some("govuk-input--width-10"),
         autoComplete = "postal-code"
         )
+
+        @govukDetails(Details(
+        id = Some("additional-search-options"),
+        summary = Text(messages("manualSearchProperty.additional.title")),
+        content = HtmlContent(dropDownContent)
+        ))
 
         @saveAndContinueButton(msg = messages("manualSearchProperty.button"), isStartButton = false)
     </div>

@@ -27,7 +27,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.FrontendAppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.LookUpVMVProperties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UpscanResponse
 
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -35,13 +35,13 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 @Singleton
-case class FindAPropertyRepo @Inject()(mongo: MongoComponent,
-                                       config: FrontendAppConfig
-                                      )(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[LookUpVMVProperties](
-    collectionName = "findAProperty",
+case class UpscanRepo @Inject()(mongo: MongoComponent,
+                                config: FrontendAppConfig
+                                )(implicit ec: ExecutionContext)
+  extends PlayMongoRepository[UpscanResponse](
+    collectionName = "upscanResponse",
     mongoComponent = mongo,
-    domainFormat = LookUpVMVProperties.format,
+    domainFormat = UpscanResponse.format,
     indexes = Seq(
       IndexModel(
         descending("createdAt"),
@@ -63,16 +63,16 @@ case class FindAPropertyRepo @Inject()(mongo: MongoComponent,
 
   override lazy val requiresTtlIndex: Boolean = false
 
-  def upsertProperty(lookUpVMVproperties: LookUpVMVProperties): Future[Boolean] = {
-    val errorMsg = s"Property has not been inserted"
+  def upsertUpscanResponse(upscanResponse: UpscanResponse): Future[Boolean] = {
+    val errorMsg = s"upscanResponse has not been inserted"
 
     collection.replaceOne(
-      filter = equal("credId.value", lookUpVMVproperties.credId.value),
-      replacement = lookUpVMVproperties,
+      filter = equal("credId.value", upscanResponse.credId.value),
+      replacement = upscanResponse,
       options = ReplaceOptions().upsert(true)
     ).toFuture().transformWith {
       case Success(result) =>
-        logger.info(s"PropertyLinking has been upserted for credId: ${lookUpVMVproperties.credId.value}")
+        logger.info(s"upscanResponse has been upserted for credId: ${upscanResponse.credId.value}")
         result.wasAcknowledged()
         Future.successful(true)
       case Failure(exception) =>
@@ -80,10 +80,11 @@ case class FindAPropertyRepo @Inject()(mongo: MongoComponent,
         Future.failed(new IllegalStateException(s"$errorMsg: ${exception.getMessage} ${exception.getCause}"))
     }
   }
-  
-  def findByCredId(credId: CredId): Future[Option[LookUpVMVProperties]] = {
+
+  def findByCredId(credId: CredId): Future[Option[UpscanResponse]] = {
     collection.find(
       equal("credId.value", credId.value)
     ).headOption()
   }
 }
+

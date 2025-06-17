@@ -76,7 +76,7 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
         result.wasAcknowledged()
         Future.successful(true)
       case Failure(exception) =>
-        logger.error(errorMsg)
+        logger.error(s"credId: ${upscanResponse.credId.value} " + errorMsg)
         Future.failed(new IllegalStateException(s"$errorMsg: ${exception.getMessage} ${exception.getCause}"))
     }
   }

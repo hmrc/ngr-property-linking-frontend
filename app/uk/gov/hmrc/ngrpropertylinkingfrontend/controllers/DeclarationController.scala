@@ -23,9 +23,10 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.DeclarationView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
+@Singleton
 class DeclarationController @Inject()(view: DeclarationView,
                                       authenticate: AuthRetrievals,
                                       isRegisteredCheck: RegistrationAction,

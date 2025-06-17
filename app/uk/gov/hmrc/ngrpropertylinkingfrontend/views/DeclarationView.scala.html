@@ -22,7 +22,8 @@
 
 @this(
 layout: Layout,
-saveAndContinueButton: saveAndContinueButton
+saveAndContinueButton: saveAndContinueButton,
+formHelper: FormWithCSRF
 )
 
 @(navigationBarContent: NavigationBarContent)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
@@ -30,9 +31,13 @@ saveAndContinueButton: saveAndContinueButton
 @heading = @{messages("addpropertyToYourAccount.title")}
 
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
+
+@formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.DeclarationController.accept, Symbol("autoComplete") -> "off") {
+
  <h1 class="govuk-heading-l">@messages("declaration.title")</h1>
  <p class="govuk-body">@messages("declaration.p1")</p>
- <a href="@uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.DeclarationController.accept" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-  @messages("declaration.accept")
- </a>
+
+@saveAndContinueButton(msg = messages("declaration.accept"), isStartButton = false)
+
+}
 }

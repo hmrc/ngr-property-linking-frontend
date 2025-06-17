@@ -22,3 +22,5 @@ POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfr
 GET        /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.show(mode: String)
 POST       /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.submit
 GET        /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.show
+GET        /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.show
+POST       /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.submit

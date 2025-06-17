@@ -18,9 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.govukfrontend.views.Aliases
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryListRow
-import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.Radios
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
@@ -88,7 +86,6 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
       form.bindFromRequest()
         .fold(
         formWithErrors => {
-          val credId = request.credId.getOrElse("")
           findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
             case Some(properties) =>
               val selectedProperty = properties.vmvProperties.properties(index)

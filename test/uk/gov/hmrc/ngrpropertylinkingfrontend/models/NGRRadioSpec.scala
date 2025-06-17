@@ -17,12 +17,10 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.data.Form
-import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.FormGroup
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.Fieldset
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm
 
 class NGRRadioSpec extends TestSupport {

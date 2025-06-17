@@ -18,24 +18,24 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.repo
 
 import com.google.inject.Singleton
 import com.mongodb.client.model.Indexes.descending
-import org.mongodb.scala.SingleObservableFuture
 import org.mongodb.scala.bson.conversions.Bson
-import org.mongodb.scala.model.*
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.Updates.combine
+import org.mongodb.scala.model.*
 import play.api.Logging
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.FrontendAppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import org.mongodb.scala.SingleObservableFuture
 
 import java.time.Instant
+import scala.util.{Failure, Success}
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 @Singleton
 case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,

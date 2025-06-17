@@ -28,8 +28,8 @@ class InputTextSpec extends ViewBaseSpec {
   "InputText" when {
     "produce the same output for apply() and render()" in {
       val htmlApply = inputText(form, "phoneNumber-value", "phoneNumber-value", "Phone Number", true)(messages).body
-      val htmlF = inputText.f(form, "phoneNumber-value", "phoneNumber-value", "Phone Number", false, Seq.empty, None, None, false, "", false)(messages).body
-      val htmlRender = inputText.render(form, "phoneNumber-value", "phoneNumber-value", "Phone Number", true, Seq.empty, None, None, false, "", false, messages).body
+      val htmlF = inputText.f(form, "phoneNumber-value", "phoneNumber-value", "Phone Number", false, Seq.empty, None, None, false, "", false, None)(messages).body
+      val htmlRender = inputText.render(form, "phoneNumber-value", "phoneNumber-value", "Phone Number", true, Seq.empty, None, None, false, "", false, None, messages).body
       htmlApply must not be empty
       htmlRender must not be empty
       htmlF must not be empty

@@ -35,7 +35,7 @@ class UpscanConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig
     //TODO finalise these fields
     val request = UpscanInitiateRequest(
       callbackUrl = "https://callBackUrl.com",
-      successRedirect = Some("https://successRedirect.com"),
+      successRedirect = Some("http://localhost:1504/ngr-property-linking-frontend/uploaded-business-rates-bill"),
       errorRedirect = Some("https://failureRedirect.com"),
       maximumFileSize = Some(25000000))//25MB
     httpClientV2

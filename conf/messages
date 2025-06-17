@@ -485,3 +485,7 @@ currentRatepayer.radio.2 = On or after 1 April 2026
 uploadBusinessRatesBill.title=Upload your business rates bill
 uploadBusinessRatesBill.p1=1 Mulholland Drive, LA, 6BH 4PE
 uploadBusinessRatesBill.p2=The file must be a Word document, PDF or image (PNG or JPG) and be less than 25MB.
+uploadBusinessRatesBill.placeholder=PLACEHOLDER
+
+#UploadedBusinessRatesBill
+uploadedBusinessRatesBill.uploaded=Uploaded

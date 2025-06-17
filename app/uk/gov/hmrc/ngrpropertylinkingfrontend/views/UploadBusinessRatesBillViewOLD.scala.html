@@ -14,24 +14,23 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{PreparedUpload, UploadForm}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.LinkComponent
 
-@this(layout: Layout,
-        fileUpload: components.FileUpload,
+@this(
+        layout: Layout,
+        formHelper: FormWithCSRF,
         saveAndContinueButton: saveAndContinueButton,
-        button: components.button
+        linkComponent: LinkComponent
 )
 
-@(form: Form[_], upscanResponse: PreparedUpload, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("uploadBusinessRatesBill.title")}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
-
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden"></span>@messages("uploadBusinessRatesBill.p1")</h2>
@@ -40,33 +39,18 @@
             @messages("uploadBusinessRatesBill.p2")
             </p>
 
-            <form action="@upscanResponse.uploadRequest.href" method="POST" enctype="multipart/form-data" id="file-upload-form">
-
-                <div id="file-upload-form-group" class="govuk-form-group @{
-                    if(form.hasErrors) "govuk-form-group--error"
-                }">
-
-                    @upscanResponse.uploadRequest.fields.map { row =>
-                        <input type="hidden" name="@row._1" value="@row._2">
-                    }
-
-                    @fileUpload(
-                        form = form,
-                        name = "file",
-                        id = "file",
-                        label = messages("uploadBusinessRatesBill.placeholder"),
-                        isPageHeading = false,
-                        attributes = Map(
-                            "accept" -> ".pdf,.doc,.docx,.xls,.xlsx,.png,.ods,.odt,.ppt,.pptx,.odp,.jpg,.png,.tiff,.csv,.jpeg",
-                            "data-max-file-size" -> "100000000",
-                            "data-min-file-size" -> "1000"
-                        )
-                    )
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="file-upload-1">
+                    Upload a file
+                </label>
+                <div
+                class="govuk-drop-zone"
+                data-module="govuk-file-upload">
+                    <input class="govuk-file-upload" id="file-upload-1" name="fileUpload1" type="file">
                 </div>
-                @button("uploadBusinessRatesBill.placeholder")
-            </form>
-
+            </div>
             @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
         </div>
     </div>
 }
+

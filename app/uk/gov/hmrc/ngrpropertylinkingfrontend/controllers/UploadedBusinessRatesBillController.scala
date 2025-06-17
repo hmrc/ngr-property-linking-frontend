@@ -33,7 +33,9 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRatesBillView,
+class UploadedBusinessRatesBillController @Inject()(
+                                                   
+                                                   
                                                   uploadedView: UploadedBusinessRatesBillView,
                                                   upscanConnector: UpscanConnector,
                                                   uploadForm: UploadForm,
@@ -41,25 +43,13 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
                                                   isRegisteredCheck: RegistrationAction,
                                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-  
-  def show: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
-      val form = uploadForm()
-      
-      
-      for {
-        x <- upscanConnector.initiate
-      } yield{
-        Ok(uploadView(form, x, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
-      }
-    }
 
-//    def show2: Action[AnyContent] =
-//      (authenticate andThen isRegisteredCheck).async { implicit request =>
-//        //val x = uploadedView("testFile.aaa", createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)
-//        //Future.successful(Ok(uploadedView("testFile.aaa", createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)))
-//      Future.successful(Ok("test"))
-//      }
+    def show: Action[AnyContent] =
+      (authenticate andThen isRegisteredCheck).async { implicit request =>
+        //val x = uploadedView("testFile.aaa", createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)
+        Future.successful(Ok(uploadedView("testFile.aaa", createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)))
+        //Future.successful(Ok("test"))
+      }
 }
 
 //    def show2: Action[AnyContent] =

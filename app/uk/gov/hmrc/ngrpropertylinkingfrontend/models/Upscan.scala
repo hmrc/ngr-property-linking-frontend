@@ -17,6 +17,10 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.libs.json.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.HttpUrlFormat
+
+import java.net.URL
+import java.time.Instant
 
 case class Reference(reference: String)
 
@@ -72,70 +76,88 @@ object UpscanInitiateResponse {
   implicit val format: OFormat[UpscanInitiateResponse] = Json.format[UpscanInitiateResponse]
 }
 
-//object UploadStatus {
-//
-//  sealed trait UploadStatus // needs to be in the same closure as it's subtypes for Json.format to work
-//
-//  case object InProgress extends UploadStatus
-//
-//  case class Failed(failureDetails: ErrorDetails) extends UploadStatus
-//
-//  case class Success(name: String, mimeType: String, downloadUrl: String, size: Option[Long]) extends UploadStatus
-//
-//}
-//
-//sealed trait CallbackBody {
-//  def reference: Reference
-//}
-//
-//case class ReadyCallbackBody(
-//                              reference: Reference,
-//                              downloadUrl: URL,
-//                              uploadDetails: UploadCallbackDetails
-//                            ) extends CallbackBody
-//
-//case class FailedCallbackBody(
-//                               reference: Reference,
-//                               failureDetails: ErrorDetails
-//                             ) extends CallbackBody
-//
-//case class UploadCallbackDetails(
-//                                  uploadTimestamp: Instant,
-//                                  checksum: String,
-//                                  fileMimeType: String,
-//                                  fileName: String,
-//                                  size: Long
-//                                )
-//
+import play.api.data.FormError
+
+case class UploadViewModel(
+                           // detailsContent: DisplayMessage,
+                            acceptedFileType: String,
+                            maxFileSize: String,
+                            formFields: Map[String, String],
+                            error: Option[FormError]
+                          )
+
+object UploadStatus {
+
+  sealed trait UploadStatus // needs to be in the same closure as its subtypes for Json.format to work
+
+  case object InProgress extends UploadStatus
+
+  case class Failed(failureDetails: UpscanCallBackErrorDetails) extends UploadStatus
+
+  case class Success(name: String, mimeType: String, downloadUrl: String, size: Option[Long]) extends UploadStatus
+
+}
+
+sealed trait UpscanCallback {
+  def reference: Reference
+}
+
+case class UpscanCallbackSuccess(
+                              reference: Reference,
+                              downloadUrl: URL,
+                              uploadDetails: UpscanCallbackUploadDetails
+                            ) extends UpscanCallback
+
+case class UpscanCallbackFailure(
+                               reference: Reference,
+                               failureDetails: UpscanCallBackErrorDetails
+                             ) extends UpscanCallback
+
+case class UpscanCallbackUploadDetails(
+                                  uploadTimestamp: Instant,
+                                  checksum: String,
+                                  fileMimeType: String,
+                                  fileName: String,
+                                  size: Long
+                                )
+
+case class UpscanRecord(reference: Reference,
+                        status: String,
+                        downloadUrl: Option[String],
+                        fileName: Option[String],
+                        failureReason: Option[String],
+                        failureMessage: Option[String])
+
+
+case class UpscanCallBackErrorDetails(failureReason: String, message: String)
+
+object UpscanCallback {
+  // must be in scope to create Reads for ReadyCallbackBody
+  private implicit val urlFormat: Format[URL] = HttpUrlFormat.format
+
+  implicit val uploadDetailsReads: Reads[UpscanCallbackUploadDetails] = Json.reads[UpscanCallbackUploadDetails]
+
+  implicit val errorDetailsReads: Reads[UpscanCallBackErrorDetails] = Json.reads[UpscanCallBackErrorDetails]
+
+  implicit val readyCallbackBodyReads: Reads[UpscanCallbackSuccess] = Json.reads[UpscanCallbackSuccess]
+
+  implicit val failedCallbackBodyReads: Reads[UpscanCallbackFailure] = Json.reads[UpscanCallbackFailure]
+
+  implicit val reads: Reads[UpscanCallback] = (json: JsValue) =>
+    json \ "fileStatus" match {
+      case JsDefined(JsString("READY")) => implicitly[Reads[UpscanCallbackSuccess]].reads(json)
+      case JsDefined(JsString("FAILED")) => implicitly[Reads[UpscanCallbackFailure]].reads(json)
+      case JsDefined(value) => JsError(s"Invalid type distriminator: $value")
+      case JsUndefined() => JsError(s"Missing type distriminator")
+      case _ => JsError(s"Missing type distriminator")
+    }
+}
+
 //case class UploadDetails(
 //                          //key: UploadKey,
 //                          reference: Reference,
 //                          status: UploadStatus.UploadStatus,
 //                          lastUpdated: Instant
 //                        )
-//
-//case class ErrorDetails(failureReason: String, message: String)
-
-//object CallbackBody {
-//  // must be in scope to create Reads for ReadyCallbackBody
-//  private implicit val urlFormat: Format[URL] = HttpUrlFormat.format
-//
-//  implicit val uploadDetailsReads: Reads[UploadCallbackDetails] = Json.reads[UploadCallbackDetails]
-//
-//  implicit val errorDetailsReads: Reads[ErrorDetails] = Json.reads[ErrorDetails]
-//
-//  implicit val readyCallbackBodyReads: Reads[ReadyCallbackBody] = Json.reads[ReadyCallbackBody]
-//
-//  implicit val failedCallbackBodyReads: Reads[FailedCallbackBody] = Json.reads[FailedCallbackBody]
-//
-//  implicit val reads: Reads[CallbackBody] = (json: JsValue) =>
-//    json \ "fileStatus" match {
-//      case JsDefined(JsString("READY")) => implicitly[Reads[ReadyCallbackBody]].reads(json)
-//      case JsDefined(JsString("FAILED")) => implicitly[Reads[FailedCallbackBody]].reads(json)
-//      case JsDefined(value) => JsError(s"Invalid type distriminator: $value")
-//      case JsUndefined() => JsError(s"Missing type distriminator")
-//      case _ => JsError(s"Missing type distriminator")
-//    }
-//}
 
 

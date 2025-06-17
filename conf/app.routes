@@ -18,3 +18,7 @@ POST       /property-selected                   uk.gov.hmrc.ngrpropertylinkingfr
 GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.show
 POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit
 GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show
+GET        /uploaded-business-rates-bill        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadedBusinessRatesBillController.show
+
+#Internal
+POST       /callback-from-upscan                uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UpscanCallbackController.handleUpscanCallback

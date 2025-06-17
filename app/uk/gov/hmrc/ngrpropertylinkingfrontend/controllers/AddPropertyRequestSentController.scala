@@ -16,24 +16,51 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryListRow
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.UniqueIdGenerator
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.AddPropertyRequestSentView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentView,
                                                  authenticate: AuthRetrievals,
                                                  isRegisteredCheck: RegistrationAction,
-                                                 mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)  extends FrontendController(mcc) with I18nSupport {
+                                                 mcc: MessagesControllerComponents,
+                                                 propertyLinkingRepo: PropertyLinkingRepo)(implicit appConfig: AppConfig, executionContext: ExecutionContext)  extends FrontendController(mcc) with I18nSupport {
+
+  private def createSummaryRows(property: VMVProperty)(implicit messages: Messages): Seq[SummaryListRow] = {
+    Seq(
+      NGRSummaryListRow(messages("Address"), None, Seq(property.addressFull), None),
+      NGRSummaryListRow(messages("Property Reference"), None, Seq(property.localAuthorityReference), None)
+    ).map(summarise)
+  }
+
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      Future.successful(Ok(view(createDefaultNavBar)))
+      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+        case Some(answers) =>
+          val property = answers.vmvProperty
+          val ref = UniqueIdGenerator.generateId
+          val summaryRows = createSummaryRows(property)
+          Future.successful(Ok(view(ref, SummaryList(summaryRows), createDefaultNavBar)))
+        case None => throw new NotFoundException("failed to find property from mongo")
+      }
+
     }
 
 }

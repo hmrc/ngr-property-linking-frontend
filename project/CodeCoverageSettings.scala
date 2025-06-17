@@ -12,7 +12,7 @@ object CodeCoverageSettings {
     ".*Routes.*",
     "testOnly.*",
     "testOnlyDoNotUseInAppConf.*",
-//    "uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.*"
+    "uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.*"
   )
 
   val settings: Seq[Setting[_]] = Seq(

@@ -145,7 +145,6 @@ object ManualPropertySearchForm extends CommonFormValidators {
           manualPropertySearch => {
             val minValue: Long = manualPropertySearch.miniRateableValue.getOrElse(0)
             val maxValue: Long = manualPropertySearch.maxRateableValue.getOrElse(0)
-            println(Console.GREEN + (manualPropertySearch.maxRateableValue.isDefined && minValue < maxValue) + Console.RESET)
             if (manualPropertySearch.maxRateableValue.isDefined)
               minValue < maxValue
             else

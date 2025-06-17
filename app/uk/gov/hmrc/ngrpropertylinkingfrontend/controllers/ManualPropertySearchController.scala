@@ -20,10 +20,8 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ManualPropertySearchForm.form
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ManualPropertySearchView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -34,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ManualPropertySearchController @Inject()(manualPropertySearchView: ManualPropertySearchView,
                                                authenticate: AuthRetrievals,
                                                isRegisteredCheck: RegistrationAction,
-                                               mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                               mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =

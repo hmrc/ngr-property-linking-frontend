@@ -129,6 +129,11 @@ case class UpscanRecord(reference: Reference,
                         failureMessage: Option[String])
 
 
+object UpscanRecord {
+  implicit val format: Format[UpscanRecord] = Json.format[UpscanRecord]
+}
+
+
 case class UpscanCallBackErrorDetails(failureReason: String, message: String)
 
 object UpscanCallback {

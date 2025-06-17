@@ -39,36 +39,59 @@ import scala.concurrent.{ExecutionContext, Future}
 class UpscanCallbackController @Inject()(upscanRepo: UpscanRepo, mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  case class UpscanRecord(reference: Reference,
-                          status: String,
-                          downloadUrl: Option[String],
-                          fileName: Option[String],
-                          failureReason: Option[String],
-                          failureMessage: Option[String])
-
   def handleUpscanCallback: Action[JsValue] = Action.async(parse.json) { implicit request =>
-    withJsonBody[UpscanCallback] { callback: UpscanCallback =>
-      val upscanRecord: UpscanRecord = callback match {
-        case successCallback: UpscanCallbackSuccess =>
+    withJsonBody[UpscanCallback] { (callback: UpscanCallback) =>
+      val upscanRecord = callback match {
+        case success: UpscanCallbackSuccess =>
           UpscanRecord(
-            reference = successCallback.reference,
+            reference = success.reference,
             status = "READY",
-            downloadUrl = successCallback.downloadUrl,
-            fileName = successCallback.uploadDetails.fileName,
+            downloadUrl = Some(success.downloadUrl.toString),
+            fileName = Some(success.uploadDetails.fileName),
             failureReason = None,
-            failureMessage = None)
-        case failureCallback: UpscanCallbackFailure =>
+            failureMessage = None
+          )
+        case failure: UpscanCallbackFailure =>
           UpscanRecord(
-            reference = successCallback.reference,
+            reference = failure.reference,
             status = "FAILED",
             downloadUrl = None,
             fileName = None,
-            failureReason = failureCallback.failureDetails.failureReason,
-            failureMessage = failureCallback.failureDetails.message)
+            failureReason = Some(failure.failureDetails.failureReason),
+            failureMessage = Some(failure.failureDetails.message)
+          )
       }
-      upscanRepo.upsertUpscanRecord(upscanRecord)
-      //uploadService.registerUploadResult(callback.reference, upscanRecord).map(_ => Ok)
+
+      upscanRepo.upsertUpscanRecord(upscanRecord).map(_ => Ok)
     }
   }
+
+
+  //  def handleUpscanCallback: Action[JsValue] = Action.async(parse.json) { implicit request =>
+//    withJsonBody[UpscanCallback] { callback: UpscanCallback =>
+//      upscanRepo.upsertUpscanRecord(
+//      callback match {
+//        case successCallback: UpscanCallbackSuccess =>
+//          UpscanRecord(
+//            reference = successCallback.reference,
+//            status = "READY",
+//            downloadUrl = successCallback.downloadUrl,
+//            fileName = successCallback.uploadDetails.fileName,
+//            failureReason = None,
+//            failureMessage = None)
+//        case failureCallback: UpscanCallbackFailure =>
+//          UpscanRecord(
+//            reference = successCallback.reference,
+//            status = "FAILED",
+//            downloadUrl = None,
+//            fileName = None,
+//            failureReason = failureCallback.failureDetails.failureReason,
+//            failureMessage = failureCallback.failureDetails.message)
+//      })
+//      //upscanRepo.upsertUpscanRecord(upscanRecord)
+//      //uploadService.registerUploadResult(callback.reference, upscanRecord).map(_ => Ok)
+//    }
+//  }
+  
 }
 

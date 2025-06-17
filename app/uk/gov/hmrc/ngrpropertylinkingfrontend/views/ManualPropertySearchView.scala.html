@@ -27,11 +27,10 @@ formHelper: FormWithCSRF,
 govukErrorSummary: GovukErrorSummary,
 inputText: components.InputText,
 govukDetails : GovukDetails,
-govukSelect : GovukSelect,
 saveAndContinueButton: saveAndContinueButton
 )
 
-@(form: Form[ManualPropertySearchForm], navigationBarContent: NavigationBarContent, councilSelect: Select)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+@(form: Form[ManualPropertySearchForm], navigationBarContent: NavigationBarContent, isOpen: Boolean = false)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @dropDownContent = {
   @inputText(
@@ -42,7 +41,6 @@ saveAndContinueButton: saveAndContinueButton
     label = "manualSearchProperty.propertyReference.label",
     classes = Some("govuk-!-width-three-quarters")
   )
-  @govukSelect(councilSelect)
   @inputText(
     form = form,
     id = "miniRateableValue",
@@ -67,7 +65,7 @@ saveAndContinueButton: saveAndContinueButton
 
 @heading = @{messages("manualSearchProperty.title")}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
-@formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ManualSearchPropertyController.submit, Symbol("autoComplete") -> "off") {
+@formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ManualPropertySearchController.submit, Symbol("autoComplete") -> "off") {
 @if(form.errors.nonEmpty) {
 @govukErrorSummary(ErrorSummaryViewModel(form))
 }
@@ -125,7 +123,8 @@ saveAndContinueButton: saveAndContinueButton
         @govukDetails(Details(
         id = Some("additional-search-options"),
         summary = Text(messages("manualSearchProperty.additional.title")),
-        content = HtmlContent(dropDownContent)
+        content = HtmlContent(dropDownContent),
+        open = isOpen
         ))
 
         @saveAndContinueButton(msg = messages("manualSearchProperty.button"), isStartButton = false)

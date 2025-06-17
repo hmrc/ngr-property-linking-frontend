@@ -16,14 +16,11 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import play.api.data.FormError
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSelect.buildSelect
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{NGRSelect, NGRSelectItem, NGRSelectName}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ManualPropertySearchForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
@@ -34,22 +31,15 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ManualSearchPropertyController @Inject()(manualPropertySearchView: ManualPropertySearchView,
-                                               findAPropertyConnector: FindAPropertyConnector,
+class ManualPropertySearchController @Inject()(manualPropertySearchView: ManualPropertySearchView,
                                                authenticate: AuthRetrievals,
                                                isRegisteredCheck: RegistrationAction,
-                                               mcc: MessagesControllerComponents,
-                                               findAPropertyRepo: FindAPropertyRepo)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                               mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-
-  private val anyItem: NGRSelectItem = NGRSelectItem("Any", "any")
-  private val council1Item: NGRSelectItem = NGRSelectItem("Adur", "3085")
-  private val council2Item: NGRSelectItem = NGRSelectItem("Somerset West & Taunton (West Somerset)", "3320")
-  private val ngrSelect: NGRSelect = NGRSelect(NGRSelectName("council", "Local council"), Seq(anyItem, council1Item, council2Item), "govuk-select govuk-!-width-three-quarters")
 
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      Future.successful(Ok(manualPropertySearchView(form, createDefaultNavBar, buildSelect(form, ngrSelect))))
+      Future.successful(Ok(manualPropertySearchView(form, createDefaultNavBar)))
     }
 
   def submit: Action[AnyContent] =
@@ -65,23 +55,10 @@ class ManualSearchPropertyController @Inject()(manualPropertySearchView: ManualP
                 formError
             )
             val formWithCorrectedErrors = formWithErrors.copy(errors = correctedFormErrors)
-            Future.successful(BadRequest(manualPropertySearchView(formWithCorrectedErrors, createDefaultNavBar, buildSelect(formWithCorrectedErrors, ngrSelect))))
+            Future.successful(BadRequest(manualPropertySearchView(formWithCorrectedErrors, createDefaultNavBar, true)))
           },
           manualPropertySearch => {
-//            val minValue: Long = manualPropertySearch.miniRateableValue.getOrElse(0)
-//            val maxValue: Long = manualPropertySearch.maxRateableValue.getOrElse(0)
-//            println(Console.YELLOW + + minValue + "++++++++++++++++++++++++++++++++++++++++" + maxValue + Console.RESET)
-//            if (maxValue > 0 && minValue >= maxValue) {
-//              println(Console.YELLOW + form + Console.RESET)
-//              val data = (manualPropertySearch.productElementNames zip manualPropertySearch.productIterator.map {
-//                case Some(v) => v.toString
-//                case None => ""
-//                case x => x.toString
-//              }).toMap
-//              val formWithErrors = form.copy(data= data, errors = Seq(FormError("miniRateableValue", Seq("manualSearchProperty.miniRateableValue.validation.error"))))
-//              println(Console.YELLOW + formWithErrors + Console.RESET)
-//              Future.successful(BadRequest(manualPropertySearchView(formWithErrors, createDefaultNavBar, buildSelect(formWithErrors, ngrSelect))))
-//            } else
+            //TODO: need to direct search result page
             Future.successful(Redirect(routes.NoResultsFoundController.show.url))
           }
         )

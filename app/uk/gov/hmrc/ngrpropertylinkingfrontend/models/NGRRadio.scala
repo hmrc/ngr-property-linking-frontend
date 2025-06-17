@@ -24,7 +24,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.Radios
 
 case class NGRRadioName(key: String)
-case class NGRRadioButtons(radioContent: String, radioValue: RadioEntry, hint: Option[Hint] = None)
+case class NGRRadioButtons(radioContent: String, radioValue: RadioEntry, buttonHint: Option[String] = None)
 case class NGRRadioHeader(title: String, classes: String , isPageHeading: Boolean)
 
 case class NGRRadio (radioGroupName: NGRRadioName, NGRRadioButtons: Seq[NGRRadioButtons], ngrTitle: Option[NGRRadioHeader] = None, hint: Option[String] = None)
@@ -53,7 +53,7 @@ object NGRRadio {
         RadioItem(
           content = Text(Messages(item.radioContent)),
           value = Some(item.radioValue.toString),
-          hint = item.hint,
+          hint = Some(Hint(content = Text(item.buttonHint.getOrElse("")))),
           checked = form.data.values.toList.contains(item.radioValue.toString)
         )
       },

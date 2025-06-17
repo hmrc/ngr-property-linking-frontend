@@ -16,27 +16,62 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
-import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
+import play.api.data.{Form, FormError, Forms}
+import play.api.data.Forms.{mapping, single, text}
+import play.api.data.format.Formatter
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.RadioEntry
 
-final case class ConnectionToPropertyForm(radioValue: String)
+sealed trait ConnectionToPropertyForm extends RadioEntry
 
-object ConnectionToPropertyForm extends CommonFormValidators {
-  implicit val format:OFormat[ConnectionToPropertyForm] = Json.format[ConnectionToPropertyForm]
+object ConnectionToPropertyForm {
+  val formName = "connection-to-property-radio"
 
-  private lazy val radioUnselectedError = "confirmAddress.radio.unselected.error"
-  private val connectToPropertyRadio = "connection-to-property-radio"
+  case object Owner extends ConnectionToPropertyForm
+  case object Occupier extends ConnectionToPropertyForm
+  case object OwnerAndOccupier extends ConnectionToPropertyForm
 
-  def unapply(connectToPropertyForm: ConnectionToPropertyForm): Option[String] = Some(ConnectionToPropertyForm.connectToPropertyRadio)
+  implicit val connectionToPropertyFormatter: Formatter[ConnectionToPropertyForm] = new Formatter[ConnectionToPropertyForm] {
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], ConnectionToPropertyForm] = {
+      data.get(key).collectFirst {
+        case "Owner" => Owner
+        case "Occupier" => Occupier
+        case "OwnerAndOccupier" => OwnerAndOccupier
+      }.toRight(Seq(FormError(key, "connectionToProperty.radio.unselected.error")))
+    }
 
-  def form: Form[ConnectionToPropertyForm] = {
-    Form(
-      mapping(
-        connectToPropertyRadio -> text()
-          .verifying(isNotEmpty(connectToPropertyRadio, radioUnselectedError))
-      )(ConnectionToPropertyForm.apply)(ConnectionToPropertyForm.unapply)
+    override def unbind(key: String, value: ConnectionToPropertyForm): Map[String, String] = Map(
+      key -> (value match {
+        case Owner => "Owner"
+        case Occupier => "Occupier"
+        case OwnerAndOccupier => "OwnerAndOccupier"
+      })
     )
   }
+
+  def form(): Form[ConnectionToPropertyForm] = Form(
+      single(formName -> Forms.of[ConnectionToPropertyForm])
+    )
+
 }
+
+
+
+//object ConnectionToPropertyForm extends CommonFormValidators {
+//  implicit val format:OFormat[ConnectionToPropertyForm] = Json.format[ConnectionToPropertyForm]
+//
+//  private val radioUnselectedError = "connectionToProperty.radio.unselected.error"
+//  private val connectToPropertyRadio = "connection-to-property-radio"
+//
+//  def unapply(connectToPropertyForm: ConnectionToPropertyForm): Option[String] = Some(connectToPropertyForm.radioValue)
+//
+//  def form: Form[ConnectionToPropertyForm] = {
+//    Form(
+//      mapping(
+//        connectToPropertyRadio -> text()
+//          .verifying(isNotEmpty(connectToPropertyRadio, radioUnselectedError))
+//      )(ConnectionToPropertyForm.apply)(ConnectionToPropertyForm.unapply)
+//    )
+//  }
+//}
 

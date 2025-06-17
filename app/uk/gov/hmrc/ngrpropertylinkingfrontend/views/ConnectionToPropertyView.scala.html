@@ -32,7 +32,7 @@ saveAndContinueButton: saveAndContinueButton,
 linkComponent: LinkComponent
 )
 
-@(form:Form[ConnectionToPropertyForm],radios: Radios, navigationBarContent: NavigationBarContent, propertyAddress: String, saveAndReturnHomeUrl: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+@(form:Form[ConnectionToPropertyForm],radios: Radios, navigationBarContent: NavigationBarContent, propertyAddress: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("connectionToProperty.title")}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
@@ -46,7 +46,6 @@ linkComponent: LinkComponent
         <h1 class="govuk-heading-l">@messages("connectionToProperty.title")</h1>
         @govukRadios(radios)
         @saveAndContinueButton(msg = messages("Continue"), isStartButton = false)
-        @linkComponent(label = messages("connectionToProperty.saveAndReturnHome.link.label"), hrefUrl= saveAndReturnHomeUrl)
     </div>
 </div>
 }

@@ -95,6 +95,10 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
   def insertCurrentRatepayer(credId: CredId ,currentRatepayer: String): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.set("currentRatepayer", currentRatepayer))
   }
+  
+  def insertConnectionToProperty(credId: CredId, connectionToProperty: String): Future[Option[PropertyLinkingUserAnswers]] = {
+    findAndUpdateByCredId(credId, Updates.set("connectionToProperty", connectionToProperty))
+  }
 
   def insertBusinessRatesBill(credId: CredId, businessRatesBill: String): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.set("businessRatesBill", businessRatesBill))

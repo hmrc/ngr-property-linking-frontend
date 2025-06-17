@@ -28,6 +28,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageConten
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm.{Occupier, Owner, OwnerAndOccupier}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ConnectionToPropertyView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -39,13 +41,12 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
                                                authenticate: AuthRetrievals,
                                                isRegisteredCheck: RegistrationAction,
                                                mcc: MessagesControllerComponents,
-                                               findAPropertyRepo: FindAPropertyRepo,
                                                propertyLinkingRepo: PropertyLinkingRepo)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  private val ownerButton: NGRRadioButtons = NGRRadioButtons("Owner", Owner, Some(Hint(content = Text("Owns the property."))))
-  private val occupierButton: NGRRadioButtons = NGRRadioButtons("Occupier",Occupier, Some(Hint(content = Text("Operates from the property."))))
-  private val bothButton: NGRRadioButtons = NGRRadioButtons("Owner and occupier",OwnerAndOccupier, Some(Hint(content = Text("Owns and Operates from the property."))))
+  private val ownerButton: NGRRadioButtons = NGRRadioButtons("Owner", Owner, Some("Owns the property."))
+  private val occupierButton: NGRRadioButtons = NGRRadioButtons("Occupier",Occupier, Some("Operates from the property."))
+  private val bothButton: NGRRadioButtons = NGRRadioButtons("Owner and occupier",OwnerAndOccupier, Some("Owns and Operates from the property."))
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("connection-to-property-radio"), Seq(ownerButton, occupierButton, bothButton))
 
   def show: Action[AnyContent] = {
@@ -54,11 +55,10 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
         case Some(properties) =>
           val propertyAddress = properties.vmvProperty.addressFull
           Future.successful(Ok(connectionToPropertyView(
-            form = form,
-            radios = buildRadios(form, ngrRadio),
+            form = form(),
+            radios = buildRadios(form(), ngrRadio),
             navigationBarContent = createDefaultNavBar(),
-            propertyAddress = propertyAddress,
-            saveAndReturnHomeUrl = routes.ConnectionToPropertyController.saveAndReturnHome.url)))
+            propertyAddress = propertyAddress)))
         case None => Future.failed(throw new NotFoundException("Unable to find matching postcode"))
       }
     }
@@ -66,80 +66,45 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
 
   def submit: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      println(Console.RED + "=================================" + Console.RESET)
-      form.bindFromRequest()
-        .fold(
+      form().bindFromRequest().fold(
         formWithErrors => {
           val credId = request.credId.getOrElse("")
-          propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+          propertyLinkingRepo.findByCredId(CredId(credId)).flatMap {
             case Some(properties) =>
-              println(Console.RED + "*****************************************" + Console.RESET)
               val propertyAddress = properties.vmvProperty.addressFull
               Future.successful(BadRequest(connectionToPropertyView(
                 form = formWithErrors,
                 radios = buildRadios(formWithErrors, ngrRadio),
                 navigationBarContent = createDefaultNavBar(),
-                propertyAddress = propertyAddress,
-                saveAndReturnHomeUrl = routes.ConnectionToPropertyController.saveAndReturnHome.url))
-              )
-            case None => Future.successful(Redirect(routes.NoResultsFoundController.show))
+                propertyAddress = propertyAddress
+              )))
+            case None =>
+              Future.successful(Redirect(routes.NoResultsFoundController.show))
           }
         },
-          propertySelectedForm => {
-//            if(propertySelectedForm.radioValue.equals("Yes")) {
-//              val credId = request.credId.getOrElse("")
-//              for {
-//                response <- propertyLinkingRepo.findByCredId(CredId(credId))
-//                property = response
-//                  .map(_.vmvProperty.addressFull)
-//                  .getOrElse(throw new NotFoundException("No properties found on account"))
-//                userAnswers = PropertyLinkingUserAnswers(CredId(credId), property)
-//                _ <- propertyLinkingRepo.upsertProperty(userAnswers)
-//              } yield Redirect(routes.CurrentRatepayerController.show)
-//            } else {
-              Future.successful(Redirect(routes.FindAPropertyController.show))
-//            }
+        {
+          case ConnectionToPropertyForm.Owner =>
+            propertyLinkingRepo.insertConnectionToProperty(
+              credId = CredId(request.credId.getOrElse("")),
+              connectionToProperty = "Owner"
+            )
+            Future.successful(Redirect(routes.FindAPropertyController.show))
+          case ConnectionToPropertyForm.Occupier =>
+            propertyLinkingRepo.insertConnectionToProperty(
+              credId = CredId(request.credId.getOrElse("")),
+              connectionToProperty = "Occupier"
+            )
+            Future.successful(Redirect(routes.FindAPropertyController.show))
+          case ConnectionToPropertyForm.OwnerAndOccupier =>
+            propertyLinkingRepo.insertConnectionToProperty(
+              credId = CredId(request.credId.getOrElse("")),
+              connectionToProperty = "Owner and Occupier"
+            )
+            Future.successful(Redirect(routes.FindAPropertyController.show))
         }
       )
     }
 
-  def saveAndReturnHome: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
-      println(Console.RED + "_______________________________________" + Console.RESET)
-      form.bindFromRequest()
-        .fold(
-          formWithErrors => {
-            val credId = request.credId.getOrElse("")
-            propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
-              case Some(properties) =>
-                println(Console.RED + "*****************************************" + Console.RESET)
-                val propertyAddress = properties.vmvProperty.addressFull
-                Future.successful(BadRequest(connectionToPropertyView(
-                  form = formWithErrors,
-                  radios = buildRadios(formWithErrors, ngrRadio),
-                  navigationBarContent = createDefaultNavBar(),
-                  propertyAddress = propertyAddress,
-                  saveAndReturnHomeUrl = routes.ConnectionToPropertyController.saveAndReturnHome.url))
-                )
-              case None => Future.successful(Redirect(routes.NoResultsFoundController.show))
-            }
-          },
-          propertySelectedForm => {
-            //            if(propertySelectedForm.radioValue.equals("Yes")) {
-            //              val credId = request.credId.getOrElse("")
-            //              for {
-            //                response <- propertyLinkingRepo.findByCredId(CredId(credId))
-            //                property = response
-            //                  .map(_.vmvProperty.addressFull)
-            //                  .getOrElse(throw new NotFoundException("No properties found on account"))
-            //                userAnswers = PropertyLinkingUserAnswers(CredId(credId), property)
-            //                _ <- propertyLinkingRepo.upsertProperty(userAnswers)
-            //              } yield Redirect(routes.CurrentRatepayerController.show)
-            //            } else {
-            Future.successful(Redirect(routes.FindAPropertyController.show))
-            //            }
-          }
-        )
-    }
+
 }
 

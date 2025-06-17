@@ -54,24 +54,3 @@ object ConnectionToPropertyForm {
     )
 
 }
-
-
-
-//object ConnectionToPropertyForm extends CommonFormValidators {
-//  implicit val format:OFormat[ConnectionToPropertyForm] = Json.format[ConnectionToPropertyForm]
-//
-//  private val radioUnselectedError = "connectionToProperty.radio.unselected.error"
-//  private val connectToPropertyRadio = "connection-to-property-radio"
-//
-//  def unapply(connectToPropertyForm: ConnectionToPropertyForm): Option[String] = Some(connectToPropertyForm.radioValue)
-//
-//  def form: Form[ConnectionToPropertyForm] = {
-//    Form(
-//      mapping(
-//        connectToPropertyRadio -> text()
-//          .verifying(isNotEmpty(connectToPropertyRadio, radioUnselectedError))
-//      )(ConnectionToPropertyForm.apply)(ConnectionToPropertyForm.unapply)
-//    )
-//  }
-//}
-

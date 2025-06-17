@@ -66,7 +66,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       result.isSuccess shouldBe true
       result.get shouldBe CurrentRatepayerForm("Before")
     }
-
+    
     "fail deserialization if confirmAddressRadio is missing" in {
       val json = Json.obj()
       val result = json.validate[CurrentRatepayerForm]

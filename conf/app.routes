@@ -20,7 +20,6 @@ POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfr
 GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show
 GET        /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.show
 POST       /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.submit
-POST       /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.saveAndReturnHome
 POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.submit(mode: String)
 GET        /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.show(mode: String)
 POST       /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.submit

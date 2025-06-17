@@ -16,18 +16,19 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockHttpV2
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
 
 import scala.concurrent.Future
 
 class NGRConnectorSpec extends MockHttpV2 {
-  val ngrConnector: NGRConnector = new NGRConnector(mockHttpClientV2, mockConfig)
+  val ngrConnector: NGRConnector = new NGRConnector(mockHttpClientV2, mockConfig, mockNgrLogger)
   val email: Email = Email("hello@me.com")
   val trn: TRNReferenceNumber = TRNReferenceNumber(TRN, "1234")
   override lazy val credId: CredId = CredId("1234")
-  
 
   "getRatepayer" when {
     "Successfully return a Ratepayer" in {
@@ -42,6 +43,38 @@ class NGRConnectorSpec extends MockHttpV2 {
       setupMockHttpV2Get(s"${mockConfig.nextGenerationRatesHost}/next-generation-rates/get-ratepayer")(None)
       val result: Future[Option[RatepayerRegistrationValuation]] = ngrConnector.getRatepayer(credId)
       result.futureValue mustBe None
+    }
+  }
+
+  "upsertPropertyLinkingUserAnswers" when {
+    "return HttpResponse when the response is 201 CREATED" in {
+      val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty)
+      val response: HttpResponse = HttpResponse(201, "Created")
+      setupMockHttpV2Post(s"${mockConfig.nextGenerationRatesHost}/next-generation-rates/upsert-property-linking-user-answers")(response)
+      val result: Future[HttpResponse] = ngrConnector.upsertPropertyLinkingUserAnswers(propertyLinkingUserAnswers)
+      result.futureValue.status mustBe 201
+    }
+
+    "throw an exception when response is not 201" in {
+      val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty)
+      val response: HttpResponse = HttpResponse(400, "Bad Request")
+
+      setupMockHttpV2Post(s"${mockConfig.nextGenerationRatesHost}/next-generation-rates/upsert-property-linking-user-answers")(response)
+
+      val exception = intercept[Exception] {
+        ngrConnector.upsertPropertyLinkingUserAnswers(propertyLinkingUserAnswers).futureValue
+      }
+      exception.getMessage must include("400: Bad Request")
+    }
+
+    "propagate exception when the request fails" in {
+      val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty)
+
+      setupMockHttpV2FailedPost(s"${mockConfig.nextGenerationRatesHost}/next-generation-rates/upsert-property-linking-user-answers")
+      val exception = intercept[RuntimeException] {
+        ngrConnector.upsertPropertyLinkingUserAnswers(propertyLinkingUserAnswers).futureValue
+      }
+      exception.getMessage must include("Request Failed")
     }
   }
 }

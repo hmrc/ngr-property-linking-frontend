@@ -115,7 +115,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
                   .getOrElse(throw new NotFoundException("No properties found on account"))
                 userAnswers = PropertyLinkingUserAnswers(CredId(credId), property)
                 _ <- propertyLinkingRepo.upsertProperty(userAnswers)
-              } yield Redirect(routes.CurrentRatepayerController.show)
+              } yield Redirect(routes.CurrentRatepayerController.show(""))
             } else {
               Future.successful(Redirect(routes.SingleSearchResultController.show(1)))
             }

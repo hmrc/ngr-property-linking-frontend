@@ -91,7 +91,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
         mockRequest()
         val result = controller().submit(index = 0)(requestWithFormValue("Yes"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.CurrentRatepayerController.show.url)
+        redirectLocation(result) mustBe Some(routes.CurrentRatepayerController.show(mode = "").url)
       }
       "Return See Other to the correct location when no is selected" in {
         def requestWithFormValue(value: String): AuthenticatedUserRequest[AnyContentAsFormUrlEncoded] = AuthenticatedUserRequest(

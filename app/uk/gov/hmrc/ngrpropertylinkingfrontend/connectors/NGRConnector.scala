@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
+import play.api.http.Status.CREATED
 import play.api.libs.json.Json
 import play.api.libs.ws.JsonBodyWritables.*
 import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.{CredId, RatepayerRegistrationValuation}
 
 import java.net.URL
@@ -30,7 +33,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class NGRConnector @Inject()(http: HttpClientV2,
-                             appConfig: AppConfig)
+                             appConfig: AppConfig,
+                             logger: NGRLogger)
                             (implicit ec: ExecutionContext){
 
   private def url(path: String): URL = url"${appConfig.nextGenerationRatesHost}/next-generation-rates/$path"
@@ -41,5 +45,18 @@ class NGRConnector @Inject()(http: HttpClientV2,
     http.get(url("get-ratepayer"))
       .withBody(Json.toJson(model))
       .execute[Option[RatepayerRegistrationValuation]]
+  }
+
+  def upsertPropertyLinkingUserAnswers(model: PropertyLinkingUserAnswers)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.post(url("upsert-property-linking-user-answers"))
+      .withBody(Json.toJson(model))
+      .execute[HttpResponse]
+      .map { response =>
+        logger.info("Upsert Property Linking UserAnswers" + model)
+        response.status match {
+          case CREATED => response
+          case _ => throw new Exception(s"${response.status}: ${response.body}")
+        }
+    }
   }
 }

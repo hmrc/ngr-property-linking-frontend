@@ -31,12 +31,12 @@
       saveAndContinueButton: saveAndContinueButton,
       )
 
-      @(navigationBarContent: NavigationBarContent, form: Form[BusinessRatesBillForm], ngrRadio: Radios,  address: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+      @(navigationBarContent: NavigationBarContent, form: Form[BusinessRatesBillForm], ngrRadio: Radios,  address: String, mode: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
       
       @heading = @{messages("businessRatesBill.title")}
       @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
-      @formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.BusinessRatesBillController.submit, Symbol("autoComplete") -> "off") {
+      @formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.BusinessRatesBillController.submit(mode), Symbol("autoComplete") -> "off") {
       @if(form.errors.nonEmpty) {
       @govukErrorSummary(ErrorSummaryViewModel(form))
       }

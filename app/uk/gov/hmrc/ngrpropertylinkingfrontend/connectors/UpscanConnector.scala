@@ -22,7 +22,7 @@ import play.mvc.Http.HeaderNames
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{PreparedUpload, UpscanInitiateRequest}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UpscanInitiateRequest}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,19 +30,22 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UpscanConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig)(implicit ec: ExecutionContext) {
 
-  def initiate(implicit headerCarrier: HeaderCarrier): Future[PreparedUpload] = {
+  def initiate(implicit headerCarrier: HeaderCarrier): Future[UpscanInitiateResponse] = {
     val upscanInitiateUri = s"${appConfig.upscanHost}/upscan/v2/initiate"
     //TODO finalise these fields
     val request = UpscanInitiateRequest(
-      callbackUrl = "https://callBackUrl.com",
+      callbackUrl = "http://localhost:1504/ngr-property-linking-frontend/callback-from-upscan",
       successRedirect = Some("http://localhost:1504/ngr-property-linking-frontend/uploaded-business-rates-bill"),
+      //TODO do failure redirect
       errorRedirect = Some("https://failureRedirect.com"),
       maximumFileSize = Some(25000000))//25MB
+    
+    //TODO enter it into DB
     httpClientV2
       .post(url"$upscanInitiateUri")
       .withBody(Json.toJson(request))
       .setHeader(HeaderNames.CONTENT_TYPE -> "application/json")
-      .execute[PreparedUpload]
+      .execute[UpscanInitiateResponse]
   }
 
   def download(downloadUrl: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =

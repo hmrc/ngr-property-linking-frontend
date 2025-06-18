@@ -16,40 +16,57 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import play.api.data.FormError
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{PreparedUpload, UploadViewModel}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UploadViewModel, UpscanRecord}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{UploadBusinessRatesBillView, UploadedBusinessRatesBillView}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadedBusinessRatesBillView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UploadedBusinessRatesBillController @Inject()(
-                                                   
-                                                   
-                                                  uploadedView: UploadedBusinessRatesBillView,
-                                                  upscanConnector: UpscanConnector,
-                                                  uploadForm: UploadForm,
-                                                  authenticate: AuthRetrievals,
-                                                  isRegisteredCheck: RegistrationAction,
-                                                  mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
+class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusinessRatesBillView,
+                                                    upscanConnector: UpscanConnector,
+                                                    upscanRepo: UpscanRepo,
+                                                    authenticate: AuthRetrievals,
+                                                    isRegisteredCheck: RegistrationAction,
+                                                    mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
+//TODO refactor into service
+  def show: Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
+    request.credId match {
+      case Some(rawCredId) =>
+        val credId = CredId(rawCredId)
+        upscanRepo.findByCredId(credId).map {
+          case Some(record) =>
+            val fileName = record.fileName.getOrElse("missing name")
+            Ok(uploadedView(fileName, record.status, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
+          case None =>
+            throw new RuntimeException(s"No UpscanRecord found for credId: ${credId.value}")
+        }
+      case None =>
+        Future.failed(new RuntimeException("No credId found in request"))
+    }
+  }
 
-    def show: Action[AnyContent] =
-      (authenticate andThen isRegisteredCheck).async { implicit request =>
-        //val x = uploadedView("testFile.aaa", createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)
-        Future.successful(Ok(uploadedView("testFile.aaa", createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)))
-        //Future.successful(Ok("test"))
-      }
+ // def show: Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
+    //      for {
+    //        maybeUpscanRecord <- upscanRepo.findByCredId(CredId(request.credId.getOrElse(throw new RuntimeException("OOPSIE"))))
+    //        upscanRecord = maybeUpscanRecord.getOrElse(throw new RuntimeException("OOPSIE"))
+    //      } yield {
+    //        Ok(uploadedView(upscanRecord.fileName.getOrElse("missing name"), upscanRecord.status, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
+    //      }
+    //    }
+
 }
 
 //    def show2: Action[AnyContent] =

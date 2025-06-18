@@ -19,13 +19,13 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PreparedUpload.{format, uploadFormFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.Reference.{referenceReader, referenceWrites}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateResponse.{format, uploadFormFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanReference.{referenceReader, referenceWrites}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateRequest.format
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateResponse.{format, refFormat}
 
 class UpscanSpec extends TestSupport {
-  val testReference: Reference = Reference("testReference")
+  val testReference: UpscanReference = UpscanReference("testReference")
   val testReferenceJson: JsValue = Json.parse(""" "testReference" """)
 
   "Reference" should {
@@ -33,7 +33,7 @@ class UpscanSpec extends TestSupport {
       Json.toJson(testReference) mustBe testReferenceJson
     }
     "deserialize from JSON" in {
-      testReferenceJson.as[Reference] mustBe testReference
+      testReferenceJson.as[UpscanReference] mustBe testReference
     }
   }
   
@@ -49,7 +49,7 @@ class UpscanSpec extends TestSupport {
     }
   }
   
-  val testPreparedUpload: PreparedUpload = PreparedUpload(testReference, testUploadForm)
+  val testPreparedUpload: UpscanInitiateResponse = UpscanInitiateResponse(testReference, testUploadForm)
   val testPreparedUploadJson: JsValue = Json.parse(
     """{"reference":"testReference","uploadRequest":{"href":"href","fields":{"key":"value"}}}""")
 
@@ -58,7 +58,7 @@ class UpscanSpec extends TestSupport {
       Json.toJson(testPreparedUpload) mustBe testPreparedUploadJson
     }
     "deserialize from JSON" in {
-      testPreparedUploadJson.as[PreparedUpload] mustBe testPreparedUpload
+      testPreparedUploadJson.as[UpscanInitiateResponse] mustBe testPreparedUpload
     }
   }
   

@@ -21,23 +21,24 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.HttpUrlFormat
 
 import java.net.URL
 import java.time.Instant
+import registration.CredId
 
-case class Reference(reference: String)
+case class UpscanReference(value: String)
 
-object Reference {
-  implicit val referenceReader: Reads[Reference] = Reads.StringReads.map(Reference(_))
-  implicit val referenceWrites: Writes[Reference] = Writes.StringWrites.contramap(_.reference)
+object UpscanReference {
+  implicit val referenceReader: Reads[UpscanReference] = Reads.StringReads.map(UpscanReference(_))
+  implicit val referenceWrites: Writes[UpscanReference] = Writes.StringWrites.contramap(_.value)
 }
 
 case class UploadForm(href: String, fields: Map[String, String])
 
-case class PreparedUpload(reference: Reference, uploadRequest: UploadForm)
+case class UpscanInitiateResponse(reference: UpscanReference, uploadRequest: UploadForm)
 
-object PreparedUpload {
+object UpscanInitiateResponse {
 
   implicit val uploadFormFormat: Format[UploadForm] = Json.format[UploadForm]
 
-  implicit val format: Format[PreparedUpload] = Json.format[PreparedUpload]
+  implicit val format: Format[UpscanInitiateResponse] = Json.format[UpscanInitiateResponse]
 }
 
 case class UpscanInitiateRequest(
@@ -65,17 +66,6 @@ object UpscanInitiateRequest {
 
 case class UpscanFileReference(reference: String)
 
-case class UpscanInitiateResponse(
-                                   fileReference: UpscanFileReference,
-                                   postTarget: String,
-                                   formFields: Map[String, String]
-                                 )
-
-object UpscanInitiateResponse {
-  implicit val refFormat: OFormat[UpscanFileReference] = Json.format[UpscanFileReference]
-  implicit val format: OFormat[UpscanInitiateResponse] = Json.format[UpscanInitiateResponse]
-}
-
 import play.api.data.FormError
 
 case class UploadViewModel(
@@ -99,18 +89,18 @@ object UploadStatus {
 }
 
 sealed trait UpscanCallback {
-  def reference: Reference
+  def reference: UpscanReference
 }
 
 case class UpscanCallbackSuccess(
-                              reference: Reference,
-                              downloadUrl: URL,
-                              uploadDetails: UpscanCallbackUploadDetails
+                                  reference: UpscanReference,
+                                  downloadUrl: URL,
+                                  uploadDetails: UpscanCallbackUploadDetails
                             ) extends UpscanCallback
 
 case class UpscanCallbackFailure(
-                               reference: Reference,
-                               failureDetails: UpscanCallBackErrorDetails
+                                  reference: UpscanReference,
+                                  failureDetails: UpscanCallBackErrorDetails
                              ) extends UpscanCallback
 
 case class UpscanCallbackUploadDetails(
@@ -121,7 +111,8 @@ case class UpscanCallbackUploadDetails(
                                   size: Long
                                 )
 
-case class UpscanRecord(reference: Reference,
+case class UpscanRecord(credId: CredId,
+                        reference: UpscanReference,
                         status: String,
                         downloadUrl: Option[String],
                         fileName: Option[String],

@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{PreparedUpload, UploadForm}
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UploadForm}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
@@ -26,7 +26,7 @@
       button: components.button
 )
 
-@(fileName: String, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(fileName: String, uploadStatus: String, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("uploadedBusinessRatesBill.title")}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {

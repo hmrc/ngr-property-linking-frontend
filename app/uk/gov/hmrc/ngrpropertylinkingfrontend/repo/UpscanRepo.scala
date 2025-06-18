@@ -27,7 +27,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.FrontendAppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanCallback, UpscanCallbackSuccess, UpscanCallbackFailure, UpscanRecord}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanReference, UpscanCallback, UpscanCallbackFailure, UpscanCallbackSuccess, UpscanRecord}
 
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -39,7 +39,7 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
                                 config: FrontendAppConfig
                                )(implicit ec: ExecutionContext)
   extends PlayMongoRepository[UpscanRecord](
-    collectionName = "upscanData",
+    collectionName = "upscanRecord",
     mongoComponent = mongo,
     domainFormat = UpscanRecord.format,
     indexes = Seq(
@@ -57,6 +57,13 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
           .name("credId.value")
           .unique(true)
           .partialFilterExpression(Filters.gte("credId.value", ""))
+      ),
+      IndexModel(
+        ascending("reference.value"),
+        IndexOptions()
+          .unique(true)
+          .name("reference.value")
+          .partialFilterExpression(Filters.gte("reference.value", ""))
       )
     )
   ) with Logging {
@@ -67,12 +74,12 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
     val errorMsg = s"upscanRecord has not been inserted"
 
     collection.replaceOne(
-      filter = equal("credId.value", upscanRecord.reference.reference),
+      filter = equal("credId.value", upscanRecord.credId),
       replacement = upscanRecord,
       options = ReplaceOptions().upsert(true)
     ).toFuture().transformWith {
       case Success(result) =>
-        logger.info(s"upscanResponse has been upserted for credId: ${upscanRecord.reference.reference}")
+        logger.info(s"upscanResponse has been upserted for credId: ${upscanRecord.credId}")
         result.wasAcknowledged()
         Future.successful(true)
       case Failure(exception) =>
@@ -80,6 +87,29 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
         Future.failed(new IllegalStateException(s"$errorMsg: ${exception.getMessage} ${exception.getCause}"))
     }
   }
+//TODO move to service?
+//  def updateUpscanRecord(upscanRecord: UpscanRecord): Future[Boolean] = {
+//    for {
+//      maybeOldUpscanRecord <- findByReference(upscanRecord.reference)
+//      oldUpscanRecord = maybeOldUpscanRecord.getOrElse(throw new RuntimeException("Error in method updateUpscanRecord: UNABLE TO FIND UPSCAN RECORD"))
+//      newUpscanRecord = upscanRecord.copy(credId = oldUpscanRecord.credId)
+//      result <- upsertUpscanRecord(newUpscanRecord)
+//    } yield result
+//  }
+
+  def findByCredId(credId: CredId): Future[Option[UpscanRecord]] = {
+    collection.find(
+      equal("credId.value", credId.value)
+    ).headOption()
+  }
+
+  def findByReference(reference: UpscanReference): Future[Option[UpscanRecord]] = {
+    collection.find(
+      equal("reference.value", reference.value)
+    ).headOption()
+  }
+
+
 
 //  def upsertUpscanResponse(upscanResponse: UpscanResponse): Future[Boolean] = {
 //    val errorMsg = s"upscanResponse has not been inserted"
@@ -98,10 +128,4 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
 //        Future.failed(new IllegalStateException(s"$errorMsg: ${exception.getMessage} ${exception.getCause}"))
 //    }
 //  }
-
-  def findByCredId(credId: CredId): Future[Option[UpscanRecord]] = {
-    collection.find(
-      equal("credId.value", credId.value)
-    ).headOption()
-  }
 }

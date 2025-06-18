@@ -55,7 +55,7 @@ class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentVie
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(answers) =>
           val property = answers.vmvProperty
-          val ref = UniqueIdGenerator.generateId
+          val ref = answers.requestSentReference.getOrElse("")
           val summaryRows = createSummaryRows(property)
           Future.successful(Ok(view(ref, SummaryList(summaryRows), createDefaultNavBar)))
         case None => throw new NotFoundException("failed to find property from mongo")

@@ -21,16 +21,21 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.UniqueIdGenerator
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.DeclarationView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DeclarationController @Inject()(view: DeclarationView,
                                       authenticate: AuthRetrievals,
                                       isRegisteredCheck: RegistrationAction,
-                                      mcc: MessagesControllerComponents)(implicit appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
+                                      propertyLinkingRepo: PropertyLinkingRepo,
+                                      mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
@@ -39,6 +44,11 @@ class DeclarationController @Inject()(view: DeclarationView,
   
   def accept: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
+      val ref = UniqueIdGenerator.generateId
+      propertyLinkingRepo.insertRequestSentReference(CredId(request.credId.getOrElse("")), ref).flatMap {
+        case Some(answers) => Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
+        case None => throw new Exception("Could not save reference")
+      }
+      
     }
 }

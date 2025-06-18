@@ -31,12 +31,14 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm.{Occupier, Owner, OwnerAndOccupier}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.Constants
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ConnectionToPropertyView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class ConnectionToPropertyController @Inject()(connectionToPropertyView: ConnectionToPropertyView,
                                                authenticate: AuthRetrievals,
                                                isRegisteredCheck: RegistrationAction,
@@ -44,10 +46,10 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
                                                propertyLinkingRepo: PropertyLinkingRepo)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  private val ownerButton: NGRRadioButtons = NGRRadioButtons("Owner", Owner, Some("Owns the property."))
-  private val occupierButton: NGRRadioButtons = NGRRadioButtons("Occupier",Occupier, Some("Operates from the property."))
-  private val bothButton: NGRRadioButtons = NGRRadioButtons("Owner and occupier",OwnerAndOccupier, Some("Owns and Operates from the property."))
-  private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("connection-to-property-radio"), Seq(ownerButton, occupierButton, bothButton))
+  private val ownerButton: NGRRadioButtons = NGRRadioButtons(Constants.owner, Owner, Some("connectionToProperty.ownerHint"))
+  private val occupierButton: NGRRadioButtons = NGRRadioButtons(Constants.occupier,Occupier, Some("connectionToProperty.occupierHint"))
+  private val bothButton: NGRRadioButtons = NGRRadioButtons(Constants.ownerAndOccupier,OwnerAndOccupier, Some("connectionToProperty.ownerAndOccupierHint"))
+  private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName(ConnectionToPropertyForm.formName), Seq(ownerButton, occupierButton, bothButton))
 
   def show: Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request =>
@@ -86,19 +88,19 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
           case ConnectionToPropertyForm.Owner =>
             propertyLinkingRepo.insertConnectionToProperty(
               credId = CredId(request.credId.getOrElse("")),
-              connectionToProperty = "Owner"
+              connectionToProperty = Constants.owner
             )
             Future.successful(Redirect(routes.CheckYourAnswersController.show))
           case ConnectionToPropertyForm.Occupier =>
             propertyLinkingRepo.insertConnectionToProperty(
               credId = CredId(request.credId.getOrElse("")),
-              connectionToProperty = "Occupier"
+              connectionToProperty = Constants.occupier
             )
             Future.successful(Redirect(routes.CheckYourAnswersController.show))
           case ConnectionToPropertyForm.OwnerAndOccupier =>
             propertyLinkingRepo.insertConnectionToProperty(
               credId = CredId(request.credId.getOrElse("")),
-              connectionToProperty = "Owner and Occupier"
+              connectionToProperty = Constants.ownerAndOccupier
             )
             Future.successful(Redirect(routes.CheckYourAnswersController.show))
         }

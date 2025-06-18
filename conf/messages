@@ -534,4 +534,6 @@ manualSearchProperty.maxRateableValue.invalid.error = Maximum rateable value mus
 #ConnectionToProperty
 connectionToProperty.title = What is your connection to the property?
 connectionToProperty.radio.unselected.error = Select your connection to the property
-connectionToProperty.saveAndReturnHome.link.label = Save and return to account home
+connectionToProperty.ownerHint = Owns the property.
+connectionToProperty.occupierHint = Operates from the property.
+connectionToProperty.ownerAndOccupierHint = Owns and Operates from the property.

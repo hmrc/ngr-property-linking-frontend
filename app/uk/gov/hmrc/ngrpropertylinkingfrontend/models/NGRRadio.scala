@@ -53,7 +53,7 @@ object NGRRadio {
         RadioItem(
           content = Text(Messages(item.radioContent)),
           value = Some(item.radioValue.toString),
-          hint = Some(Hint(content = Text(item.buttonHint.getOrElse("")))),
+          hint = Some(Hint(content = Text(Messages(item.buttonHint.getOrElse(""))))),
           checked = form.data.values.toList.contains(item.radioValue.toString)
         )
       },

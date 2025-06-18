@@ -530,3 +530,10 @@ manualSearchProperty.maxRateableValue.limit.error = Maximum rateable value must 
 manualSearchProperty.miniRateableValue.validation.error = Minimum rateable value must be lower than maximum rateable value
 manualSearchProperty.miniRateableValue.invalid.error = Minimum rateable value must be a number, like £50,000
 manualSearchProperty.maxRateableValue.invalid.error = Maximum rateable value must be a number, like £100,000
+
+#ConnectionToProperty
+connectionToProperty.title = What is your connection to the property?
+connectionToProperty.radio.unselected.error = Select your connection to the property
+connectionToProperty.ownerHint = Owns the property.
+connectionToProperty.occupierHint = Operates from the property.
+connectionToProperty.ownerAndOccupierHint = Owns and Operates from the property.

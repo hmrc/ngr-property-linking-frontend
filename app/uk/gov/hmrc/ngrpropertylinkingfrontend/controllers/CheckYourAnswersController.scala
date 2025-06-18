@@ -80,9 +80,9 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
       NGRSummaryListRow(
         messages("checkYourAnswers.PropertyConnection"),
         None,
-        Seq(userAnswers.credId.value.toString),
-        changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "property-connection", messageKey = "service.change", visuallyHiddenMessageKey = Some("property-connection")))
-      ) //TODO CHANGE CURRENT RATEPAYER
+        Seq(userAnswers.connectionToProperty.getOrElse("")),
+        changeLink = Some(Link(href = routes.ConnectionToPropertyController.show, linkId = "property-connection", messageKey = "service.change", visuallyHiddenMessageKey = Some("property-connection")))
+      ) 
     ).map(summarise)
   }
 

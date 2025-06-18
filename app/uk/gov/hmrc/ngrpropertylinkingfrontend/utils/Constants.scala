@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models
+package uk.gov.hmrc.ngrpropertylinkingfrontend.utils
 
-trait RadioEntry
+object Constants {
 
-sealed trait YesNoItem extends RadioEntry
-case object Yes extends YesNoItem
-case object No extends YesNoItem
+  val owner = "Owner"
+  val occupier = "Occupier"
+  val ownerAndOccupier = "Owner and Occupier"
 
-sealed trait BeforeAfter extends RadioEntry
-case object Before extends BeforeAfter
-case object After extends BeforeAfter
 
+}

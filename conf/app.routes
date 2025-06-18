@@ -18,6 +18,8 @@ POST       /property-selected                   uk.gov.hmrc.ngrpropertylinkingfr
 GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.show(mode: String)
 POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit(mode: String)
 GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show
+GET        /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.show
+POST       /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.submit
 POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.submit(mode: String)
 GET        /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.show(mode: String)
 POST       /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.submit

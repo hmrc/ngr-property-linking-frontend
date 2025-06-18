@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData with DefaultAwaitTimeout{
   lazy val view: CheckYourAnswersView = inject[CheckYourAnswersView]
-  lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some("Before"), businessRatesBill = Some("Yes"))
+  lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some("Before"), businessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"))
 
   def controller() = new CheckYourAnswersController(
     view,
@@ -62,13 +62,13 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
       None,
       Seq("checkYourAnswers.currentRatepayer.before"),
       changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "current-ratepayer", messageKey = "service.change", visuallyHiddenMessageKey = Some("current-ratepayer")))
-    ), //TODO CHANGE CURRENT RATEPAYER
+    ),
     NGRSummaryListRow(
       messages("checkYourAnswers.businessRatesBill"),
       None,
       Seq("Yes"),
       changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
-    ), //TODO CHANGE CURRENT RATEPAYER
+    ),
     NGRSummaryListRow(
       messages("checkYourAnswers.EvidenceDocument"),
       None,
@@ -78,9 +78,9 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
     NGRSummaryListRow(
       messages("checkYourAnswers.PropertyConnection"),
       None,
-      Seq("userAnswers.credId.value.toString"),
-      changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "property-connection", messageKey = "service.change", visuallyHiddenMessageKey = Some("property-connection")))
-    ) //TODO CHANGE CURRENT RATEPAYER
+      Seq("userAnswers.connectionToProperty.getOrElse()"),
+      changeLink = Some(Link(href = routes.ConnectionToPropertyController.show, linkId = "property-connection", messageKey = "service.change", visuallyHiddenMessageKey = Some("property-connection")))
+    )
   ).map(summarise)
 
   val content: NavigationBarContent = NavBarPageContents.CreateNavBar(
@@ -111,6 +111,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
       content must include("2191322564521")
       content must include("Do you have a business rates bill for this property?")
       content must include("Yes")
+      content must include("Owner")
     }
     "Calling the submit function return a 303 and the correct redirect location" in {
       mockRequest()

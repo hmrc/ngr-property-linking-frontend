@@ -88,19 +88,19 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
               credId = CredId(request.credId.getOrElse("")),
               connectionToProperty = "Owner"
             )
-            Future.successful(Redirect(routes.FindAPropertyController.show))
+            Future.successful(Redirect(routes.CheckYourAnswersController.show))
           case ConnectionToPropertyForm.Occupier =>
             propertyLinkingRepo.insertConnectionToProperty(
               credId = CredId(request.credId.getOrElse("")),
               connectionToProperty = "Occupier"
             )
-            Future.successful(Redirect(routes.FindAPropertyController.show))
+            Future.successful(Redirect(routes.CheckYourAnswersController.show))
           case ConnectionToPropertyForm.OwnerAndOccupier =>
             propertyLinkingRepo.insertConnectionToProperty(
               credId = CredId(request.credId.getOrElse("")),
               connectionToProperty = "Owner and Occupier"
             )
-            Future.successful(Redirect(routes.FindAPropertyController.show))
+            Future.successful(Redirect(routes.CheckYourAnswersController.show))
         }
       )
     }

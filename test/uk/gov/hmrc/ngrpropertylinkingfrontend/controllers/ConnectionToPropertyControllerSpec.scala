@@ -68,7 +68,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
           result.header.headers.get("Location") mustBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.FindAPropertyController.show.url)
+        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.show.url)
       }
       "Successfully submit when selected After and redirect to correct page" in {
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some("After"), connectionToProperty = Some("Occupier")))))
@@ -79,7 +79,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
           result.header.headers.get("Location") mustBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.FindAPropertyController.show.url)
+        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.show.url)
       }
       "Submit with radio buttons unselected and display error message" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))

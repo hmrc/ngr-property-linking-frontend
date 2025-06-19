@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import play.api.i18n.I18nSupport
+import play.api.data.Form
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukInput
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.input.Input
 import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
@@ -30,6 +32,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageConten
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.InputText
@@ -40,10 +43,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepayerView,
-                                          authenticate: AuthRetrievals,
-                                          isRegisteredCheck: RegistrationAction,
-                                          propertyLinkingRepo: PropertyLinkingRepo,
-                                          mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                           inputText: InputText,
+                                           authenticate: AuthRetrievals,
+                                           isRegisteredCheck: RegistrationAction,
+                                           propertyLinkingRepo: PropertyLinkingRepo,
+                                           mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext, messages: Messages)
   extends FrontendController(mcc) with I18nSupport {
 
   private def createLabelAndTextField(id: String, labelName: String, width: String): String =
@@ -54,17 +58,21 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
       |  </div>
       |</div>""".stripMargin
 
-  private val dateInputTexts: Html = Html(
+  private def textField(id: String, labelName: String, width: String): HtmlFormat.Appendable =
+    inputText(form = form, id = id, name = id, label = labelName, isVisible = true, classes = Some(s"govuk-input govuk-input--width-$width"))
+
+
+  private def dateInputTexts: Html = Html(
     """<h1 class="govuk-heading-s">Enter the date you became the current ratepayer</h1>""" +
     """<div id="ratepayersince-date-hint" class="govuk-hint">For example, 24 05 2026.</div>""" +
-    s"""<div class="govuk-date-input" id="date">
-      |  ${createLabelAndTextField("day", "Day", "2")}
-      |  ${createLabelAndTextField("month", "Month", "2")}
-      |  ${createLabelAndTextField("year", "Year", "4")}
-      |</div>""".stripMargin
+    """<div class="govuk-date-input" id="date">""" +
+      textField("day", "Day", "2") +
+//      textField("month", "Month", "2") +
+//      textField("year", "Year", "4") +
+      """</div>"""
   )
   private val beforeButton: NGRRadioButtons = NGRRadioButtons("Before 1 April 2026", Before)
-  private val afterButton: NGRRadioButtons = NGRRadioButtons("On or after 1 April 2026", After, Some(dateInputTexts))
+  private val afterButton: NGRRadioButtons = NGRRadioButtons(radioContent = "On or after 1 April 2026", radioValue = After, conditionalHtml = Some(dateInputTexts))
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("current-ratepayer-radio"), Seq(beforeButton, afterButton))
   
   def show(mode: String): Action[AnyContent] =

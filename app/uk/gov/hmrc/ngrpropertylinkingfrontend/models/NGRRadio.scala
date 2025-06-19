@@ -25,11 +25,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.Radios
 
 case class NGRRadioName(key: String)
-<<<<<<< Updated upstream
-case class NGRRadioButtons(radioContent: String, radioValue: RadioEntry, buttonHint: Option[String] = None)
-=======
-case class NGRRadioButtons(radioContent: String, radioValue: RadioEntry, conditionalHtml: Option[Html] = None)
->>>>>>> Stashed changes
+case class NGRRadioButtons(radioContent: String, radioValue: RadioEntry, buttonHint: Option[String] = None, conditionalHtml: Option[Html] = None)
 case class NGRRadioHeader(title: String, classes: String , isPageHeading: Boolean)
 
 case class NGRRadio (radioGroupName: NGRRadioName, NGRRadioButtons: Seq[NGRRadioButtons], ngrTitle: Option[NGRRadioHeader] = None, hint: Option[String] = None)
@@ -58,13 +54,9 @@ object NGRRadio {
         RadioItem(
           content = Text(Messages(item.radioContent)),
           value = Some(item.radioValue.toString),
-<<<<<<< Updated upstream
           hint = Some(Hint(content = Text(Messages(item.buttonHint.getOrElse(""))))),
-          checked = form.data.values.toList.contains(item.radioValue.toString)
-=======
           checked = form.data.values.toList.contains(item.radioValue.toString),
           conditionalHtml = item.conditionalHtml
->>>>>>> Stashed changes
         )
       },
       classes = "govuk-radios",

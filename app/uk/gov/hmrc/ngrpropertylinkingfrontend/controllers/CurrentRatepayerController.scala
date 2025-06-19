@@ -18,6 +18,10 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.twirl.api.Html
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.input.Input
+import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
@@ -28,6 +32,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.InputText
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
@@ -40,9 +45,26 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
                                           propertyLinkingRepo: PropertyLinkingRepo,
                                           mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-  
+
+  private def createLabelAndTextField(id: String, labelName: String, width: String): String =
+    s"""<div class="govuk-date-input__item">
+      |  <div class="govuk-form-group">
+      |    <label class="govuk-label" for="$id">$labelName</label>
+      |    <input class="govuk-input govuk-input--width-$width" id="$id" name="$id" type="text" inputmode="numeric">
+      |  </div>
+      |</div>""".stripMargin
+
+  private val dateInputTexts: Html = Html(
+    """<h1 class="govuk-heading-s">Enter the date you became the current ratepayer</h1>""" +
+    """<div id="ratepayersince-date-hint" class="govuk-hint">For example, 24 05 2026.</div>""" +
+    s"""<div class="govuk-date-input" id="date">
+      |  ${createLabelAndTextField("day", "Day", "2")}
+      |  ${createLabelAndTextField("month", "Month", "2")}
+      |  ${createLabelAndTextField("year", "Year", "4")}
+      |</div>""".stripMargin
+  )
   private val beforeButton: NGRRadioButtons = NGRRadioButtons("Before 1 April 2026", Before)
-  private val afterButton: NGRRadioButtons = NGRRadioButtons("On or after 1 April 2026", After)
+  private val afterButton: NGRRadioButtons = NGRRadioButtons("On or after 1 April 2026", After, Some(dateInputTexts))
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("current-ratepayer-radio"), Seq(beforeButton, afterButton))
   
   def show(mode: String): Action[AnyContent] =

@@ -16,60 +16,93 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.{I18nSupport, Messages}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UploadViewModel, UpscanRecord}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow, UpscanRecord}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadedBusinessRatesBillView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
-import akka.pattern.after
-import scala.concurrent.Future
-import scala.concurrent.duration._
-import com.google.inject.name.Named
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{PropertyLinkingRepo, UpscanRepo}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusinessRatesBillView,
-                                                    upscanConnector: UpscanConnector,
                                                     upscanRepo: UpscanRepo,
                                                     authenticate: AuthRetrievals,
                                                     isRegisteredCheck: RegistrationAction,
+                                                    propertyLinkingRepo: PropertyLinkingRepo,
                                                     mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
 
+  private def createSummaryList(fileName: String, status: String, downloadUrl: Option[String])(implicit messages: Messages): SummaryList = {
+    SummaryList(
+      Seq(
+        NGRSummaryListRow(
+          fileName,
+          None,
+          Seq(if (status.equals("READY")) "Uploaded" else status),
+          Some(Link(Call("GET", "remove-href-link"), "remove-link", "Remove")),
+          Some(Link(Call("GET", downloadUrl.getOrElse("")), "file-download-link", "")),
+          if (status.equals("READY")) Some("govuk-tag govuk-tag--green") else None,
+          "govuk-summary-list__key_width"
+        )
+      ).map(summarise)
+    )
+  }
+
   //TODO refactor into service
   def show: Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
-    println("PPPPPPP UPloaded business rates controller is called")
+    println("PPPPPPP Uploaded business rates controller is called")
+
     request.credId match {
       case Some(rawCredId) =>
         val credId = CredId(rawCredId)
-        //TODO replace
+
+        // Keeping delay (NOTE: this blocks a thread — avoid in production)
         Thread.sleep(500)
 
-        upscanRepo.findByCredId(credId).map {
+        upscanRepo.findByCredId(credId).flatMap {
           case Some(record) =>
             val fileName = record.fileName.getOrElse("missing name")
             println("upscanRecord retrieved is: " + record)
             println("failure reason is: " + record.failureReason)
             println("failure message is: " + record.failureMessage)
-            record.failureReason match
-              case Some(errorToDisplay) => Redirect(routes.UploadBusinessRatesBillController.show(Some(errorToDisplay)))
-              case None => Ok(uploadedView(fileName, record.status, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
+
+            propertyLinkingRepo.findByCredId(credId).map {
+              case Some(property) =>
+                record.failureReason match {
+                  case Some(errorToDisplay) =>
+                    Redirect(routes.UploadBusinessRatesBillController.show(Some(errorToDisplay)))
+                  case None =>
+                    Ok(uploadedView(
+                      createDefaultNavBar,
+                      createSummaryList(fileName, record.status, record.downloadUrl),
+                      property.vmvProperty.addressFull
+                    ))
+                }
+              case None =>
+                throw new NotFoundException("failed to find property from mongo")
+            }
+
           case None =>
             throw new RuntimeException(s"No UpscanRecord found for credId: ${credId.value}")
         }
+
       case None =>
         Future.failed(new RuntimeException("No credId found in request"))
     }
   }
+
+
 }

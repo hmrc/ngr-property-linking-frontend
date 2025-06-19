@@ -17,7 +17,7 @@ GET        /property-selected                   uk.gov.hmrc.ngrpropertylinkingfr
 POST       /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.submit(index: Int)
 GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.show
 POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit
-GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show
+GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show(errorCode: Option[String])
 GET        /uploaded-business-rates-bill        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadedBusinessRatesBillController.show
 
 #Internal

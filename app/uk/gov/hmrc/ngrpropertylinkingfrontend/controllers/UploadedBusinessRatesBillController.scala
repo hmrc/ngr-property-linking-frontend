@@ -60,7 +60,11 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
           case Some(record) =>
             val fileName = record.fileName.getOrElse("missing name")
             println("upscanRecord retrieved is: " + record)
-            Ok(uploadedView(fileName, record.status, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
+            println("failure reason is: " + record.failureReason)
+            println("failure message is: " + record.failureMessage)
+            record.failureReason match
+              case Some(errorToDisplay) => Redirect(routes.UploadBusinessRatesBillController.show(Some(errorToDisplay)))
+              case None => Ok(uploadedView(fileName, record.status, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
           case None =>
             throw new RuntimeException(s"No UpscanRecord found for credId: ${credId.value}")
         }

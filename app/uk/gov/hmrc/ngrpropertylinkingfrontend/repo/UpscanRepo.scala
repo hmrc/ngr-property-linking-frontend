@@ -104,10 +104,6 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
   }
 
   def findByReference(reference: UpscanReference): Future[Option[UpscanRecord]] = {
-    //collection.countDocuments().headOption().map(p => println("zzzzz are these many records in the DB: " + p.getOrElse("None lel")))
-
-    //collection.find().headOption()
-//TODO fix this
     collection.find(
       equal("reference", reference.value)
     ).headOption()

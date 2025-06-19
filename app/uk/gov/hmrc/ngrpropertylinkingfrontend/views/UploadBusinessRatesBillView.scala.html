@@ -27,7 +27,7 @@
         button: components.button
 )
 
-@(form: Form[_], upscanResponse: UpscanInitiateResponse, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], upscanResponse: UpscanInitiateResponse, errorMessage: Option[String], navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("uploadBusinessRatesBill.title")}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
@@ -52,21 +52,22 @@
 
                     @fileUpload(
                         form = form,
+                        errorMessage = errorMessage,
                         name = "file",
                         id = "file",
-                        label = messages("uploadBusinessRatesBill.placeholder"),
+                        label = "",
                         isPageHeading = false,
                         attributes = Map(
-                            "accept" -> ".pdf,.doc,.docx,.xls,.xlsx,.png,.ods,.odt,.ppt,.pptx,.odp,.jpg,.png,.tiff,.csv,.jpeg",
+                            //TODO clarify whether this is correct
+                            "accept" -> ".pdf,.doc,.docx,.png,.jpg,.jpeg",
                             "data-max-file-size" -> "100000000",
                             "data-min-file-size" -> "1000"
                         )
                     )
                 </div>
-                @button("uploadBusinessRatesBill.placeholder")
-            </form>
+                @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
 
-            @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
+            </form>
         </div>
     </div>
 }

@@ -54,7 +54,6 @@ class UpscanCallbackController @Inject()(upscanRepo: UpscanRepo,
   println(">>>>>>>> UpscanCallbackController loaded <<<<<<<<")
 //TODO move some to service?
   def handleUpscanCallback: Action[JsValue] = Action.async(parse.json) { implicit request =>
-    println("XXXXXXXXXXXX UPSCAN SAYS HELLO XXXXXXXXX")
     withJsonBody[UpscanCallback] { upscanCallback =>
       println("XXXX upscan reference on callback is: " + upscanCallback.reference.value)
       upscanRepo.findByReference(upscanCallback.reference).flatMap {

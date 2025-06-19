@@ -485,7 +485,27 @@ currentRatepayer.radio.2 = On or after 1 April 2026
 uploadBusinessRatesBill.title=Upload your business rates bill
 uploadBusinessRatesBill.p1=1 Mulholland Drive, LA, 6BH 4PE
 uploadBusinessRatesBill.p2=The file must be a Word document, PDF or image (PNG or JPG) and be less than 25MB.
-uploadBusinessRatesBill.placeholder=PLACEHOLDER
+uploadBusinessRatesBill.noFileChosen=No file chosen
 
 #UploadedBusinessRatesBill
 uploadedBusinessRatesBill.uploaded=Uploaded
+
+#error message for uploads
+
+#scenario 6
+uploadBusinessRatesBill.error.exceedsMaximumSize = The selected file must be smaller than 100MB
+#scenario 7
+uploadBusinessRatesBill.error.noFileSelected = Select a [whatever the file to upload is]
+#scenario 11
+uploadBusinessRatesBill.error.emptyFileUploaded = The selected file is empty
+uploadBusinessRatesBill.error.fileTooSmall = The selected file is too small
+
+
+uploadBusinessRatesBill.error.virusDetected = The selected file contains a virus
+
+uploadBusinessRatesBill.error.problemWithUpload = The selected file could not be uploaded
+uploadBusinessRatesBill.error.fileAlreadyExists = The selected file has already been uploaded
+
+#dont need?
+uploadBusinessRatesBill.error.invalidFileType = The selected file must be a [list of acceptable file types]
+

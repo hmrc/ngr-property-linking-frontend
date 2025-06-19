@@ -22,6 +22,7 @@
 
 @(
         form: Form[_],
+        errorMessage: Option[String],
         id: String,
         name: String,
         label: String,
@@ -29,7 +30,7 @@
         headingMessageArgs: Seq[String] = Seq(),
         hint: Option[Html] = None,
         classes: Option[String] = None,
-        labelHidden: Boolean = false,
+        labelHidden: Boolean = true,
         attributes: Map[String, String] = Map.empty
 )(implicit messages: Messages)
 
@@ -46,6 +47,9 @@
         content = HtmlContent(hintHtml)
     )),
     value = form(name).value,
-    errorMessage = form(name).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
-    attributes = attributes
+    /*errorMessage = form(name).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),*/
+    errorMessage = errorMessage.map(error => ErrorMessage(content = Text(error))),
+    attributes = attributes,
+    //TODO maybe fix this
+    noFileChosenText = Some("SSSSSSSS")
 ))

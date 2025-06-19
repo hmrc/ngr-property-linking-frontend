@@ -37,10 +37,11 @@ class UpscanConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig
       callbackUrl = "http://localhost:1504/ngr-property-linking-frontend/callback-from-upscan",
       successRedirect = Some("http://localhost:1504/ngr-property-linking-frontend/uploaded-business-rates-bill"),
       //TODO do failure redirect
-      errorRedirect = Some("https://failureRedirect.com"),
-      maximumFileSize = Some(25000000))//25MB
+      errorRedirect = Some("http://localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill"),
+      //TODO confirm these sizes
+      maximumFileSize = Some(25000000),//25MB
+      minimumFileSize = Some(100))
     
-    //TODO enter it into DB
     httpClientV2
       .post(url"$upscanInitiateUri")
       .withBody(Json.toJson(request))

@@ -23,19 +23,44 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanCallback, UpscanCallbackFailure, UpscanCallbackSuccess, UpscanRecord}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.data.FormError
+import play.api.i18n.I18nSupport
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UploadViewModel, UpscanRecord}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{UploadBusinessRatesBillView, UploadedBusinessRatesBillView}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UpscanCallbackController @Inject()(upscanRepo: UpscanRepo, mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+class UpscanCallbackController @Inject()(upscanRepo: UpscanRepo,
+                                         authenticate: AuthRetrievals,
+                                         isRegisteredCheck: RegistrationAction,
+                                         mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
+  println(">>>>>>>> UpscanCallbackController loaded <<<<<<<<")
 //TODO move some to service?
   def handleUpscanCallback: Action[JsValue] = Action.async(parse.json) { implicit request =>
+    println("XXXXXXXXXXXX UPSCAN SAYS HELLO XXXXXXXXX")
     withJsonBody[UpscanCallback] { upscanCallback =>
+      println("XXXX upscan reference on callback is: " + upscanCallback.reference.value)
       upscanRepo.findByReference(upscanCallback.reference).flatMap {
         case Some(existingUpscanRecord) =>
           val updatedRecord: UpscanRecord = buildUpdatedUpscanRecord(upscanCallback, existingUpscanRecord.credId)
+          println("updatedRecord is: " + updatedRecord)
           upscanRepo.upsertUpscanRecord(updatedRecord).map(_ => Ok)
         case None =>
           Future.failed(new RuntimeException("Upscan record not found for reference: " + upscanCallback.reference.value))
@@ -65,62 +90,5 @@ class UpscanCallbackController @Inject()(upscanRepo: UpscanRepo, mcc: MessagesCo
         failureMessage = Some(failure.failureDetails.message)
       )
   }
-
-//  def handleUpscanCallbackOLD: Action[JsValue] = Action.async(parse.json) { implicit request =>
-//    withJsonBody[UpscanCallback] { (callback: UpscanCallback) =>
-//      val upscanRecord = callback match {
-//        case success: UpscanCallbackSuccess =>
-//          UpscanRecord(
-//            credId = CredId("unknown at this point but overwritten"),
-//            reference = success.reference,
-//            status = "READY",
-//            downloadUrl = Some(success.downloadUrl.toString),
-//            fileName = Some(success.uploadDetails.fileName),
-//            failureReason = None,
-//            failureMessage = None
-//          )
-//        case failure: UpscanCallbackFailure =>
-//          UpscanRecord(
-//            credId = CredId("unknown at this point but overwritten"),
-//            reference = failure.reference,
-//            status = "FAILED",
-//            downloadUrl = None,
-//            fileName = None,
-//            failureReason = Some(failure.failureDetails.failureReason),
-//            failureMessage = Some(failure.failureDetails.message)
-//          )
-//      }
-//
-//      upscanRepo.upsertUpscanRecord(upscanRecord).map(_ => Ok)
-//    }
-//  }
-
-
-  //  def handleUpscanCallback: Action[JsValue] = Action.async(parse.json) { implicit request =>
-//    withJsonBody[UpscanCallback] { callback: UpscanCallback =>
-//      upscanRepo.upsertUpscanRecord(
-//      callback match {
-//        case successCallback: UpscanCallbackSuccess =>
-//          UpscanRecord(
-//            reference = successCallback.reference,
-//            status = "READY",
-//            downloadUrl = successCallback.downloadUrl,
-//            fileName = successCallback.uploadDetails.fileName,
-//            failureReason = None,
-//            failureMessage = None)
-//        case failureCallback: UpscanCallbackFailure =>
-//          UpscanRecord(
-//            reference = successCallback.reference,
-//            status = "FAILED",
-//            downloadUrl = None,
-//            fileName = None,
-//            failureReason = failureCallback.failureDetails.failureReason,
-//            failureMessage = failureCallback.failureDetails.message)
-//      })
-//      //upscanRepo.upsertUpscanRecord(upscanRecord)
-//      //uploadService.registerUploadResult(callback.reference, upscanRecord).map(_ => Ok)
-//    }
-//  }
-
 }
 

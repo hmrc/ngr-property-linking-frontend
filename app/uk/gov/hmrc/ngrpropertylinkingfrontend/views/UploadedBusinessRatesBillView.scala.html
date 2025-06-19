@@ -37,7 +37,8 @@
             <h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
             <p class="govuk-caption-m hmrc-caption-m">
             @messages("uploadBusinessRatesBill.p2")
-                fileName
+                @{Text(fileName).asHtml}
+                @{Text(uploadStatus).asHtml}
             </p>
 
         </div>

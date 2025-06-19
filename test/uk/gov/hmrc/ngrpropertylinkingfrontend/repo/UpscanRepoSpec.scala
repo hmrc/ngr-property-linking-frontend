@@ -23,10 +23,10 @@ import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{TestData, TestSupport}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanCallbackSuccess, UpscanCallbackUploadDetails}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{UploadDetails, UpscanResponse}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanRecord}
 
 class UpscanRepoSpec  extends TestSupport with TestData
-  with DefaultPlayMongoRepositorySupport[UpscanResponse] {
+  with DefaultPlayMongoRepositorySupport[UpscanRecord] {
   override val repository: UpscanRepo = app.injector.instanceOf[UpscanRepo]
 
   override def beforeEach(): Unit = {
@@ -79,7 +79,7 @@ class UpscanRepoSpec  extends TestSupport with TestData
 
     "find UpscanResponse by cred id" when {
       "correct UpscanResponse has been returned" in {
-        await(repository.upsertUpscanResponse(upscanResponse))
+        await(repository.upsertUpscanResponse(upscanRecord))
         val isSuccessful = await(repository.findByCredId(credId))
 
         isSuccessful mustBe defined

@@ -74,12 +74,12 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
     val errorMsg = s"upscanRecord has not been inserted"
 
     collection.replaceOne(
-      filter = equal("credId.value", upscanRecord.credId),
+      filter = equal("credId.value", upscanRecord.credId.value),
       replacement = upscanRecord,
       options = ReplaceOptions().upsert(true)
     ).toFuture().transformWith {
       case Success(result) =>
-        logger.info(s"upscanResponse has been upserted for credId: ${upscanRecord.credId}")
+        logger.info(s"upscanResponse has been upserted for credId: ${upscanRecord.credId.value}")
         result.wasAcknowledged()
         Future.successful(true)
       case Failure(exception) =>
@@ -104,8 +104,12 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
   }
 
   def findByReference(reference: UpscanReference): Future[Option[UpscanRecord]] = {
+    //collection.countDocuments().headOption().map(p => println("zzzzz are these many records in the DB: " + p.getOrElse("None lel")))
+
+    //collection.find().headOption()
+//TODO fix this
     collection.find(
-      equal("reference.value", reference.value)
+      equal("reference", reference.value)
     ).headOption()
   }
 

@@ -50,6 +50,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
         case Some(rawCredId) =>
           val credId = CredId(rawCredId)
           upscanConnector.initiate.flatMap { upscanInitiateResponse =>
+            println("XXXX upscan reference on initiate is: " + upscanInitiateResponse.reference.value)
             val upscanRecord = UpscanRecord(
               credId = credId,
               reference = upscanInitiateResponse.reference,
@@ -70,112 +71,4 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
           Future.failed(new RuntimeException("Missing credId in authenticated request"))
       }
     }
-
-
-//  def show: Action[AnyContent] =
-//    (authenticate andThen isRegisteredCheck).async { implicit request =>
-//      for {
-//        preparedUpload <- upscanConnector.initiate
-//        _ <- upscanRepo.upsertUpscanRecord(UpscanRecord(
-//          credId = CredId(request.credId.getOrElse("OOPSIE")),
-//          reference = preparedUpload.reference,
-//          //TODO case classes for statuses
-//          status = "INITIATED",
-//          downloadUrl = None,
-//          fileName = None,
-//          failureReason = None,
-//          failureMessage = None))
-//      } yield{
-//        Ok(uploadView(uploadForm(), preparedUpload, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
-//      }
-//    }
-
-//    def show2: Action[AnyContent] =
-//      (authenticate andThen isRegisteredCheck).async { implicit request =>
-//        //val x = uploadedView("testFile.aaa", createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)
-//        //Future.successful(Ok(uploadedView("testFile.aaa", createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)))
-//      Future.successful(Ok("test"))
-//      }
 }
-
-//    def show2: Action[AnyContent] =
-//      (authenticate andThen isRegisteredCheck).async { implicit request =>
-//
-//        for {
-//          x <- upscanConnector.initiate
-//        } yield {
-//          Ok(view(form, x, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
-//        }
-//      }
-
-//  def showOLD: Action[AnyContent] =
-//    (authenticate andThen isRegisteredCheck).async { implicit request =>
-//
-//      val uploadViewModel: Future[UploadViewModel] = upscanConnector.initiate.map { upscanInitiateResponse =>
-//        UploadViewModel(
-//          postTarget = upscanInitiateResponse.uploadRequest.href,
-//          acceptedFileType = ???,
-//          maxFileSize = "1000",
-//          formFields = upscanInitiateResponse.uploadRequest.fields,
-//          error = None
-//        )
-//      }
-//
-//      val form = uploadForm()
-//
-//      //val upscanInitiateResponse: Future[PreparedUpload] = upscanConnector.initiate
-//
-//      //TODO confirm back url
-//      Future.successful(Ok(view(form, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)))
-//    }
-
-//    def form(): Form[PhoneNumber] =
-//      Form(
-//        mapping(
-//          phoneNumber -> text()
-//            .verifying(
-//              firstError(
-//                isNotEmpty(phoneNumber, phoneNumberEmptyError),
-//                regexp(phoneNumberRegexPattern.pattern(), phoneNumberInvalidFormat)
-//              )
-//            )
-//        )(PhoneNumber.apply)(PhoneNumber.unapply)
-//      )
-
-
-//  case class UploadViewModel(
-//                              // detailsContent: DisplayMessage,
-//                              postTarget: String,
-//                              acceptedFileType: String,
-//                              maxFileSize: String,
-//                              formFields: Map[String, String],
-//                              error: Option[FormError]
-//                            )
-
-
-//  def buildViewModel(
-//                 postTarget: String,
-//                 formFields: Map[String, String],
-//                 error: Option[FormError],
-//                 maxFileSize: String
-//               ): FormPageViewModel[UploadViewModel] =
-//    FormPageViewModel(
-//      "uploadMemberDetails.title",
-//      "uploadMemberDetails.heading",
-//      UploadViewModel(
-//        detailsContent =
-//          ParagraphMessage("uploadMemberDetails.details.paragraph") ++
-//            ListMessage(
-//              ListType.Bullet,
-//              "uploadMemberDetails.list1",
-//              "uploadMemberDetails.list2",
-//              "uploadMemberDetails.list3"
-//            ),
-//        acceptedFileType = ".csv",
-//        maxFileSize = maxFileSize,
-//        formFields,
-//        error
-//      ),
-//      Call("POST", postTarget)
-//    ).withDescription(ParagraphMessage("uploadMemberDetails.paragraph"))
-

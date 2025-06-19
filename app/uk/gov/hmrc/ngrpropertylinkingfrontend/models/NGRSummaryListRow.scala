@@ -22,12 +22,20 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Text, Value
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actions}
 
-final case class NGRSummaryListRow(titleMessageKey: String, captionKey: Option[String], value: Seq[String], changeLink: Option[Link])
+final case class NGRSummaryListRow(
+                                    titleMessageKey: String,
+                                    captionKey: Option[String],
+                                    value: Seq[String],
+                                    changeLink: Option[Link],
+                                    titleLink: Option[Link] = None,
+                                    valueClasses: Option[String] = None,
+                                    classes: String = "")
 
 object NGRSummaryListRow {
   def summarise(checkYourAnswerRow: NGRSummaryListRow)(implicit messages: Messages): SummaryListRow = {
 
     val caption = checkYourAnswerRow.captionKey
+    val titleLink = checkYourAnswerRow.titleLink
     val keyContent = if (caption.nonEmpty) {
       HtmlContent(
         Html(
@@ -35,25 +43,42 @@ object NGRSummaryListRow {
             s"""<div id="account-number-hint" class="govuk-hint">${Messages(caption.getOrElse(""))}</div>"""
         )
       )
+    } else if (titleLink.nonEmpty) {
+      HtmlContent(
+        Html(
+          s"""<a href="${titleLink.get.href.url}" class="govuk-link govuk-summary-list__key_width">${Messages(checkYourAnswerRow.titleMessageKey)}</a>"""
+        )
+      )
     } else {
       Text(Messages(checkYourAnswerRow.titleMessageKey))
     }
 
-    val key = Key(content = keyContent)
+    val key = Key(content = keyContent, classes = checkYourAnswerRow.classes)
 
-    val idMaker = checkYourAnswerRow.titleMessageKey.toLowerCase().replace(" ","-")
+    val idMaker = checkYourAnswerRow.titleMessageKey.toLowerCase().replace(" ", "-")
+
+    val valueClasses = checkYourAnswerRow.valueClasses
+
+    def valueContent(seqOfString: Seq[String]): HtmlContent =
+      if (valueClasses.nonEmpty) {
+        HtmlContent(
+          s"""<span id="$idMaker-id" class="${valueClasses.getOrElse("")}">${seqOfString.map(Messages(_)).mkString("</br>")}</span>"""
+        )
+      } else {
+        HtmlContent(s"""<span id="$idMaker-id">${seqOfString.map(Messages(_)).mkString("</br>")}</span>""")
+      }
 
     checkYourAnswerRow.value match {
       case seqOfString if seqOfString.nonEmpty => SummaryListRow(
-        key     = key,
-        value   = Value(content = HtmlContent(s"""<span id="$idMaker-id">${seqOfString.map(Messages(_)).mkString("</br>")}</span>""")),
+        key = key,
+        value = Value(content = valueContent(seqOfString)),
         actions = checkYourAnswerRow.changeLink match {
           case Some(changeLink) => Some(
             Actions(items = Seq(ActionItem(
-              href               = changeLink.href.url,
-              content            = Text(Messages(changeLink.messageKey)),
+              href = changeLink.href.url,
+              content = Text(Messages(changeLink.messageKey)),
               visuallyHiddenText = changeLink.visuallyHiddenMessageKey,
-              attributes         = Map(
+              attributes = Map(
                 "id" -> changeLink.linkId
               )
             )))
@@ -62,10 +87,10 @@ object NGRSummaryListRow {
         }
       )
       case _ => SummaryListRow(
-        key   = Key(content = Text(Messages(checkYourAnswerRow.titleMessageKey))),
+        key = Key(content = Text(Messages(checkYourAnswerRow.titleMessageKey))),
         value = checkYourAnswerRow.changeLink match {
           case Some(link) => Value(HtmlContent(s"""<a id="${link.linkId}" href="${link.href.url}" class="govuk-link">${messages(link.messageKey)}</a>"""))
-          case None       => Value()
+          case None => Value()
         }
       )
     }

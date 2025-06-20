@@ -26,3 +26,6 @@ POST       /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfr
 GET        /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.show
 GET        /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.show
 POST       /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.submit
+GET        /add-property-request-sent           uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyRequestSentController.show
+GET        /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.show
+POST       /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.accept

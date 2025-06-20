@@ -24,24 +24,57 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperties
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, Postcode}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.ErrorResponse
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{FindAProperty, ManualPropertySearchForm}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperties
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FindAPropertyConnector @Inject()(http: HttpClientV2,
+class FindAPropertyConnector @Inject()(
+                                        http: HttpClientV2,
                                        appConfig: AppConfig,
                                        logger: NGRLogger)
                                       (implicit ec: ExecutionContext) {
 
-  def findAProperty(postcode: Postcode)(implicit headerCarrier: HeaderCarrier): Future[Either[ErrorResponse, VMVProperties]] = {
-
+  def findAPropertyManualSearch(searchParams: ManualPropertySearchForm)(implicit headerCarrier: HeaderCarrier): Future[Either[ErrorResponse, VMVProperties]] = {
     val urlEndpoint =  if(appConfig.features.vmvPropertyLookupTestEnabled()){
-      url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
+      url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${searchParams.postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
     }else{
-      //TODO Actual call to vmv
-      url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode="
+      url"${appConfig.addressLookupUrl}/external-ndr-list-api/properties"
+    }
+    http.get(urlEndpoint)
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK | NOT_FOUND =>
+            response.json.validate[VMVProperties] match {
+              case JsSuccess(valid, _) =>
+                logger.info(s"Successfully Received propertyList ${response.body}")
+                Right(valid)
+              case JsError(errors) =>
+                logger.error(s"Error received from vmv find a property service: $errors")
+                Left(ErrorResponse(BAD_REQUEST, s"Json Validation Error: $errors"))
+            }
+          case _ =>
+            logger.error(s"Error received from vmv find a property service: ${response.body}")
+            Left(ErrorResponse(response.status, response.body))
+        }
+      } recover {
+      case _ =>
+        logger.error(s"Error received from vmv find a property service")
+        Left(ErrorResponse(Status.INTERNAL_SERVER_ERROR, "Call to VMV find a property failed"))
+    }
+  }
+
+  def findAPropertyPostcodeSearch(searchParams: FindAProperty)(implicit headerCarrier: HeaderCarrier): Future[Either[ErrorResponse, VMVProperties]] = {
+    val urlEndpoint = if (appConfig.features.vmvPropertyLookupTestEnabled()) {
+      url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${searchParams.postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
+    } else {
+      if(searchParams.propertyName.nonEmpty){
+        url"${appConfig.addressLookupUrl}/external-ndr-list-api/properties?postcode=${searchParams.postcode}&propertyNameNumber=${searchParams.propertyName.get}"
+      }else{ url"${appConfig.addressLookupUrl}/external-ndr-list-api/properties?postcode=${searchParams.postcode}"}
     }
     http.get(urlEndpoint)
       .execute[HttpResponse]

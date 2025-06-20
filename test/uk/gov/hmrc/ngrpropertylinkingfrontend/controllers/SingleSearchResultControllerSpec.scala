@@ -23,7 +23,7 @@ import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLoca
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.LookUpVMVProperties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.LookUpVMVProperties
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, Postcode}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 import scala.concurrent.Future

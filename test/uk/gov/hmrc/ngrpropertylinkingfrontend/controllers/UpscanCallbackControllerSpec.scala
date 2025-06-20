@@ -17,97 +17,132 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
-import play.api.libs.json.Json
-import play.api.test.Helpers.{contentAsString, status}
-import uk.gov.hmrc.http.StringContextOps
+import org.mockito.Mockito.*
+import play.api.libs.json.{JsValue, Json}
+import play.api.test.Helpers.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanCallBackErrorDetails, UpscanCallbackFailure, UpscanCallbackSuccess, UpscanCallbackUploadDetails, UpscanRecord, UpscanReference}
-import play.api.test.Helpers.defaultAwaitTimeout
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+
+import java.net.URL
 import java.time.Instant
 import scala.concurrent.Future
 
 class UpscanCallbackControllerSpec extends ControllerSpecSupport {
-  val controller: UpscanCallbackController = new UpscanCallbackController(
+
+  def controller() = new UpscanCallbackController(
     mockUpscanRepo,
     mockAuthJourney,
     mockIsRegisteredCheck,
     mcc
   )(mockConfig, ec)
 
-  val testReference: UpscanReference = UpscanReference("ref123")
-  val testDownloadUrl = url"http://example.com/download"
-  val testFileName = "testfile.pdf"
+  val credIdX: CredId = CredId("1234")
+  val reference: UpscanReference = UpscanReference("123456789")
 
-  "UpscanCallbackController" must {
-    "handleUpscanCallback" must {
-      "return OK when a successful callback updates an existing UpscanRecord" in {
-        val callback = UpscanCallbackSuccess(
-          reference = testReference,
-          downloadUrl = testDownloadUrl,
-          uploadDetails = UpscanCallbackUploadDetails(fileName = testFileName, fileMimeType = "application/pdf", uploadTimestamp = Instant.now(), checksum = "abc123", size = 1000)
+  val existingRecord: UpscanRecord = UpscanRecord(
+    credId = credIdX,
+    reference = reference,
+    status = "INITIATED",
+    downloadUrl = None,
+    fileName = None,
+    failureReason = None,
+    failureMessage = None
+  )
+
+  "handleUpscanCallback()" should {
+
+    "return OK and update repo when callback is SUCCESS" in {
+      val callbackJson: JsValue = Json.obj(
+        "fileStatus" -> "READY",
+        "reference" -> reference.value,
+        "downloadUrl" -> "https://example.com/download-file",
+        "uploadDetails" -> Json.obj(
+          "uploadTimestamp" -> Instant.now.toString,
+          "checksum" -> "abc123",
+          "fileMimeType" -> "application/pdf",
+          "fileName" -> "test.pdf",
+          "size" -> 123456
         )
-        val existingRecord = UpscanRecord(
-          credId = credId,
-          reference = testReference,
-          status = "PENDING",
-          downloadUrl = None,
-          fileName = None,
-          failureReason = None,
-          failureMessage = None
+      )
+
+      when(mockUpscanRepo.findByReference(reference)).thenReturn(Future.successful(Some(existingRecord)))
+      when(mockUpscanRepo.upsertUpscanRecord(any[UpscanRecord])).thenReturn(Future.successful(true))
+
+
+      val result = controller().handleUpscanCallback()(fakeRequest.withBody(callbackJson))
+
+      status(result) mustBe OK
+    }
+
+    "return OK and update repo when callback is FAILURE" in {
+      val callbackJson: JsValue = Json.obj(
+        "fileStatus" -> "FAILED",
+        "reference" -> reference.value,
+        "failureDetails" -> Json.obj(
+          "failureReason" -> "QUARANTINE",
+          "message" -> "File contains a virus"
         )
-        when(mockUpscanRepo.findByReference(testReference)).thenReturn(Future.successful(Some(existingRecord)))
-        when(mockUpscanRepo.upsertUpscanRecord(any())).thenReturn(Future.successful(()))
+      )
 
-        val result = controller.handleUpscanCallback()(authenticatedFakeRequest.withBody(Json.toJson(callback)))
+      when(mockUpscanRepo.findByReference(reference)).thenReturn(Future.successful(Some(existingRecord)))
+      when(mockUpscanRepo.upsertUpscanRecord(any[UpscanRecord])).thenReturn(Future.successful(true))
 
-        status(result) mustBe OK
-      }
 
-      "return OK when a failed callback updates an existing UpscanRecord" in {
-        val callback = UpscanCallbackFailure(
-          reference = testReference,
-          failureDetails = UpscanCallBackErrorDetails(failureReason = "QUARANTINE", message = "File contains a virus")
+      val result = controller().handleUpscanCallback()(fakeRequest.withBody(callbackJson))
+
+      status(result) mustBe OK
+    }
+
+    "return 500 if no existing record is found for reference" in {
+      val callbackJson: JsValue = Json.obj(
+        "fileStatus" -> "READY",
+        "reference" -> reference.value,
+        "downloadUrl" -> "https://example.com/download-file",
+        "uploadDetails" -> Json.obj(
+          "uploadTimestamp" -> Instant.now.toString,
+          "checksum" -> "abc123",
+          "fileMimeType" -> "application/pdf",
+          "fileName" -> "test.pdf",
+          "size" -> 123456
         )
-        val existingRecord = UpscanRecord(
-          credId = credId,
-          reference = testReference,
-          status = "PENDING",
-          downloadUrl = None,
-          fileName = None,
-          failureReason = None,
-          failureMessage = None
+      )
+
+      when(mockUpscanRepo.findByReference(reference)).thenReturn(Future.successful(None))
+
+      val result = controller().handleUpscanCallback()(fakeRequest.withBody(callbackJson)).failed.futureValue
+
+      result mustBe a[RuntimeException]
+      result.getMessage must include("Upscan record not found")
+    }
+
+
+    "return 400 for malformed or missing JSON discriminator" in {
+      val badJson: JsValue = Json.obj(
+        "reference" -> reference.value,
+        "uploadDetails" -> Json.obj(
+          "uploadTimestamp" -> Instant.now.toString,
+          "checksum" -> "12345",
+          "fileMimeType" -> "application/pdf",
+          "fileName" -> "test.pdf",
+          "size" -> 123456
         )
-        when(mockUpscanRepo.findByReference(testReference)).thenReturn(Future.successful(Some(existingRecord)))
-        when(mockUpscanRepo.upsertUpscanRecord(any())).thenReturn(Future.successful(()))
+      )
 
-        val result = controller.handleUpscanCallback()(authenticatedFakeRequest.withBody(Json.toJson(callback)))
+      val result = controller().handleUpscanCallback()(fakeRequest.withBody(badJson))
 
-        status(result) mustBe OK
-      }
+      status(result) mustBe BAD_REQUEST
+    }
 
-      "return INTERNAL_SERVER_ERROR when no UpscanRecord is found for the reference" in {
-        val callback = UpscanCallbackSuccess(
-          reference = testReference,
-          downloadUrl = testDownloadUrl,
-          uploadDetails = UpscanCallbackUploadDetails(fileName = testFileName, fileMimeType = "application/pdf", uploadTimestamp = Instant.now(), checksum = "abc123", size = 1000)
-        )
-        when(mockUpscanRepo.findByReference(testReference)).thenReturn(Future.successful(None))
+    "return 400 for unrecognized fileStatus value" in {
+      val callbackJson: JsValue = Json.obj(
+        "fileStatus" -> "UNRECOGNISED_FILE_STATUS",
+        "reference" -> reference.value
+      )
 
-        val result = controller.handleUpscanCallback()(authenticatedFakeRequest.withBody(Json.toJson(callback)))
+      val result = controller().handleUpscanCallback()(fakeRequest.withBody(callbackJson))
 
-        status(result) mustBe INTERNAL_SERVER_ERROR
-        contentAsString(result) must include("Upscan record not found for reference: " + testReference)
-      }
-
-      "return INTERNAL_SERVER_ERROR when the JSON body is invalid" in {
-        val invalidJson = Json.parse("""{"invalid": "data"}""")
-        val result = controller.handleUpscanCallback()(authenticatedFakeRequest.withBody(invalidJson))
-
-        status(result) mustBe INTERNAL_SERVER_ERROR
-        contentAsString(result) must include("Invalid JSON")
-      }
+      status(result) mustBe BAD_REQUEST
     }
   }
 }

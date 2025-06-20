@@ -18,7 +18,6 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.libs.json.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.HttpUrlFormat
-
 import java.net.URL
 import java.time.Instant
 import registration.CredId
@@ -65,6 +64,10 @@ object UpscanInitiateRequest {
 //}
 
 case class UpscanFileReference(reference: String)
+
+object UpscanFileReference {
+  implicit val UpscanFileReferenceFormat: Format[UpscanFileReference] = Json.format[UpscanFileReference]
+}
 
 import play.api.data.FormError
 
@@ -132,12 +135,23 @@ object UpscanCallback {
   private implicit val urlFormat: Format[URL] = HttpUrlFormat.format
 
   implicit val uploadDetailsReads: Reads[UpscanCallbackUploadDetails] = Json.reads[UpscanCallbackUploadDetails]
-
+  
   implicit val errorDetailsReads: Reads[UpscanCallBackErrorDetails] = Json.reads[UpscanCallBackErrorDetails]
 
   implicit val readyCallbackBodyReads: Reads[UpscanCallbackSuccess] = Json.reads[UpscanCallbackSuccess]
 
   implicit val failedCallbackBodyReads: Reads[UpscanCallbackFailure] = Json.reads[UpscanCallbackFailure]
+
+  implicit val UpscanCallbackSuccessFormat: Format[UpscanCallbackSuccess] = Json.format[UpscanCallbackSuccess]
+
+  implicit val UpscanCallbackFailureFormat: Format[UpscanCallbackFailure] = Json.format[UpscanCallbackFailure]
+  
+  implicit val UpscanCallBackErrorDetailsFormat: Format[UpscanCallBackErrorDetails] = Json.format[UpscanCallBackErrorDetails]
+
+  implicit val UpscanCallbackUploadDetailsFormat: Format[UpscanCallbackUploadDetails] = Json.format[UpscanCallbackUploadDetails]
+
+  
+  
 
   implicit val reads: Reads[UpscanCallback] = (json: JsValue) =>
     json \ "fileStatus" match {

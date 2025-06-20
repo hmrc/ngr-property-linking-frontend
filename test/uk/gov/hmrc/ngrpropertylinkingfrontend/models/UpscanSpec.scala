@@ -22,7 +22,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateResponse.{format, uploadFormFormat}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanReference.{referenceReader, referenceWrites}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateRequest.format
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateResponse.{format, refFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateResponse.format
 
 class UpscanSpec extends TestSupport {
   val testReference: UpscanReference = UpscanReference("testReference")
@@ -92,12 +92,16 @@ class UpscanSpec extends TestSupport {
     }
   }
   
-  val testUpscanInitiateResponse: UpscanInitiateResponse = UpscanInitiateResponse(
-    fileReference = testUpscanFileReference,
-    postTarget = "postTarget",
-    formFields = Map("key" -> "value"))
+//  val testUpscanInitiateResponse: UpscanInitiateResponse = UpscanInitiateResponse(
+//    fileReference = testUpscanFileReference,
+//    postTarget = "postTarget",
+//    formFields = Map("key" -> "value"))
+
+  val testUpscanInitiateResponse: UpscanInitiateResponse = UpscanInitiateResponse(reference = UpscanReference("fileRef"), uploadRequest = UploadForm(href = "postTarget", fields = Map("key" -> "value")))
+
+
   val testUpscanInitiateResponseJson: JsValue = Json.parse(
-    """{"fileReference":{"reference":"fileRef"},"postTarget":"postTarget","formFields":{"key":"value"}}""")
+    """{"reference":"fileRef","uploadRequest":{"href":"postTarget","fields":{"key":"value"}}}""")
 
   "UpscanInitiateResponse" should {
     "serialize to JSON" in {

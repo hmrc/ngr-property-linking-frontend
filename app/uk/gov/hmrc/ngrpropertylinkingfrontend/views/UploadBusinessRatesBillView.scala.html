@@ -27,7 +27,7 @@
         button: components.button
 )
 
-@(form: Form[_], upscanResponse: UpscanInitiateResponse, errorMessage: Option[String], address: String, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[String], upscanResponse: UpscanInitiateResponse, errorMessage: Option[String], address: String, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("uploadBusinessRatesBill.title")}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {

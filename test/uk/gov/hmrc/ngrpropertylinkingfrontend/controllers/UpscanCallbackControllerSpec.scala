@@ -16,13 +16,16 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import org.scalatest.matchers.should.Matchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, status}
+import uk.gov.hmrc.http.StringContextOps
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanCallbackFailure, UpscanCallbackSuccess, UpscanRecord, FileStatus, FailureDetails}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanCallBackErrorDetails, UpscanCallbackFailure, UpscanCallbackSuccess, UpscanCallbackUploadDetails, UpscanRecord, UpscanReference}
+import play.api.test.Helpers.defaultAwaitTimeout
+import java.time.Instant
 import scala.concurrent.Future
 
 class UpscanCallbackControllerSpec extends ControllerSpecSupport {
@@ -33,9 +36,8 @@ class UpscanCallbackControllerSpec extends ControllerSpecSupport {
     mcc
   )(mockConfig, ec)
 
-  val testCredId = CredId("1234")
-  val testReference = "ref123"
-  val testDownloadUrl = "http://example.com/download"
+  val testReference: UpscanReference = UpscanReference("ref123")
+  val testDownloadUrl = url"http://example.com/download"
   val testFileName = "testfile.pdf"
 
   "UpscanCallbackController" must {
@@ -44,10 +46,10 @@ class UpscanCallbackControllerSpec extends ControllerSpecSupport {
         val callback = UpscanCallbackSuccess(
           reference = testReference,
           downloadUrl = testDownloadUrl,
-          uploadDetails = UploadDetails(fileName = testFileName, fileMimeType = "application/pdf", uploadTimestamp = "2025-06-18T16:24:00Z", checksum = "abc123")
+          uploadDetails = UpscanCallbackUploadDetails(fileName = testFileName, fileMimeType = "application/pdf", uploadTimestamp = Instant.now(), checksum = "abc123", size = 1000)
         )
         val existingRecord = UpscanRecord(
-          credId = testCredId,
+          credId = credId,
           reference = testReference,
           status = "PENDING",
           downloadUrl = None,
@@ -56,7 +58,7 @@ class UpscanCallbackControllerSpec extends ControllerSpecSupport {
           failureMessage = None
         )
         when(mockUpscanRepo.findByReference(testReference)).thenReturn(Future.successful(Some(existingRecord)))
-        when(mockUpscanRepo.upsertUpscanRecord(any[UpscanRecord])).thenReturn(Future.successful(()))
+        when(mockUpscanRepo.upsertUpscanRecord(any())).thenReturn(Future.successful(()))
 
         val result = controller.handleUpscanCallback()(authenticatedFakeRequest.withBody(Json.toJson(callback)))
 
@@ -66,10 +68,10 @@ class UpscanCallbackControllerSpec extends ControllerSpecSupport {
       "return OK when a failed callback updates an existing UpscanRecord" in {
         val callback = UpscanCallbackFailure(
           reference = testReference,
-          failureDetails = FailureDetails(failureReason = "QUARANTINE", message = "File contains a virus")
+          failureDetails = UpscanCallBackErrorDetails(failureReason = "QUARANTINE", message = "File contains a virus")
         )
         val existingRecord = UpscanRecord(
-          credId = testCredId,
+          credId = credId,
           reference = testReference,
           status = "PENDING",
           downloadUrl = None,
@@ -78,7 +80,7 @@ class UpscanCallbackControllerSpec extends ControllerSpecSupport {
           failureMessage = None
         )
         when(mockUpscanRepo.findByReference(testReference)).thenReturn(Future.successful(Some(existingRecord)))
-        when(mockUpscanRepo.upsertUpscanRecord(any[UpscanRecord])).thenReturn(Future.successful(()))
+        when(mockUpscanRepo.upsertUpscanRecord(any())).thenReturn(Future.successful(()))
 
         val result = controller.handleUpscanCallback()(authenticatedFakeRequest.withBody(Json.toJson(callback)))
 
@@ -89,7 +91,7 @@ class UpscanCallbackControllerSpec extends ControllerSpecSupport {
         val callback = UpscanCallbackSuccess(
           reference = testReference,
           downloadUrl = testDownloadUrl,
-          uploadDetails = UploadDetails(fileName = testFileName, fileMimeType = "application/pdf", uploadTimestamp = "2025-06-18T16:24:00Z", checksum = "abc123")
+          uploadDetails = UpscanCallbackUploadDetails(fileName = testFileName, fileMimeType = "application/pdf", uploadTimestamp = Instant.now(), checksum = "abc123", size = 1000)
         )
         when(mockUpscanRepo.findByReference(testReference)).thenReturn(Future.successful(None))
 

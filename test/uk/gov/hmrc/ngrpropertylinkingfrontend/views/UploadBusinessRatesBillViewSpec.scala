@@ -18,7 +18,10 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.data._
+import play.api.data.Forms._
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UploadForm, UpscanInitiateResponse, UpscanReference}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadBusinessRatesBillView
 
@@ -47,16 +50,22 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
     val heading = "h1.govuk-heading-l"
     val caption = "h2.govuk-caption-l"
     val paragraph = "p.govuk-caption-m"
-    val fileInputLabel = "label.govuk-label"
     val fileInput = "input#file-upload-1"
     val continueButton = "button.govuk-button"
   }
 
+  val form: Form[String] = Form(single("text" -> nonEmptyText))
+  val upscanForm: UploadForm = UploadForm("", Map("key" -> "value"))
+  val upscanResponse: UpscanInitiateResponse = UpscanInitiateResponse(UpscanReference("ref"), upscanForm)
+
   "UploadBusinessRatesBillView" must {
     "render consistently using apply and render" must {
-      val rendered = view.apply(content, "/search-again", "/dashboard")(request, messages, mockConfig)
-      val renderedHtml = view.render(content, "/search-again", "/dashboard", request, messages, mockConfig).body
-      lazy val htmlF = view.f(content, "/search-again", "/dashboard")
+
+
+
+      val rendered = view.apply(form, upscanResponse, None, "address", navigationBarContent = content, searchAgainUrl = "searchAgain", dashboardUrl = "dashboard")(request, messages, mockConfig)
+      val renderedHtml = view.render(form, upscanResponse, None, "address", navigationBarContent = content, searchAgainUrl = "searchAgain", dashboardUrl = "dashboard", request, messages, mockConfig).body
+      lazy val htmlF = view.f(form, upscanResponse, None, "address", content, "searchAgain", "dashboard")
 
       "htmlF is not empty" in {
         htmlF.toString() must not be empty
@@ -73,7 +82,7 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
 
     "display the correct static content" must {
       implicit val document: Document =
-        Jsoup.parse(view(content, "/search-again", "/dashboard").body)
+        Jsoup.parse(view(form, upscanResponse, None, "address", content, "searchAgain", "dashboard").body)
 
       "have the correct page title" in {
         elementText(Selectors.navTitle) mustBe title
@@ -84,19 +93,11 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
       }
 
       "have the correct caption text" in {
-        elementText(Selectors.caption) must include(p1)
+        elementText(Selectors.caption) must include("address")
       }
 
       "have the correct paragraph below heading" in {
         elementText(Selectors.paragraph) must include(p2)
-      }
-
-      "have a file input label" in {
-        elementText(Selectors.fileInputLabel) mustBe "Upload a file"
-      }
-
-      "have a file input field" in {
-        document.select(Selectors.fileInput).attr("type") mustBe "file"
       }
 
       "have a continue button with correct text" in {

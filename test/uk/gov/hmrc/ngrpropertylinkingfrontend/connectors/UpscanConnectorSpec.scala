@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockHttpV2
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{PreparedUpload, Reference, UploadForm}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UpscanReference, UploadForm}
 
 import scala.concurrent.Future
 
@@ -29,10 +29,10 @@ class UpscanConnectorSpec extends MockHttpV2 {
 
   "initiate()" when {
     "Successfully return a PreparedUpload" in {
-      val response: PreparedUpload = PreparedUpload(Reference(reference), UploadForm("href", formFields))
+      val response: UpscanInitiateResponse = UpscanInitiateResponse(UpscanReference(reference), UploadForm("href", formFields))
       setupMockHttpV2PostWithHeaderCarrier(s"${mockConfig.upscanHost}/upscan/v2/initiate", Seq("Content-Type" -> "application/json"))(response)
-      val result: Future[PreparedUpload] = upscanConnector.initiate()
-      result.futureValue.reference mustBe Reference(reference)
+      val result: Future[UpscanInitiateResponse] = upscanConnector.initiate()
+      result.futureValue.reference mustBe UpscanReference(reference)
       result.futureValue.uploadRequest mustBe UploadForm("href", formFields)
     }
   }

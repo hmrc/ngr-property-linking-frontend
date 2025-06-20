@@ -24,18 +24,18 @@ import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{NGRRadio, NGRRadioButtons, NGRRadioName, NGRSummaryListRow, No, PropertyLinkingUserAnswers, Yes}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, NGRRadio, NGRRadioButtons, NGRRadioName, NGRSummaryListRow, No, PropertyLinkingUserAnswers, Yes}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.PropertySelectedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.PropertySelectedForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{VMVProperty, LookUpVMVProperties}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{LookUpVMVProperties, VMVProperty}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo}
+
 import java.text.NumberFormat
 import java.util.Locale
-
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -67,7 +67,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
   }
 
   def show(index: Int): Action[AnyContent] = {
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen isRegisteredCheck).async { implicit request: AuthenticatedUserRequest[AnyContent] =>
       findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
         case Some(properties) =>
           val selectedProperty = properties.vmvProperties.properties(index)

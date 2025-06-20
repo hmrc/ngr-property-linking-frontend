@@ -481,26 +481,6 @@ currentRatepayer.details.content.p3 = For example, you own the property and a te
 currentRatepayer.radio.1 = Before 1 April 2026
 currentRatepayer.radio.2 = On or after 1 April 2026
 
-#UploadBusinessRatesBill
-uploadBusinessRatesBill.title=Upload your business rates bill
-uploadBusinessRatesBill.p1=1 Mulholland Drive, LA, 6BH 4PE
-uploadBusinessRatesBill.p2=The file must be a Word document, PDF or image (PNG or JPG) and be less than 25MB.
-
-#BusinessRatesBill
-businessRatesBill.title = Do you have a business rates bill for the property?
-uploadBusinessRatesBill.hint = You need the most recent bill you have for the property.
-
-#CheckYourAnswers
-checkYourAnswers.title = Check and confirm your details
-checkYourAnswers.property.title = Property to add to account
-checkYourAnswers.propertyReference.title = Property reference
-checkYourAnswers.currentRatepayer.title = When did you become the current ratepayer?
-checkYourAnswers.businessRatesBill = Do you have a business rates bill for this property?
-checkYourAnswers.EvidenceDocument = Evidence document
-checkYourAnswers.PropertyConnection = What is your connection to the property
-checkYourAnswers.currentRatepayer.before = Before 1 April 2026
-checkYourAnswers.currentRatepayer.after = On or after 1 April 2026
-
 #ManualSearchProperty
 manualSearchProperty.title = What is the address?
 manualSearchProperty.line1.label = Address line 1
@@ -538,6 +518,50 @@ connectionToProperty.ownerHint = Owns the property.
 connectionToProperty.occupierHint = Operates from the property.
 connectionToProperty.ownerAndOccupierHint = Owns and Operates from the property.
 
+
+#CheckYourAnswers
+checkYourAnswers.title = Check and confirm your details
+checkYourAnswers.property.title = Property to add to account
+checkYourAnswers.propertyReference.title = Property reference
+checkYourAnswers.currentRatepayer.title = When did you become the current ratepayer?
+checkYourAnswers.businessRatesBill = Do you have a business rates bill for this property?
+checkYourAnswers.EvidenceDocument = Evidence document
+checkYourAnswers.PropertyConnection = What is your connection to the property
+checkYourAnswers.currentRatepayer.before = Before 1 April 2026
+checkYourAnswers.currentRatepayer.after = On or after 1 April 2026
+
+#BusinessRatesBill
+businessRatesBill.title = Do you have a business rates bill for the property?
+uploadBusinessRatesBill.hint = You need the most recent bill you have for the property.
+
+#UploadBusinessRatesBill
+uploadBusinessRatesBill.title=Upload your business rates bill
+uploadBusinessRatesBill.p1=The file must be a Word document, PDF or image (PNG or JPG) and be less than 25MB.
+uploadBusinessRatesBill.noFileChosen=No file chosen
+
+#UploadedBusinessRatesBill
+uploadedBusinessRatesBill.uploaded=Uploaded
+
+#error message for uploads
+
+#scenario 6
+uploadBusinessRatesBill.error.exceedsMaximumSize = The selected file must be smaller than 100MB
+#scenario 7
+uploadBusinessRatesBill.error.noFileSelected = Select a [whatever the file to upload is]
+#scenario 11
+uploadBusinessRatesBill.error.emptyFileUploaded = The selected file is empty
+uploadBusinessRatesBill.error.fileTooSmall = The selected file is too small
+
+
+uploadBusinessRatesBill.error.virusDetected = The selected file contains a virus
+
+uploadBusinessRatesBill.error.problemWithUpload = The selected file could not be uploaded
+uploadBusinessRatesBill.error.fileAlreadyExists = The selected file has already been uploaded
+
+#dont need?
+uploadBusinessRatesBill.error.invalidFileType = The selected file must be a [list of acceptable file types]
+
+
 #AddPropertyRequestSent
 addPropertyRequestSent.title = Add a property request sent
 addPropertyRequestSent.yourReference = Your reference is
@@ -554,3 +578,4 @@ addPropertyRequestSent.goHome = Go to your account home
 declaration.title = Declaration
 declaration.p1 = By submitting this request to add a property, you declare that to the best of your knowledge, the information given is correct and complete.
 declaration.accept = Accept and send
+

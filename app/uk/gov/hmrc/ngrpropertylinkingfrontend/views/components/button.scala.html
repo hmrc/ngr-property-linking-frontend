@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-import play.api.libs.json.{Format, Json}
+@this(govukButton: GovukButton)
 
-case class UploadDetails(
-                          fileName:String,
-                          fileMimeType: String,
-                          uploadTimestamp: String,
-                          checksum: String,
-                          size: Long
-                        )
+@(msg: String, idForButton: String = "button-1", changeContinueToSaveAndContinue: Boolean = true)(implicit messages: Messages)
 
-object UploadDetails {
-  implicit val format:Format[UploadDetails] = Json.format[UploadDetails]
-}
+@govukButton(Button(
+    attributes = Map("id" -> idForButton),
+    content = {
+        Text(messages(msg))
+    },
+    preventDoubleClick = Some(true)
+))

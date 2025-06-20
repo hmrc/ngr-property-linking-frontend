@@ -30,3 +30,6 @@ GET        /uploaded-business-rates-bill        uk.gov.hmrc.ngrpropertylinkingfr
 
 #Internal
 POST       /callback-from-upscan                uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UpscanCallbackController.handleUpscanCallback
+GET        /add-property-request-sent           uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyRequestSentController.show
+GET        /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.show
+POST       /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.accept

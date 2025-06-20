@@ -58,6 +58,7 @@ class CurrentRatepayerViewSpec extends ViewBaseSpec {
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("confirm-address-radio"), Seq(beforeButton, afterButton))
   val form = CurrentRatepayerForm.form.fillAndValidate(CurrentRatepayerForm("Before"))
   val radio: Radios = buildRadios(form, ngrRadio)
+  val mode: String = ""
 
   object Selectors {
     val navTitle = "head > title"
@@ -75,11 +76,11 @@ class CurrentRatepayerViewSpec extends ViewBaseSpec {
 
   "CurrentRatepayerView" must {
 
-    val currentRatepayerView = view(content, form, radio, address)
+    val currentRatepayerView = view(content, form, radio, address, mode)
     lazy implicit val document: Document = Jsoup.parse(currentRatepayerView.body)
-    val htmlApply = view.apply(content, form , radio, address).body
-    val htmlRender = view.render(content, form , radio , address, request, messages, mockConfig).body
-    lazy val htmlF = view.f(content, form , radio , address)
+    val htmlApply = view.apply(content, form , radio, address, mode).body
+    val htmlRender = view.render(content, form , radio , address, mode, request, messages, mockConfig).body
+    lazy val htmlF = view.f(content, form , radio , address, mode)
 
     "htmlF is not empty" in {
       htmlF.toString() must not be empty

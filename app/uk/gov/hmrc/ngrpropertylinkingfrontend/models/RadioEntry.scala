@@ -25,3 +25,4 @@ case object No extends YesNoItem
 sealed trait BeforeAfter extends RadioEntry
 case object Before extends BeforeAfter
 case object After extends BeforeAfter
+

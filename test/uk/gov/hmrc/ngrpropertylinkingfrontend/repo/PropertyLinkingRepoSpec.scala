@@ -68,6 +68,20 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
         actual shouldBe expected
       }
     }
+
+    "insertConnectionToProperty by cred id" when {
+      "correct PropertyLinkingUserAnswer has been returned" in {
+        val isSuccessful = await(repository.upsertProperty(PropertyLinkingUserAnswers(
+          credId,
+          testVmvProperty
+        )))
+        isSuccessful shouldBe true
+        await(repository.insertConnectionToProperty(credId = credId, connectionToProperty = "Owner"))
+        val actual: PropertyLinkingUserAnswers = await(repository.findByCredId(credId)).get
+        val expected = PropertyLinkingUserAnswers(credId, testVmvProperty, None, None, Some("Owner"))
+        actual shouldBe expected
+      }
+    }
     
     "find PropertyLinkingUserAnswer by cred id" when {
       "correct PropertyLinkingUserAnswer has been returned" in {

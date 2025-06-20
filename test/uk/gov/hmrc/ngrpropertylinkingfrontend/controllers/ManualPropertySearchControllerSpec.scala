@@ -1,0 +1,113 @@
+/*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
+
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
+import play.api.mvc.RequestHeader
+import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import uk.gov.hmrc.auth.core.Nino
+import uk.gov.hmrc.http.HeaderNames
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ManualPropertySearchView
+
+class ManualPropertySearchControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
+  implicit val requestHeader: RequestHeader = mock[RequestHeader]
+  lazy val manualPropertySearchView: ManualPropertySearchView = inject[ManualPropertySearchView]
+  val pageTitle = "What is the address?"
+
+  def controller() = new ManualPropertySearchController(
+    manualPropertySearchView,
+    mockAuthJourney,
+    mockIsRegisteredCheck,
+    mcc
+  )(mockConfig)
+
+  "ManualPropertySearchController" must {
+    "method show" must {
+      "Return OK and the correct view" in {
+        val result = controller().show()(authenticatedFakeRequest)
+        status(result) mustBe OK
+        val content = contentAsString(result)
+        content must include(pageTitle)
+      }
+    }
+
+    "method submit" must {
+      "Successfully submit and redirect to no results found page" in {
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
+          .withFormUrlEncodedBody("addressLine1" -> "99",
+            "town" -> "Worthing",
+            "postcode" -> "W126WA")
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+        status(result) mustBe SEE_OTHER
+        //TODO: redirect to search result page
+        redirectLocation(result) mustBe Some(routes.NoResultsFoundController.show.url)
+      }
+
+      "Submit with no postcode and display error message" in {
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
+          .withFormUrlEncodedBody("addressLine1" -> "99",
+            "town" -> "Worthing",
+            "postcode" -> "")
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+        status(result) mustBe BAD_REQUEST
+        val content = contentAsString(result)
+        content must include("Enter postcode")
+      }
+
+      "Submit with invalid postcode and display error message" in {
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
+          .withFormUrlEncodedBody("addressLine1" -> "99",
+            "town" -> "Worthing",
+            "postcode" -> "W12A6WA")
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+        status(result) mustBe BAD_REQUEST
+        val content = contentAsString(result)
+        content must include("Enter a full UK postcode")
+      }
+
+      "Submit invalid minimum rateable value and maximum rateable value and display error message" in {
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
+          .withFormUrlEncodedBody("addressLine1" -> "99",
+            "town" -> "Worthing",
+            "postcode" -> "W126WA",
+            "miniRateableValue" -> "£100,000 00abc",
+            "maxRateableValue" -> "£25,0asas%00.65")
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+        status(result) mustBe BAD_REQUEST
+        val content = contentAsString(result)
+        content must include("Minimum rateable value must be a number, like £50,000")
+        content must include("Maximum rateable value must be a number, like £100,000")
+      }
+
+      "Submit with minimum rateable value greater than maximum rateable value and display error message" in {
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
+          .withFormUrlEncodedBody("addressLine1" -> "99",
+            "town" -> "Worthing",
+            "postcode" -> "W126WA",
+            "miniRateableValue" -> "100,000",
+            "maxRateableValue" -> "25,000")
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+        status(result) mustBe BAD_REQUEST
+        val content = contentAsString(result)
+        content must include("Minimum rateable value must be lower than maximum rateable value")
+      }
+    }
+  }
+}

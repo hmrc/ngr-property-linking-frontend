@@ -47,18 +47,6 @@ class UpscanRepoSpec  extends TestSupport with TestData
     uploadDetails = upscanCallbackUploadDetails
   )
 
-//  val upscanResponse: UpscanResponse = UpscanResponse(
-//    reference = "11370e18-6e24-453e-b45a-76d3e32ea33d",
-//    downloadUrl =  "https://bucketName.s3.eu-west-2.amazonaws.com?1235676",
-//    fileStatus =  "READY",
-//    uploadDetails = UploadDetails(
-//      fileName = "test.pdf",
-//      fileMimeType =  "application/pdf",
-//      uploadTimestamp =  "2018-04-24T09:30:00Z",
-//      checksum = "396f101dd52e8b2ace0dcf5ed09b1d1f030e608938510ce46e7a5c7a4e775100",
-//      size = 987
-//    )
-//  )
 
   "repository" can {
     "save a new UpscanResponse" when {
@@ -68,13 +56,7 @@ class UpscanRepoSpec  extends TestSupport with TestData
         val actual = await(repository.findByCredId(credId))
         actual shouldBe Some(upscanResponse)
       }
-//      "missing credId" in {
-//        val missingCredId = upscanResponse.copy(credId = CredId(null))
-//        val exception = intercept[IllegalStateException] {
-//          await(repository.upsertUpscanResponse(missingCredId))
-//        }
-//        exception.getMessage contains "upscanResponse has not been inserted" shouldBe true
-//      }
+
     }
 
     "find UpscanResponse by cred id" when {

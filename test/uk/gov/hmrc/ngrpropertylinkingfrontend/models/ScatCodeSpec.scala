@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
 class ScatCodeSpec extends TestSupport {

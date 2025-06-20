@@ -2,7 +2,7 @@ import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapVersion = "9.12.0"
+  private val bootstrapVersion = "9.13.0"
   private val hmrcMongoVersion = "2.6.0"
   private val enumeratumVersion = "1.8.2"
   private val akkaVersion = "2.6.21" // or align with Play’s version, see notes below
@@ -10,7 +10,7 @@ object AppDependencies {
 
   val compile = Seq(
     "uk.gov.hmrc"             %% "bootstrap-frontend-play-30"                        % bootstrapVersion,
-    "uk.gov.hmrc"             %% "play-frontend-hmrc-play-30"                        % "12.1.0",
+    "uk.gov.hmrc"             %% "play-frontend-hmrc-play-30"                        % "12.5.0",
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-30"                                % hmrcMongoVersion,
     "uk.gov.hmrc"             %% "centralised-authorisation-resource-client-play-30" % "1.7.0",
     "com.beachape"            %% "enumeratum-play"                                   % enumeratumVersion,

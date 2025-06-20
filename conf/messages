@@ -2,6 +2,7 @@ service.name = Manage your business rates valuation
 service.text = This is your new service
 service.base.title = {0} - GOV.UK
 service.continue = Continue
+service.change = Change
 
 scat.1 = AA/RAC Service Centre Or Box
 scat.3 = Advertising Right
@@ -458,8 +459,7 @@ whatYouNeed.p4=We can usually give you a decision on your request to add a prope
 singleSearchResultPage.title = Search results for {0}
 singleSearchResultPage.details.summary = Help if you cannot find your property
 singleSearchResultPage.details.content.1 = Check the details you entered are correct.
-singleSearchResultPage.details.content.2 = You can try different ways of searching for your property, for example by
-singleSearchResultPage.details.content.3 = rateable value or property reference.
+singleSearchResultPage.details.content.2 = You can try different ways of searching for your property, for example by rateable value or property reference.
 singleSearchResultPage.details.link = Search again
 singleSearchResultPage.details.telephone = Telephones:
 singleSearchResultPage.details.telephoneNumber = 03000 501501
@@ -480,6 +480,54 @@ currentRatepayer.details.content.p2 = You are not the current ratepayer if someo
 currentRatepayer.details.content.p3 = For example, you own the property and a tenant pays the business rates.
 currentRatepayer.radio.1 = Before 1 April 2026
 currentRatepayer.radio.2 = On or after 1 April 2026
+
+#ManualSearchProperty
+manualSearchProperty.title = What is the address?
+manualSearchProperty.line1.label = Address line 1
+manualSearchProperty.line2.label = Address line 2 (optional)
+manualSearchProperty.city.label = Town or city
+manualSearchProperty.county.label = County (optional)
+manualSearchProperty.postcode.label = Postcode
+manualSearchProperty.button = Find address
+manualSearchProperty.line1.required.error = Enter address line 1, typically the building and street
+manualSearchProperty.city.required.error = Enter town or city
+manualSearchProperty.postcode.required.error = Enter postcode
+manualSearchProperty.postcode.invalid.error = Enter a full UK postcode
+manualSearchProperty.city.miniLength.error = Town or city must be 3 characters or more
+manualSearchProperty.county.miniLength.error = County must be 3 characters or more
+manualSearchProperty.line1.maxLength.error = Address line 1 must be 100 characters or less
+manualSearchProperty.line2.maxLength.error = Address line 2 must be 100 characters or less
+manualSearchProperty.city.maxLength.error = Town or city must be 100 characters or less
+manualSearchProperty.county.maxLength.error = County must be 100 characters or less
+manualSearchProperty.additional.title = Additional search options
+manualSearchProperty.propertyReference.label = Property reference
+manualSearchProperty.miniRateableValue.label = Minimum rateable value in pounds
+manualSearchProperty.maxRateableValue.label = Maximum rateable value in pounds
+manualSearchProperty.miniRateableValue.hint = For example, 25,000
+manualSearchProperty.maxRateableValue.hint = For example, 100,000
+manualSearchProperty.miniRateableValue.limit.error = Minimum rateable value must be £2,147,483,647 or lower
+manualSearchProperty.maxRateableValue.limit.error = Maximum rateable value must be £2,147,483,647 or lower
+manualSearchProperty.miniRateableValue.validation.error = Minimum rateable value must be lower than maximum rateable value
+manualSearchProperty.miniRateableValue.invalid.error = Minimum rateable value must be a number, like £50,000
+manualSearchProperty.maxRateableValue.invalid.error = Maximum rateable value must be a number, like £100,000
+
+#ConnectionToProperty
+connectionToProperty.title = What is your connection to the property?
+connectionToProperty.radio.unselected.error = Select your connection to the property
+connectionToProperty.ownerHint = Owns the property.
+connectionToProperty.occupierHint = Operates from the property.
+connectionToProperty.ownerAndOccupierHint = Owns and Operates from the property.
+
+#CheckYourAnswers
+checkYourAnswers.title = Check and confirm your details
+checkYourAnswers.property.title = Property to add to account
+checkYourAnswers.propertyReference.title = Property reference
+checkYourAnswers.currentRatepayer.title = When did you become the current ratepayer?
+checkYourAnswers.businessRatesBill = Do you have a business rates bill for this property?
+checkYourAnswers.EvidenceDocument = Evidence document
+checkYourAnswers.PropertyConnection = What is your connection to the property
+checkYourAnswers.currentRatepayer.before = Before 1 April 2026
+checkYourAnswers.currentRatepayer.after = On or after 1 April 2026
 
 #UploadBusinessRatesBill
 uploadBusinessRatesBill.title=Upload your business rates bill

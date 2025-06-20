@@ -28,7 +28,8 @@
  classes: Option[String] = None,
  stripWhitespace: Boolean = false,
  autoComplete: String = "",
- populateField: Boolean = true
+ populateField: Boolean = true,
+ prefix: Option[PrefixOrSuffix] = None
 )(implicit messages: Messages)
 
 @govukInput(Input(
@@ -40,6 +41,7 @@
  classes = if(isVisible) "govuk-label" else "govuk-visually-hidden"
  ),
  hint = hint,
+ prefix = prefix,
  value = if(populateField) form(name).value else None,
  errorMessage = form(name).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args: _*)))),
  autocomplete = Some(autoComplete)

@@ -15,6 +15,14 @@ GET        /results                             uk.gov.hmrc.ngrpropertylinkingfr
 GET        /select-property/:index              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.selectedProperty(index: Int)
 GET        /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.show(index: Int)
 POST       /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.submit(index: Int)
+GET        /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.show
+POST       /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.submit
+POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.submit(mode: String)
+GET        /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.show(mode: String)
+POST       /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.submit
+GET        /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.show
+GET        /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.show
+POST       /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.submit
 GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.show
 POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit
 GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show(errorCode: Option[String])

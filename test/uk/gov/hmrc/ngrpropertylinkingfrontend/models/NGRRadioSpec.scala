@@ -17,12 +17,10 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.data.Form
-import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.FormGroup
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.Fieldset
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm
 
 class NGRRadioSpec extends TestSupport {
@@ -39,22 +37,11 @@ class NGRRadioSpec extends TestSupport {
       NGRRadio.buildRadios(form, ngrRadios) mustBe
         Radios(
           Some(Fieldset(None, Some(Legend(Text("radioName"), "", true)), "", None, Map())),
-          None,
-          None,
-          FormGroup(None, Map(), None, None),
-          Some("radioName"),
-          "radioName",
-          List(RadioItem(Text("Yes"), None, Some("Yes"),
-          None,
-          None,
-          None,
-          false,
-          None,
-          false,
-          Map()),
-          RadioItem(Text("No"), None, Some("No"), None, None, None, false, None, false, Map())),
-          "govuk-radios", Map(), None
-        )
+          None, None, FormGroup(None, Map(), None, None),
+          Some("radioName"), "radioName", List(RadioItem(Text("Yes"),
+            None, Some("Yes"), None, Some(Hint(None, "", Map(), Text(""))),
+            None, false, None, false, Map()), RadioItem(Text("No"), None, Some("No"),
+            None, Some(Hint(None, "", Map(), Text(""))), None, false, None, false, Map())), "govuk-radios", Map(), None)
     }
 
     "generate a radio button with a warning" in {
@@ -66,20 +53,15 @@ class NGRRadioSpec extends TestSupport {
 
       lazy val form: Form[CurrentRatepayerForm] =  CurrentRatepayerForm.form.withError("radioName", "error message")
       NGRRadio.buildRadios(form ,ngrRadios) mustBe
-        Radios(
-          Some(Fieldset(None, Some(Legend(Text("radioName"), "", true)), "", None, Map())),
-          None,
-          Some(ErrorMessage(None, "", Map(), Some("Error"), Text("error message"))),
-          FormGroup(None, Map(), None, None),
-          Some("radioName"),
-          "radioName",
-          List(
-            RadioItem(Text("Yes"), None, Some("Yes"), None, None, None, false, None, false, Map()),
-            RadioItem(Text("No"), None, Some("No"), None, None, None, false, None, false, Map()),
-            ),
-          "govuk-radios",
-          Map(),
-          None)
+        Radios(Some(Fieldset(None, Some(Legend(Text("radioName"), "", true)), "",
+          None, Map())), None, Some(ErrorMessage(None, "", Map(), Some("Error"),
+          Text("error message"))), FormGroup(None, Map(), None, None),
+          Some("radioName"), "radioName",
+          List(RadioItem(Text("Yes"), None, Some("Yes"),
+            None, Some(Hint(None, "", Map(), Text(""))),
+            None, false, None, false, Map()), RadioItem(Text("No"),
+            None, Some("No"), None, Some(Hint(None, "", Map(), Text(""))),
+            None, false, None, false, Map())), "govuk-radios", Map(), None)
     }
   }
 }

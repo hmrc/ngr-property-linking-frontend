@@ -26,15 +26,15 @@ object CurrentRatepayerForm extends CommonFormValidators {
   implicit val format: OFormat[CurrentRatepayerForm] = Json.format[CurrentRatepayerForm]
 
   private lazy val radioUnselectedError = "confirmAddress.radio.unselected.error"
-  private val confirmAddressRadio       = "confirm-address-radio"
+  private val currentRatepayerRadio       = "current-ratepayer-radio"
   
-  def unapply(currentRatepayerForm: CurrentRatepayerForm): Option[String] = Some(CurrentRatepayerForm.confirmAddressRadio)
+  def unapply(currentRatepayerForm: CurrentRatepayerForm): Option[String] = Some(CurrentRatepayerForm.currentRatepayerRadio)
   
   def form: Form[CurrentRatepayerForm] = {
     Form(
       mapping(
-        confirmAddressRadio -> text()
-          .verifying(isNotEmpty(confirmAddressRadio, radioUnselectedError))
+        currentRatepayerRadio -> text()
+          .verifying(isNotEmpty(currentRatepayerRadio, radioUnselectedError))
       )(CurrentRatepayerForm.apply)(CurrentRatepayerForm.unapply)
     )
   }

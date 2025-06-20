@@ -18,15 +18,16 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.{Fieldset, Legend, RadioItem, Text}
+import uk.gov.hmrc.govukfrontend.views.Aliases.*
+import uk.gov.hmrc.govukfrontend.views.html.components.{Hint, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.Radios
 
 case class NGRRadioName(key: String)
-case class NGRRadioButtons(radioContent: String, radioValue: RadioEntry)
+case class NGRRadioButtons(radioContent: String, radioValue: RadioEntry, buttonHint: Option[String] = None)
 case class NGRRadioHeader(title: String, classes: String , isPageHeading: Boolean)
 
-case class NGRRadio (radioGroupName: NGRRadioName, NGRRadioButtons: Seq[NGRRadioButtons], ngrTitle: Option[NGRRadioHeader] = None)
+case class NGRRadio (radioGroupName: NGRRadioName, NGRRadioButtons: Seq[NGRRadioButtons], ngrTitle: Option[NGRRadioHeader] = None, hint: Option[String] = None)
 
 object NGRRadio {
 
@@ -42,14 +43,17 @@ object NGRRadio {
             classes = header.classes,
             isPageHeading = header.isPageHeading
           ))
-        )
-      ),
+        )),
+      hint = NGRRadios.hint.map { hint =>
+        Hint(content = Text(Messages(hint)))
+      },
       idPrefix = Some(NGRRadios.radioGroupName.key),
       name = NGRRadios.radioGroupName.key,
       items = NGRRadios.NGRRadioButtons.map { item =>
         RadioItem(
           content = Text(Messages(item.radioContent)),
           value = Some(item.radioValue.toString),
+          hint = Some(Hint(content = Text(Messages(item.buttonHint.getOrElse(""))))),
           checked = form.data.values.toList.contains(item.radioValue.toString)
         )
       },

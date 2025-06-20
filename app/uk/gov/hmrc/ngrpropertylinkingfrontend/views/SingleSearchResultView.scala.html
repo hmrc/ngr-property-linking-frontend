@@ -47,7 +47,6 @@
             label = messages("singleSearchResultPage.details.link"),
             hrefUrl = searchAgainUrl,
             beforeLinkContent = messages("singleSearchResultPage.details.content.2"),
-            content = Some(messages("singleSearchResultPage.details.content.3")),
             afterLinkContent = "."
         )
     <p class="govuk-body">
@@ -72,10 +71,14 @@
         </p>
         @govukTable(propertySearchResultTable)
         @govukPagination(paginationData.toPagination)
+    </div>
+</div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
         @govukDetails(Details(
-            id = Some("help-if-you-cannot-find-your-property"),
-            summary = Text(messages("singleSearchResultPage.details.summary")),
-            content = HtmlContent(dropDownContent)
+        id = Some("help-if-you-cannot-find-your-property"),
+        summary = Text(messages("singleSearchResultPage.details.summary")),
+        content = HtmlContent(dropDownContent)
         ))
     </div>
 </div>

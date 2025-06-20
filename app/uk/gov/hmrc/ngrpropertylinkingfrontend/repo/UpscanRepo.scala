@@ -87,15 +87,7 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
         Future.failed(new IllegalStateException(s"$errorMsg: ${exception.getMessage} ${exception.getCause}"))
     }
   }
-//TODO move to service?
-//  def updateUpscanRecord(upscanRecord: UpscanRecord): Future[Boolean] = {
-//    for {
-//      maybeOldUpscanRecord <- findByReference(upscanRecord.reference)
-//      oldUpscanRecord = maybeOldUpscanRecord.getOrElse(throw new RuntimeException("Error in method updateUpscanRecord: UNABLE TO FIND UPSCAN RECORD"))
-//      newUpscanRecord = upscanRecord.copy(credId = oldUpscanRecord.credId)
-//      result <- upsertUpscanRecord(newUpscanRecord)
-//    } yield result
-//  }
+
 
   def findByCredId(credId: CredId): Future[Option[UpscanRecord]] = {
     collection.find(
@@ -109,23 +101,4 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
     ).headOption()
   }
 
-
-
-//  def upsertUpscanResponse(upscanResponse: UpscanResponse): Future[Boolean] = {
-//    val errorMsg = s"upscanResponse has not been inserted"
-//
-//    collection.replaceOne(
-//      filter = equal("credId.value", upscanResponse.credId.value),
-//      replacement = upscanResponse,
-//      options = ReplaceOptions().upsert(true)
-//    ).toFuture().transformWith {
-//      case Success(result) =>
-//        logger.info(s"upscanResponse has been upserted for credId: ${upscanResponse.credId.value}")
-//        result.wasAcknowledged()
-//        Future.successful(true)
-//      case Failure(exception) =>
-//        logger.error(errorMsg)
-//        Future.failed(new IllegalStateException(s"$errorMsg: ${exception.getMessage} ${exception.getCause}"))
-//    }
-//  }
 }

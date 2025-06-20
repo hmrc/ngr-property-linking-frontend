@@ -21,7 +21,7 @@ import play.api.mvc.*
 import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.{FindAPropertyConnector, UpscanConnector}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.{FindAPropertyConnector, NGRConnector, UpscanConnector}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo, UpscanRepo}
 
@@ -33,6 +33,7 @@ trait ControllerSpecSupport extends TestSupport {
   val mockAuthJourney: AuthRetrievals = mock[AuthRetrievals]
   val mockFindAPropertyConnector: FindAPropertyConnector = mock[FindAPropertyConnector]
   val mockUpscanConnector: UpscanConnector = mock[UpscanConnector]
+  val mockNgrConnector: NGRConnector = mock[NGRConnector]
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   mockRequest()
   val mockFindAPropertyRepo: FindAPropertyRepo = mock[FindAPropertyRepo]

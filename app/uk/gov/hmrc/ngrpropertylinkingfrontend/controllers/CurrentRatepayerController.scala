@@ -17,18 +17,18 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{After, Before, NGRRadio, NGRRadioButtons, NGRRadioName}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,24 +43,24 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
   
   private val beforeButton: NGRRadioButtons = NGRRadioButtons("Before 1 April 2026", Before)
   private val afterButton: NGRRadioButtons = NGRRadioButtons("On or after 1 April 2026", After)
-  private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("confirm-address-radio"), Seq(beforeButton, afterButton))
+  private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("current-ratepayer-radio"), Seq(beforeButton, afterButton))
   
-  def show: Action[AnyContent] =
+  def show(mode: String): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
-        case Some(property) =>  Future.successful(Ok(currentRatepayerView(createDefaultNavBar, form, buildRadios(form, ngrRadio), address = property.vmvProperty.addressFull)))
+        case Some(property) =>  Future.successful(Ok(currentRatepayerView(createDefaultNavBar, form, buildRadios(form, ngrRadio), address = property.vmvProperty.addressFull, mode = mode)))
         case None => throw new NotFoundException("failed to find property from mongo")
       }
 
     }
 
-  def submit: Action[AnyContent] =
+  def submit(mode: String): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
           formWithErrors => propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
-              case Some(property) =>  Future.successful(BadRequest(currentRatepayerView(createDefaultNavBar, formWithErrors, buildRadios(formWithErrors, ngrRadio), address = property.vmvProperty.addressFull)))
+              case Some(property) =>  Future.successful(BadRequest(currentRatepayerView(createDefaultNavBar, formWithErrors, buildRadios(formWithErrors, ngrRadio), address = property.vmvProperty.addressFull, mode = mode)))
               case None => throw new NotFoundException("failed to find property from mongo")
             },
           currentRatepayerForm =>
@@ -68,7 +68,10 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
               credId = CredId(request.credId.getOrElse("")),
               currentRatepayer = currentRatepayerForm.radioValue
             )
-            Future.successful(Redirect(routes.WhatYouNeedController.show.url))
+            if(mode == "CYA")
+              Future.successful(Redirect(routes.CheckYourAnswersController.show))
+            else
+              Future.successful(Redirect(routes.BusinessRatesBillController.show("")))
         )
     }
 }

@@ -59,7 +59,6 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
     val detailsSummary = "#help-if-you-cannot-find-your-property > summary"
     val detailsP1 = "#help-if-you-cannot-find-your-property > div > p:nth-child(1)"
     val detailsP2 = "#help-if-you-cannot-find-your-property > div > p:nth-child(4)"
-    val detailsP3 = "#help-if-you-cannot-find-your-property > div > p:nth-child(6)"
     val opentime = "#help-if-you-cannot-find-your-property > div > p:nth-child(8)"
     val searchLink = "#main-content > div > div > div.govuk-grid-row > div > p:nth-child(3) > a"
     val returnHomeLink = "#main-content > div > div > div.govuk-grid-row > div > p:nth-child(4) > a"

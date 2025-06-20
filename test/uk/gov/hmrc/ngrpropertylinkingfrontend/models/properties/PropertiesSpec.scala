@@ -22,88 +22,44 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
 class PropertiesSpec extends TestSupport {
 
-//  val testProperties: VMVProperties = VMVProperties(
-//    total = 1,
-//    properties = List(
-//      testVmvProperty,
-//    )
-//  )
-//
-//  val testPropertyJsonResponse: JsValue = Json.parse(
-//    """ {
-//      |    "total": 1,
-//      |    "properties": [
-//      |      {
-//      |        "localAuthorityReference": "2191322564521",
-//      |        "valuations": [
-//      |          {
-//      |            "assessmentRef": 20351392000,
-//      |            "assessmentStatus": "CURRENT",
-//      |            "rateableValue": 9300,
-//      |            "scatCode": "249",
-//      |            "descriptionText": "SHOP AND PREMISES",
-//      |            "effectiveDate": "2023-04-01",
-//      |            "currentFromDate": "2023-04-01",
-//      |            "listYear": "2023",
-//      |            "primaryDescription": "CS",
-//      |            "allowedActions": [
-//      |              "challenge",
-//      |              "viewDetailedValuation",
-//      |              "propertyLink",
-//      |              "similarProperties"
-//      |            ],
-//      |            "listType": "current",
-//      |            "propertyLinkEarliestStartDate": "2017-04-01"
-//      |          },
-//      |          {
-//      |            "assessmentRef": 20351392000,
-//      |            "assessmentStatus": "CURRENT",
-//      |            "rateableValue": 9300,
-//      |            "scatCode": "249",
-//      |            "descriptionText": "SHOP AND PREMISES",
-//      |            "effectiveDate": "2023-04-01",
-//      |            "currentFromDate": "2023-04-01",
-//      |            "listYear": "2023",
-//      |            "primaryDescription": "CS",
-//      |            "allowedActions": [
-//      |              "challenge",
-//      |              "viewDetailedValuation",
-//      |              "propertyLink",
-//      |              "similarProperties"
-//      |            ],
-//      |            "listType": "current",
-//      |            "propertyLinkEarliestStartDate": "2017-04-01"
-//      |          },
-//      |          {
-//      |            "assessmentRef": 20351392000,
-//      |            "assessmentStatus": "CURRENT",
-//      |            "rateableValue": 9300,
-//      |            "scatCode": "249",
-//      |            "descriptionText": "SHOP AND PREMISES",
-//      |            "effectiveDate": "2023-04-01",
-//      |            "currentFromDate": "2023-04-01",
-//      |            "listYear": "2023",
-//      |            "primaryDescription": "CS",
-//      |            "allowedActions": [
-//      |              "challenge",
-//      |              "viewDetailedValuation",
-//      |              "propertyLink",
-//      |              "similarProperties"
-//      |            ],
-//      |            "listType": "current",
-//      |            "propertyLinkEarliestStartDate": "2017-04-01"
-//      |          }
-//      |        ]
-//      |      }
-//      |    ]
-//      |  }""".stripMargin)
-//
-//  "Property" should {
-//    "deserialize to json" in {
-//      Json.toJson(testProperties) mustBe testPropertyJsonResponse
-//    }
-//    "serialize to json" in {
-//      testPropertyJsonResponse.as[VMVProperties] mustBe testProperties
-//    }
-//  }
+  val testProperties: VMVProperties = properties1
+
+  val testPropertyJsonResponse: JsValue = Json.parse(
+    """{
+      |"total":1,
+      |"properties":[
+        |{
+          |"localAuthorityReference":"2191322564521",
+          |"valuations":[
+          |{"descriptionText":"SHOP AND PREMISES",
+          |"rateableValue":9300,
+          |"assessmentRef":25141561000,
+          |"scatCode":"249",
+          |"currentFromDate":"2023-04-01",
+          |"effectiveDate":"2023-04-01",
+          |"listYear":"2023",
+          |"propertyLinkEarliestStartDate":"2017-04-01",
+          |"primaryDescription":"CS",
+          |"listType":"current",
+          |"assessmentStatus":"CURRENT",
+          |"allowedActions":[
+          |"check","challenge",
+          |"viewDetailedValuation",
+          |"propertyLink",
+          |"similarProperties"
+          |]
+        |}
+      |],
+      |"addressFull":"(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
+      |"localAuthorityCode":"4720",
+      |"uarn":11905603000}]}""".stripMargin)
+
+  "Property" should {
+    "deserialize to json" in {
+      Json.toJson(properties1) mustBe testPropertyJsonResponse
+    }
+    "serialize to json" in {
+      testPropertyJsonResponse.as[VMVProperties] mustBe testProperties
+    }
+  }
 }

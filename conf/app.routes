@@ -23,8 +23,8 @@ POST       /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfr
 GET        /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.show
 GET        /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.show
 POST       /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.submit
-GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.show
-POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit
+GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.show(mode: String)
+POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit(mode: String)
 GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show(errorCode: Option[String])
 GET        /uploaded-business-rates-bill        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadedBusinessRatesBillController.show
 

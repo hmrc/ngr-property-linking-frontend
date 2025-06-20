@@ -28,9 +28,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{UploadBusinessRatesBillView, UploadedBusinessRatesBillView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{PropertyLinkingRepo, UpscanRepo}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,6 +41,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
                                                   uploadForm: UploadForm,
                                                   authenticate: AuthRetrievals,
                                                   isRegisteredCheck: RegistrationAction,
+                                                  propertyLinkingRepo: PropertyLinkingRepo,
                                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
   //http://localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill?errorMessage=%27file%27+field+not+found&key=f8ad3406-3992-4d0e-ba36-8ffa339707af&errorCode=InvalidArgument&errorRequestId=SomeRequestId&errorResource=NoFileReference
@@ -79,9 +79,14 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
               failureMessage = None
             )
 
-            upscanRepo.upsertUpscanRecord(upscanRecord).map { _ =>
+            upscanRepo.upsertUpscanRecord(upscanRecord).flatMap { _ =>
               //TODO refactor out preparedUpload
-              Ok(uploadView(uploadForm(), upscanInitiateResponse, errorToDisplay, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
+              propertyLinkingRepo.findByCredId(credId).map {
+                case Some(property) => Ok(uploadView(uploadForm(), upscanInitiateResponse, errorToDisplay, property.vmvProperty.addressFull, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
+                case None => throw new RuntimeException("Could not get address from property linking repo")
+
+              }
+              
             }
           }
 

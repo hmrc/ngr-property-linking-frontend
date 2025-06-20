@@ -19,6 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status.OK
+import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{PropertyLinkingUserAnswers, UpscanInitiateResponse, UpscanReference}
@@ -50,5 +51,49 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
         content must include(pageTitle)
       }
     }
+
+
+    def testErrorCase(errorCode: String, expectedMessage: String): Unit = {
+      mockRequest(hasCredId = true)
+      when(mockUpscanConnector.initiate(any())).thenReturn(Future.successful(UpscanInitiateResponse(UpscanReference("ref"), uploadForm)))
+      when(mockUpscanRepo.upsertUpscanRecord(any())).thenReturn(Future.successful(true))
+      when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
+      val result = controller.show(Some(errorCode))(authenticatedFakeRequest)
+      status(result) mustBe OK
+      val content = contentAsString(result)
+      content must include(Messages(expectedMessage))
+    }
+
+
+    "display 'no file selected' error for InvalidArgument" in {
+      testErrorCase("InvalidArgument", "uploadBusinessRatesBill.error.noFileSelected")
+    }
+
+    "display 'file too large' error for EntityTooLarge" in {
+      testErrorCase("EntityTooLarge", "uploadBusinessRatesBill.error.exceedsMaximumSize")
+    }
+
+    "display 'file too small' error for EntityTooSmall" in {
+      testErrorCase("EntityTooSmall", "uploadBusinessRatesBill.error.fileTooSmall")
+    }
+
+    "display 'virus detected' error for QUARANTINE" in {
+      testErrorCase("QUARANTINE", "uploadBusinessRatesBill.error.virusDetected")
+    }
+
+    "display 'problem with upload' error for REJECTED" in {
+      testErrorCase("REJECTED", "uploadBusinessRatesBill.error.problemWithUpload")
+    }
+
+    "display 'problem with upload' error for UNKNOWN reason" in {
+      testErrorCase("UNKNOWN123", "uploadBusinessRatesBill.error.problemWithUpload")
+    }
+
+
   }
+
+
+
+
+
 }

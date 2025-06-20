@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.mvc.RequestHeader
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
@@ -24,7 +26,10 @@ import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperties
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ManualPropertySearchView
+
+import scala.concurrent.Future
 
 class ManualPropertySearchControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
   implicit val requestHeader: RequestHeader = mock[RequestHeader]
@@ -35,6 +40,8 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
     manualPropertySearchView,
     mockAuthJourney,
     mockIsRegisteredCheck,
+    mockFindAPropertyConnector,
+    mockFindAPropertyRepo,
     mcc
   )(mockConfig)
 
@@ -50,17 +57,31 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
 
     "method submit" must {
       "Successfully submit and redirect to no results found page" in {
+        mockConfig.features.vmvPropertyLookupTestEnabled(true)
+        when(mockFindAPropertyConnector.findAPropertyManualSearch(any())(any())).thenReturn(Future.successful(Right(VMVProperties(total = 0, List.empty))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody("addressLine1" -> "99",
             "town" -> "Worthing",
             "postcode" -> "W126WA")
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
-        //TODO: redirect to search result page
         redirectLocation(result) mustBe Some(routes.NoResultsFoundController.show.url)
       }
 
+      "Successfully submit and redirect to properties found page" in {
+        mockConfig.features.vmvPropertyLookupTestEnabled(true)
+        when(mockFindAPropertyConnector.findAPropertyManualSearch(any())(any())).thenReturn(Future.successful(Right(properties11)))
+        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
+          .withFormUrlEncodedBody("addressLine1" -> "99",
+            "town" -> "Worthing",
+            "postcode" -> "W126WA")
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(page = 1).url)
+      }
+
       "Submit with no postcode and display error message" in {
+        mockConfig.features.vmvPropertyLookupTestEnabled(true)
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
           .withFormUrlEncodedBody("addressLine1" -> "99",
             "town" -> "Worthing",
@@ -72,6 +93,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
       }
 
       "Submit with invalid postcode and display error message" in {
+        mockConfig.features.vmvPropertyLookupTestEnabled(true)
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
           .withFormUrlEncodedBody("addressLine1" -> "99",
             "town" -> "Worthing",
@@ -83,6 +105,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
       }
 
       "Submit invalid minimum rateable value and maximum rateable value and display error message" in {
+        mockConfig.features.vmvPropertyLookupTestEnabled(true)
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
           .withFormUrlEncodedBody("addressLine1" -> "99",
             "town" -> "Worthing",
@@ -97,6 +120,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
       }
 
       "Submit with minimum rateable value greater than maximum rateable value and display error message" in {
+        mockConfig.features.vmvPropertyLookupTestEnabled(true)
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
           .withFormUrlEncodedBody("addressLine1" -> "99",
             "town" -> "Worthing",

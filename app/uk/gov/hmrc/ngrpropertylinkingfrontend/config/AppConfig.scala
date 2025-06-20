@@ -28,6 +28,7 @@ trait AppConfig {
   val ngrLoginRegistrationHost: String
   val ngrPropertyLinkingFrontendUrl: String
   val ngrPropertyLinkingFrontendInternalUrl: String
+  val addressLookupUrl: String
   val upscanHost: String
   val ngrDashboardUrl: String
   val ngrLogoutUrl: String
@@ -42,6 +43,7 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val features = new Features()(config)
   override val nextGenerationRatesHost: String = servicesConfig.baseUrl("next-generation-rates")
   override val ngrLoginRegistrationHost: String = servicesConfig.baseUrl("ngr-login-register-frontend")
+  override val addressLookupUrl: String = servicesConfig.baseUrl("voa-modernised-api")
   override val ngrPropertyLinkingFrontendUrl: String = s"$propertyLinkingHost/ngr-property-linking-frontend"
   override val ngrPropertyLinkingFrontendInternalUrl: String = s"$propertyLinkingHost/internal"
   override val upscanHost: String = servicesConfig.baseUrl("upscan")

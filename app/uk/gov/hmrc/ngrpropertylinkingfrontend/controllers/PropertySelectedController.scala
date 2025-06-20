@@ -32,6 +32,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.PropertySelectedForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{LookUpVMVProperties, VMVProperty}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.{VMVProperty, LookUpVMVProperties}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo}
 
 import java.text.NumberFormat
@@ -62,7 +63,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
       NGRSummaryListRow(messages("Property Reference"), None, Seq(property.localAuthorityReference), None),
       NGRSummaryListRow(messages("Local Council"), None, Seq("Torbay"), None),
       NGRSummaryListRow(messages("Description"), None, Seq(property.valuations.map(_.descriptionText).last), None),
-      NGRSummaryListRow(messages("Rateable value"), None, Seq(formatRateableValue(property.valuations.last.rateableValue)), None),
+      NGRSummaryListRow(messages("Rateable value"), None, Seq(formatRateableValue(property.valuations.last.rateableValue.get.toLong)), None),
     ).map(summarise)
   }
 

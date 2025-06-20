@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate
 
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{Pagination, PaginationItem, PaginationLink}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperty
 
 final case class PaginationData(
                            totalPages: Int,

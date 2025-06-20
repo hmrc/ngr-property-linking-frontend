@@ -34,7 +34,7 @@ class UpscanConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig
     val upscanInitiateUri = s"${appConfig.upscanHost}/upscan/v2/initiate"
     //TODO finalise these fields
     val request = UpscanInitiateRequest(
-      callbackUrl = "http://localhost:1504/ngr-property-linking-frontend/callback-from-upscan",
+      callbackUrl = "http://localhost:1504/callback-from-upscan",
       successRedirect = Some("http://localhost:1504/ngr-property-linking-frontend/uploaded-business-rates-bill"),
       //TODO do failure redirect
       errorRedirect = Some("http://localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill"),

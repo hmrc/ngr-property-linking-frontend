@@ -18,7 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperty
 
 case class PropertyLinkingUserAnswers (credId: CredId,
                                        vmvProperty: VMVProperty,

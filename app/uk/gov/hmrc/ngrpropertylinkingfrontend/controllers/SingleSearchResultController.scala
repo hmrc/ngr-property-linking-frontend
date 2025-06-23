@@ -22,7 +22,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Table
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperty
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
@@ -100,7 +100,7 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
                   TableRowText(capitalizeEnds(stringValue._1.addressFull)),
                   TableRowText(stringValue._1.localAuthorityReference),
                   TableRowText(stringValue._1.valuations.last.descriptionText.toLowerCase.capitalize),
-                  TableRowText(formatRateableValue(stringValue._1.valuations.last.rateableValue)),
+                  TableRowText(formatRateableValue(stringValue._1.valuations.last.rateableValue.get.toLong)),
                   TableRowLink(stringValue._2, "Select property")
                 ))
             ).toTable

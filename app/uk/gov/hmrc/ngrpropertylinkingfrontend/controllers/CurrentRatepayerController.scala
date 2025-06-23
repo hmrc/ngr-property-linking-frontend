@@ -68,6 +68,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
         .bindFromRequest()
         .fold(
           formWithErrors =>
+            //When validating from after apply, formError key is always empty. Bellow allows us to highlight the error field.
             val correctedFormErrors = formWithErrors.errors.map(formError =>
               if (formError.key.equals("")) {
                 formError.messages match

@@ -67,12 +67,10 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
         case Some(rawCredId) =>
           val credId = CredId(rawCredId)
           upscanConnector.initiate.flatMap { upscanInitiateResponse =>
-            println("XXXX upscan reference on initiate is: " + upscanInitiateResponse.reference.value)
-
             val upscanRecord = UpscanRecord(
               credId = credId,
               reference = upscanInitiateResponse.reference,
-              status = "INITIATED", // TODO: replace with status classes
+              status = "INITIATED", // TODO: replace with status classes?
               downloadUrl = None,
               fileName = None,
               failureReason = None,
@@ -80,17 +78,16 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
             )
 
             upscanRepo.upsertUpscanRecord(upscanRecord).flatMap { _ =>
-              //TODO refactor out preparedUpload
               propertyLinkingRepo.findByCredId(credId).map {
                 case Some(property) => Ok(uploadView(uploadForm(), upscanInitiateResponse, errorToDisplay, property.vmvProperty.addressFull, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
+                //TODO move this to the repo class?
                 case None => throw new RuntimeException("Could not get address from property linking repo")
-
               }
-              
             }
           }
 
         case None =>
+          //TODO improve message/error
           Future.failed(new RuntimeException("Missing credId in authenticated request"))
       }
     }

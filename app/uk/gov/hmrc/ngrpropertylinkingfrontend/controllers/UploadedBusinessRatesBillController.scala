@@ -52,7 +52,8 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
           fileName,
           None,
           Seq(if (status.equals("READY")) "Uploaded" else status),
-          Some(Link(Call("GET", "remove-href-link"), "remove-link", "Remove")),
+          //TODO this needs to change the status of the file upload in the DB to 'Removed'
+          Some(Link(Call("GET", routes.UploadBusinessRatesBillController.show(None).url), "remove-link", "Remove")),
           Some(Link(Call("GET", downloadUrl.getOrElse("")), "file-download-link", "")),
           if (status.equals("READY")) Some("govuk-tag govuk-tag--green") else None,
           "govuk-summary-list__key_width"
@@ -63,22 +64,18 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
 
   //TODO refactor into service
   def show: Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
-    println("PPPPPPP Uploaded business rates controller is called")
-
     request.credId match {
       case Some(rawCredId) =>
         val credId = CredId(rawCredId)
 
+        //TODO address this Thread.sleep. Short term it may be possible to reduce the wait time, long term replace it
         // Keeping delay (NOTE: this blocks a thread — avoid in production)
         Thread.sleep(500)
 
         upscanRepo.findByCredId(credId).flatMap {
           case Some(record) =>
+            //TODO should we error out here?
             val fileName = record.fileName.getOrElse("missing name")
-            println("upscanRecord retrieved is: " + record)
-            println("failure reason is: " + record.failureReason)
-            println("failure message is: " + record.failureMessage)
-
             propertyLinkingRepo.findByCredId(credId).map {
               case Some(property) =>
                 record.failureReason match {
@@ -92,6 +89,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
                     ))
                 }
               case None =>
+                //TODO check these error messages can't be improved
                 throw new NotFoundException("failed to find property from mongo")
             }
 
@@ -109,5 +107,4 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
       Future.successful(Redirect(routes.ConnectionToPropertyController.show.url))
     }
   }
-
 }

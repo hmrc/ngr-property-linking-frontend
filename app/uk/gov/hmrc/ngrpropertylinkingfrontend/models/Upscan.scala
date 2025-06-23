@@ -24,6 +24,7 @@ import registration.CredId
 
 case class UpscanReference(value: String)
 
+//TODO check we use all the classes and whether they can be cleaned up
 object UpscanReference {
   implicit val referenceReader: Reads[UpscanReference] = Reads.StringReads.map(UpscanReference(_))
   implicit val referenceWrites: Writes[UpscanReference] = Writes.StringWrites.contramap(_.value)
@@ -52,17 +53,6 @@ object UpscanInitiateRequest {
   implicit val format: OFormat[UpscanInitiateRequest] = Json.format[UpscanInitiateRequest]
 }
 
-//case class UploadKey private (userId: String, srn: Srn) {
-//  val value: String = userId + UploadKey.separator + srn.value
-//}
-
-//object UploadKey {
-//  def fromRequest()(implicit req: DataRequest[_]): UploadKey =
-//    UploadKey(req.getUserId)
-//
-//  val separator = "&&"
-//}
-
 case class UpscanFileReference(reference: String)
 
 object UpscanFileReference {
@@ -71,16 +61,12 @@ object UpscanFileReference {
 
 import play.api.data.FormError
 
-case class UploadViewModel(
-                           // detailsContent: DisplayMessage,
-                            acceptedFileType: String,
+case class UploadViewModel(acceptedFileType: String,
                             maxFileSize: String,
                             formFields: Map[String, String],
-                            error: Option[FormError]
-                          )
+                            error: Option[FormError])
 
 object UploadStatus {
-
   sealed trait UploadStatus // needs to be in the same closure as its subtypes for Json.format to work
 
   case object InProgress extends UploadStatus
@@ -88,7 +74,6 @@ object UploadStatus {
   case class Failed(failureDetails: UpscanCallBackErrorDetails) extends UploadStatus
 
   case class Success(name: String, mimeType: String, downloadUrl: String, size: Option[Long]) extends UploadStatus
-
 }
 
 sealed trait UpscanCallback {
@@ -127,10 +112,11 @@ object UpscanRecord {
   implicit val format: Format[UpscanRecord] = Json.format[UpscanRecord]
 }
 
-
 case class UpscanCallBackErrorDetails(failureReason: String, message: String)
 
 object UpscanCallback {
+  
+//TODO move some of these to tests as they are only used there and not in actual code
   // must be in scope to create Reads for ReadyCallbackBody
   private implicit val urlFormat: Format[URL] = HttpUrlFormat.format
 

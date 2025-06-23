@@ -69,10 +69,9 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
   ) with Logging {
 
   override lazy val requiresTtlIndex: Boolean = false
-
+//TODO give this class a once-over
   def upsertUpscanRecord(upscanRecord: UpscanRecord): Future[Boolean] = {
     val errorMsg = s"upscanRecord has not been inserted"
-
     collection.replaceOne(
       filter = equal("credId.value", upscanRecord.credId.value),
       replacement = upscanRecord,

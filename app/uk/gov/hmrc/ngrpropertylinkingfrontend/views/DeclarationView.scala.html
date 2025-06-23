@@ -30,7 +30,7 @@ formHelper: FormWithCSRF
 
 @heading = @{messages("addpropertyToYourAccount.title")}
 
-@layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
+@layout(pageTitle = Some(heading), fullWidth = false, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
 
 @formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.DeclarationController.accept, Symbol("autoComplete") -> "off") {
 

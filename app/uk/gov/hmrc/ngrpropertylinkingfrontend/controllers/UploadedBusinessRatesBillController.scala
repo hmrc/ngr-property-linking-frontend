@@ -52,7 +52,8 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
           fileName,
           None,
           Seq(if (status.equals("READY")) "Uploaded" else status),
-          Some(Link(Call("GET", "remove-href-link"), "remove-link", "Remove")),
+          //TODO this needs to change the status of the file upload in the DB to 'Removed'
+          Some(Link(Call("GET", routes.UploadBusinessRatesBillController.show(None).url), "remove-link", "Remove")),
           Some(Link(Call("GET", downloadUrl.getOrElse("")), "file-download-link", "")),
           if (status.equals("READY")) Some("govuk-tag govuk-tag--green") else None,
           "govuk-summary-list__key_width"

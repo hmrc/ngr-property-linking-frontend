@@ -38,11 +38,11 @@ class AddPropertyRequestSentViewSpec extends ViewBaseSpec {
     val title = "#main-content > div > div > div.govuk-panel.govuk-panel--confirmation > h1"
     val yourRef = "#main-content > div > div > div.govuk-panel.govuk-panel--confirmation > div"
     val print = "#printPage > a"
-    val emailSent = "#main-content > div > div > p:nth-child(5)"
+    val emailSent = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(4)"
     val whatNext = "#main-content > div > div > h2"
-    val p1 = "#main-content > div > div > p:nth-child(7)"
-    val p2 = "#main-content > div > div > p:nth-child(8)"
-    val goBack = "#main-content > div > div > p:nth-child(9) > a"
+    val p1 = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(6)"
+    val p2 = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(7)"
+    val goBack = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(8)"
   }
 
   "AddPropertyRequestSent" must {

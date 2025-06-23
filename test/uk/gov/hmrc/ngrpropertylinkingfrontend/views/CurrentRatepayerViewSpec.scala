@@ -41,6 +41,9 @@ class CurrentRatepayerViewSpec extends ViewBaseSpec {
   val contentP2 = "You are not the current ratepayer if someone else pays the business rates. For example, you own the property and a tenant pays the business rates."
   val radio1 = "Before 1 April 2026"
   val radio2 = "On or after 1 April 2026"
+  val dayInputLabel = "Day"
+  val monthInputLabel = "Month"
+  val yearInputLabel = "Year"
 
   val content: NavigationBarContent = NavBarPageContents.CreateNavBar(
     contents = NavBarContents(
@@ -56,22 +59,22 @@ class CurrentRatepayerViewSpec extends ViewBaseSpec {
   private val beforeButton: NGRRadioButtons = NGRRadioButtons("Before", Before)
   private val afterButton: NGRRadioButtons = NGRRadioButtons("After", After)
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("confirm-address-radio"), Seq(beforeButton, afterButton))
-  val form = CurrentRatepayerForm.form.fillAndValidate(CurrentRatepayerForm("Before"))
+  val form = CurrentRatepayerForm.form.fillAndValidate(CurrentRatepayerForm("Before", None, None, None))
   val radio: Radios = buildRadios(form, ngrRadio)
   val mode: String = ""
 
   object Selectors {
     val navTitle = "head > title"
-    val heading = "#main-content > div > div > form > div > h1"
-    val addressCaption = "#main-content > div > div > form > div > span"
-    val p1 = "#main-content > div > div > form > div > p"
+    val heading = "#main-content > div > div > form > div > div > h1"
+    val addressCaption = "#main-content > div > div > form > div > div > span"
+    val p1 = "#main-content > div > div > form > div > div > p"
     val detailsSummary = "#how-to-tell-if-you-are-the-current-rate-payer > summary > span"
     val contentP1 = "#how-to-tell-if-you-are-the-current-rate-payer > div > p:nth-child(1)"
     val contentL1 = "#how-to-tell-if-you-are-the-current-rate-payer > div > li:nth-child(2)"
     val contentL2 = "#how-to-tell-if-you-are-the-current-rate-payer > div > li:nth-child(3)"
     val contentP2 = "#how-to-tell-if-you-are-the-current-rate-payer > div > p:nth-child(5)"
-    val radio1 = "#main-content > div > div > form > div > div > div > div:nth-child(1) > label"
-    val radio2 = "#main-content > div > div > form > div > div > div > div:nth-child(2) > label"
+    val radio1 = "#main-content > div > div > form > div > div > div > div > div > div > div:nth-child(1) > label"
+    val radio2 = "#main-content > div > div > form > div > div > div > div > div > div > div:nth-child(2) > label"
   }
 
   "CurrentRatepayerView" must {

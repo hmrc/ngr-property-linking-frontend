@@ -77,4 +77,15 @@ trait CommonFormValidators  {
         Invalid(errorKey, maximum)
       }
     }
+
+  protected def inRange[A](minimum: A, maximum: A, errorKey: String)(implicit ev: Ordering[A]): Constraint[A] =
+    Constraint { input =>
+      import ev._
+
+      if (input >= minimum && input <= maximum) {
+        Valid
+      } else {
+        Invalid(errorKey, minimum, maximum)
+      }
+    }
 }

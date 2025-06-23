@@ -19,11 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.govukfrontend.views.html.components.GovukInput
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.input.Input
-import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
+import play.twirl.api.Html
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
@@ -35,50 +31,32 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.InputText
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.DateTextFields
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepayerView,
-                                           inputText: InputText,
+                                           dateTextFields: DateTextFields,
                                            authenticate: AuthRetrievals,
                                            isRegisteredCheck: RegistrationAction,
                                            propertyLinkingRepo: PropertyLinkingRepo,
-                                           mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext, messages: Messages)
+                                           mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  private def createLabelAndTextField(id: String, labelName: String, width: String): String =
-    s"""<div class="govuk-date-input__item">
-      |  <div class="govuk-form-group">
-      |    <label class="govuk-label" for="$id">$labelName</label>
-      |    <input class="govuk-input govuk-input--width-$width" id="$id" name="$id" type="text" inputmode="numeric">
-      |  </div>
-      |</div>""".stripMargin
-
-  private def textField(id: String, labelName: String, width: String): HtmlFormat.Appendable =
-    inputText(form = form, id = id, name = id, label = labelName, isVisible = true, classes = Some(s"govuk-input govuk-input--width-$width"))
-
-
-  private def dateInputTexts: Html = Html(
-    """<h1 class="govuk-heading-s">Enter the date you became the current ratepayer</h1>""" +
-    """<div id="ratepayersince-date-hint" class="govuk-hint">For example, 24 05 2026.</div>""" +
-    """<div class="govuk-date-input" id="date">""" +
-      textField("day", "Day", "2") +
-//      textField("month", "Month", "2") +
-//      textField("year", "Year", "4") +
-      """</div>"""
-  )
   private val beforeButton: NGRRadioButtons = NGRRadioButtons("Before 1 April 2026", Before)
-  private val afterButton: NGRRadioButtons = NGRRadioButtons(radioContent = "On or after 1 April 2026", radioValue = After, conditionalHtml = Some(dateInputTexts))
-  private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("current-ratepayer-radio"), Seq(beforeButton, afterButton))
+  private def afterButton(form: Form[CurrentRatepayerForm])(implicit messages: Messages): NGRRadioButtons =
+    NGRRadioButtons(radioContent = "On or after 1 April 2026", radioValue = After, conditionalHtml = Some(dateTextFields(form)))
+  private def ngrRadio(form: Form[CurrentRatepayerForm])(implicit messages: Messages): NGRRadio =
+    NGRRadio(NGRRadioName("current-ratepayer-radio"), Seq(beforeButton, afterButton(form)))
   
   def show(mode: String): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
-        case Some(property) =>  Future.successful(Ok(currentRatepayerView(createDefaultNavBar, form, buildRadios(form, ngrRadio), address = property.vmvProperty.addressFull, mode = mode)))
+        case Some(property) =>  Future.successful(Ok(currentRatepayerView(createDefaultNavBar, form, buildRadios(form, ngrRadio(form)), address = property.vmvProperty.addressFull, mode = mode)))
         case None => throw new NotFoundException("failed to find property from mongo")
       }
 
@@ -89,14 +67,35 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
-              case Some(property) =>  Future.successful(BadRequest(currentRatepayerView(createDefaultNavBar, formWithErrors, buildRadios(formWithErrors, ngrRadio), address = property.vmvProperty.addressFull, mode = mode)))
+          formWithErrors =>
+            val correctedFormErrors = formWithErrors.errors.map(formError =>
+              if (formError.key.equals("")) {
+                formError.messages match
+                  case messages if messages.contains("currentRatepayer.day.empty.error") => formError.copy(key = "day")
+                  case messages if messages.contains("currentRatepayer.month.empty.error") => formError.copy(key = "month")
+                  case messages if messages.contains("currentRatepayer.year.empty.error") => formError.copy(key = "year")
+                  case _ => formError
+              } else {
+                formError
+              }
+            )
+            val formWithCorrectedErrors = formWithErrors.copy(errors = correctedFormErrors)
+            propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
+              case Some(property) =>  Future.successful(BadRequest(currentRatepayerView(createDefaultNavBar, formWithCorrectedErrors,
+                buildRadios(formWithCorrectedErrors, ngrRadio(formWithCorrectedErrors)), address = property.vmvProperty.addressFull, mode = mode)))
               case None => throw new NotFoundException("failed to find property from mongo")
             },
           currentRatepayerForm =>
+            def ratepayerDate: Option[LocalDate] =
+              if (currentRatepayerForm.radioValue.equals("After"))
+                Some(LocalDate.of(currentRatepayerForm.year.get, currentRatepayerForm.month.get, currentRatepayerForm.day.get))
+              else
+                None
+
             propertyLinkingRepo.insertCurrentRatepayer(
               credId = CredId(request.credId.getOrElse("")),
-              currentRatepayer = currentRatepayerForm.radioValue
+              currentRatepayer = currentRatepayerForm.radioValue,
+              becomeRatepayerDate = ratepayerDate
             )
             if(mode == "CYA")
               Future.successful(Redirect(routes.CheckYourAnswersController.show))

@@ -31,7 +31,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import org.mongodb.scala.SingleObservableFuture
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 import scala.util.{Failure, Success}
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -92,8 +92,13 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
       .toFutureOption()
   }
 
-  def insertCurrentRatepayer(credId: CredId ,currentRatepayer: String): Future[Option[PropertyLinkingUserAnswers]] = {
-    findAndUpdateByCredId(credId, Updates.set("currentRatepayer", currentRatepayer))
+  def insertCurrentRatepayer(credId: CredId ,currentRatepayer: String, becomeRatepayerDate: Option[LocalDate]): Future[Option[PropertyLinkingUserAnswers]] = {
+    findAndUpdateByCredId(credId,
+      Seq(
+        Updates.set("currentRatepayer.when", currentRatepayer),
+        Updates.set("currentRatepayer.becomeRatepayerDate", becomeRatepayerDate.getOrElse(null))
+      ): _*
+    )
   }
   
   def insertConnectionToProperty(credId: CredId, connectionToProperty: String): Future[Option[PropertyLinkingUserAnswers]] = {

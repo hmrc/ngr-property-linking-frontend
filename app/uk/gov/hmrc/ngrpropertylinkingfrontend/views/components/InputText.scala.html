@@ -1,5 +1,5 @@
 @*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@
  stripWhitespace: Boolean = false,
  autoComplete: String = "",
  populateField: Boolean = true,
- prefix: Option[PrefixOrSuffix] = None
+ prefix: Option[PrefixOrSuffix] = None,
 )(implicit messages: Messages)
 
 @govukInput(Input(
@@ -43,6 +43,9 @@
  hint = hint,
  prefix = prefix,
  value = if(populateField) form(name).value else None,
- errorMessage = form(name).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args: _*)))),
+ errorMessage = form.errors(name) match {
+case Nil => None
+case errors => Some(ErrorMessage(content = HtmlContent(errors.map(err => messages(err.message)).mkString("<br>"))))
+},
  autocomplete = Some(autoComplete)
 ))

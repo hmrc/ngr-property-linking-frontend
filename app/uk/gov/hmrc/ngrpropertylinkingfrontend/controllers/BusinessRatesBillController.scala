@@ -22,7 +22,7 @@ import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{After, Before, NGRRadio, NGRRadioButtons, NGRRadioHeader, NGRRadioName, No, Yes}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{NGRRadio, NGRRadioButtons, NGRRadioHeader, NGRRadioName, No, Yes}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.BusinessRatesBillForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId

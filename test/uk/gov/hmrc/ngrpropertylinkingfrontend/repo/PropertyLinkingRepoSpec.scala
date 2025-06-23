@@ -21,7 +21,7 @@ import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{TestData, TestSupport}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{CurrentRatepayer, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 
 class PropertyLinkingRepoSpec extends TestSupport with TestData
@@ -62,9 +62,9 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
           testVmvProperty
         )))
         isSuccessful shouldBe true
-        await(repository.insertCurrentRatepayer(credId = credId, currentRatepayer = "Before"))
+        await(repository.insertCurrentRatepayer(credId = credId, currentRatepayer = "Before", becomeRatepayerDate = None))
         val actual: PropertyLinkingUserAnswers = await(repository.findByCredId(credId)).get
-        val expected = PropertyLinkingUserAnswers(credId, testVmvProperty, Some("Before"))
+        val expected = PropertyLinkingUserAnswers(credId, testVmvProperty, Some(CurrentRatepayer("Before", None)))
         actual shouldBe expected
       }
     }

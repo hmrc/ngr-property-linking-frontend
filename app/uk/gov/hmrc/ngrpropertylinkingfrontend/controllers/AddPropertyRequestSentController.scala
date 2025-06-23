@@ -29,7 +29,6 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageConten
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperty
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
-import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.UniqueIdGenerator
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.AddPropertyRequestSentView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 

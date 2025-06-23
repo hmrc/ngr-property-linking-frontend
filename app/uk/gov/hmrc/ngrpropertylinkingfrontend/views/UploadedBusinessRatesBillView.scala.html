@@ -22,23 +22,25 @@
 
 @this(layout: Layout,
 govukSummaryList : GovukSummaryList,
-saveAndContinueButton: saveAndContinueButton
+saveAndContinueButton: saveAndContinueButton,
+formHelper: FormWithCSRF,
 )
 
 @(navigationBarContent: NavigationBarContent, summaryList: SummaryList, addressFull: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("uploadBusinessRatesBill.title")}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <span class="govuk-caption-m">@addressFull</span>
-        <h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
-        <p class="govuk-caption-m hmrc-caption-m">
-            @messages("uploadBusinessRatesBill.p1")
-        </p>
-        <p class="govuk-body">@govukSummaryList(summaryList)</p>
-        @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
-    </div>
-</div>
+    @formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.UploadedBusinessRatesBillController.submit, Symbol("autoComplete") -> "off") {
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <span class="govuk-caption-m">@addressFull</span>
+                <h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
+                <p class="govuk-caption-m hmrc-caption-m">
+                    @messages("uploadBusinessRatesBill.p1")
+                </p>
+                <p class="govuk-body">@govukSummaryList(summaryList)</p>
+                @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
+            </div>
+        </div>
+}
 }

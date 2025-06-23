@@ -104,5 +104,10 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
     }
   }
 
+  def submit: Action[AnyContent] = {
+    (authenticate andThen isRegisteredCheck).async { implicit request =>
+      Future.successful(Redirect(routes.CheckYourAnswersController.show.url))
+    }
+  }
 
 }

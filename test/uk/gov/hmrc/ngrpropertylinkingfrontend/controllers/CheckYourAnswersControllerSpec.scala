@@ -119,7 +119,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
       when(mockNgrConnector.upsertPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(httpResponse))
       val result = controller().submit()(authenticatedFakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.WhatYouNeedController.show.url)
+      redirectLocation(result) shouldBe Some(routes.DeclarationController.show.url)
     }
   }
 }

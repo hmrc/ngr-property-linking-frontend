@@ -74,7 +74,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
       NGRSummaryListRow(
         messages("checkYourAnswers.EvidenceDocument"),
         None,
-        Seq(userAnswers.credId.value.toString),
+        Seq(userAnswers.credId.value),
         changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "evidence-document", messageKey = "service.change", visuallyHiddenMessageKey = Some("evidence-document")))
       ), //TODO CHANGE CURRENT RATEPAYER
       NGRSummaryListRow(
@@ -106,7 +106,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
         }
         response <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
         result <- if (response.status == CREATED) {
-          Future.successful(Redirect(routes.WhatYouNeedController.show))
+          Future.successful(Redirect(routes.DeclarationController.show))
         } else {
           Future.failed(new Exception("Failed upsert to backend"))
         }

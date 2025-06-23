@@ -51,11 +51,9 @@ class UpscanCallbackController @Inject()(upscanRepo: UpscanRepo,
                                          isRegisteredCheck: RegistrationAction,
                                          mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-  println(">>>>>>>> UpscanCallbackController loaded <<<<<<<<")
 //TODO move some to service?
   def handleUpscanCallback: Action[JsValue] = Action.async(parse.json) { implicit request =>
     withJsonBody[UpscanCallback] { upscanCallback =>
-      println("XXXX upscan reference on callback is: " + upscanCallback.reference.value)
       upscanRepo.findByReference(upscanCallback.reference).flatMap {
         case Some(existingUpscanRecord) =>
           val updatedRecord: UpscanRecord = buildUpdatedUpscanRecord(upscanCallback, existingUpscanRecord.credId)

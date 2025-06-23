@@ -32,6 +32,7 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
+@singleton
 class FindAPropertyConnector @Inject()(
                                         http: HttpClientV2,
                                        appConfig: AppConfig,

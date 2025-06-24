@@ -51,7 +51,7 @@
 }
 
 @heading = @{messages("currentRatepayer.title")}
-@layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
+@layout(pageTitle = Some(heading), fullWidth = false, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
 @formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.CurrentRatepayerController.submit(mode), Symbol("autoComplete") -> "off") {
     @if(form.errors.nonEmpty) {
     @govukErrorSummary(ErrorSummaryViewModel(form))

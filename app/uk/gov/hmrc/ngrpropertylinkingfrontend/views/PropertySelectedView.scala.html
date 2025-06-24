@@ -36,7 +36,7 @@ linkComponent: LinkComponent
 @(form:Form[PropertySelectedForm],radios: Radios, summaryList: SummaryList, navigationBarContent: NavigationBarContent, index: Int, dashboardUrl: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("propertySelected.title")}
-@layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
+@layout(pageTitle = Some(heading), fullWidth = false, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
 @formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.PropertySelectedController.submit(index), Symbol("autoComplete") -> "off") {
 @if(form.errors.nonEmpty) {
 @govukErrorSummary(ErrorSummaryViewModel(form))

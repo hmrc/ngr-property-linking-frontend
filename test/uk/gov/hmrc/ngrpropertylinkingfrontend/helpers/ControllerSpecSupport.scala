@@ -17,6 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.helpers
 
 import org.mockito.Mockito.when
+import play.api.libs.json.JsValue
 import play.api.mvc.*
 import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -38,8 +39,8 @@ trait ControllerSpecSupport extends TestSupport {
   mockRequest()
   val mockFindAPropertyRepo: FindAPropertyRepo = mock[FindAPropertyRepo]
   val mockPropertyLinkingRepo: PropertyLinkingRepo = mock[PropertyLinkingRepo]
-  val mockUpscanRepo: UpscanRepo= mock[UpscanRepo]
-
+  val mockUpscanRepo: UpscanRepo = mock[UpscanRepo]
+  
   def mockRequest(hasCredId: Boolean = false, hasNino: Boolean = true): Unit =
     when(mockAuthJourney andThen mockIsRegisteredCheck) thenReturn new ActionBuilder[AuthenticatedUserRequest, AnyContent] {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedUserRequest[A] => Future[Result]): Future[Result] =  {

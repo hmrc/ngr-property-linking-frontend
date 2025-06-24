@@ -27,7 +27,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.FrontendAppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UpscanResponse
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanReference, UpscanCallback, UpscanCallbackFailure, UpscanCallbackSuccess, UpscanRecord}
 
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -37,11 +37,11 @@ import scala.util.{Failure, Success}
 @Singleton
 case class UpscanRepo @Inject()(mongo: MongoComponent,
                                 config: FrontendAppConfig
-                                )(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[UpscanResponse](
-    collectionName = "upscanResponse",
+                               )(implicit ec: ExecutionContext)
+  extends PlayMongoRepository[UpscanRecord](
+    collectionName = "upscanRecord",
     mongoComponent = mongo,
-    domainFormat = UpscanResponse.format,
+    domainFormat = UpscanRecord.format,
     indexes = Seq(
       IndexModel(
         descending("createdAt"),
@@ -57,34 +57,47 @@ case class UpscanRepo @Inject()(mongo: MongoComponent,
           .name("credId.value")
           .unique(true)
           .partialFilterExpression(Filters.gte("credId.value", ""))
+      ),
+      IndexModel(
+        ascending("reference.value"),
+        IndexOptions()
+          .unique(true)
+          .name("reference.value")
+          .partialFilterExpression(Filters.gte("reference.value", ""))
       )
     )
   ) with Logging {
 
   override lazy val requiresTtlIndex: Boolean = false
-
-  def upsertUpscanResponse(upscanResponse: UpscanResponse): Future[Boolean] = {
-    val errorMsg = s"upscanResponse has not been inserted"
-
+//TODO give this class a once-over
+  def upsertUpscanRecord(upscanRecord: UpscanRecord): Future[Boolean] = {
+    val errorMsg = s"upscanRecord has not been inserted"
     collection.replaceOne(
-      filter = equal("credId.value", upscanResponse.credId.value),
-      replacement = upscanResponse,
+      filter = equal("credId.value", upscanRecord.credId.value),
+      replacement = upscanRecord,
       options = ReplaceOptions().upsert(true)
     ).toFuture().transformWith {
       case Success(result) =>
-        logger.info(s"upscanResponse has been upserted for credId: ${upscanResponse.credId.value}")
+        logger.info(s"upscanResponse has been upserted for credId: ${upscanRecord.credId.value}")
         result.wasAcknowledged()
         Future.successful(true)
       case Failure(exception) =>
-        logger.error(s"credId: ${upscanResponse.credId.value} " + errorMsg)
+        logger.error(errorMsg)
         Future.failed(new IllegalStateException(s"$errorMsg: ${exception.getMessage} ${exception.getCause}"))
     }
   }
 
-  def findByCredId(credId: CredId): Future[Option[UpscanResponse]] = {
+
+  def findByCredId(credId: CredId): Future[Option[UpscanRecord]] = {
     collection.find(
       equal("credId.value", credId.value)
     ).headOption()
   }
-}
 
+  def findByReference(reference: UpscanReference): Future[Option[UpscanRecord]] = {
+    collection.find(
+      equal("reference", reference.value)
+    ).headOption()
+  }
+
+}

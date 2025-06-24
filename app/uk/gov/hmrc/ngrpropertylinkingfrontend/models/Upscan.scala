@@ -17,23 +17,28 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import play.api.libs.json.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.HttpUrlFormat
+import java.net.URL
+import java.time.Instant
+import registration.CredId
 
-case class Reference(reference: String)
+case class UpscanReference(value: String)
 
-object Reference {
-  implicit val referenceReader: Reads[Reference] = Reads.StringReads.map(Reference(_))
-  implicit val referenceWrites: Writes[Reference] = Writes.StringWrites.contramap(_.reference)
+//TODO check we use all the classes and whether they can be cleaned up
+object UpscanReference {
+  implicit val referenceReader: Reads[UpscanReference] = Reads.StringReads.map(UpscanReference(_))
+  implicit val referenceWrites: Writes[UpscanReference] = Writes.StringWrites.contramap(_.value)
 }
 
 case class UploadForm(href: String, fields: Map[String, String])
 
-case class PreparedUpload(reference: Reference, uploadRequest: UploadForm)
+case class UpscanInitiateResponse(reference: UpscanReference, uploadRequest: UploadForm)
 
-object PreparedUpload {
+object UpscanInitiateResponse {
 
   implicit val uploadFormFormat: Format[UploadForm] = Json.format[UploadForm]
 
-  implicit val format: Format[PreparedUpload] = Json.format[PreparedUpload]
+  implicit val format: Format[UpscanInitiateResponse] = Json.format[UpscanInitiateResponse]
 }
 
 case class UpscanInitiateRequest(
@@ -48,94 +53,107 @@ object UpscanInitiateRequest {
   implicit val format: OFormat[UpscanInitiateRequest] = Json.format[UpscanInitiateRequest]
 }
 
-//case class UploadKey private (userId: String, srn: Srn) {
-//  val value: String = userId + UploadKey.separator + srn.value
-//}
-
-//object UploadKey {
-//  def fromRequest()(implicit req: DataRequest[_]): UploadKey =
-//    UploadKey(req.getUserId)
-//
-//  val separator = "&&"
-//}
-
 case class UpscanFileReference(reference: String)
 
-case class UpscanInitiateResponse(
-                                   fileReference: UpscanFileReference,
-                                   postTarget: String,
-                                   formFields: Map[String, String]
-                                 )
-
-object UpscanInitiateResponse {
-  implicit val refFormat: OFormat[UpscanFileReference] = Json.format[UpscanFileReference]
-  implicit val format: OFormat[UpscanInitiateResponse] = Json.format[UpscanInitiateResponse]
+object UpscanFileReference {
+  implicit val UpscanFileReferenceFormat: Format[UpscanFileReference] = Json.format[UpscanFileReference]
 }
 
-//object UploadStatus {
-//
-//  sealed trait UploadStatus // needs to be in the same closure as it's subtypes for Json.format to work
-//
-//  case object InProgress extends UploadStatus
-//
-//  case class Failed(failureDetails: ErrorDetails) extends UploadStatus
-//
-//  case class Success(name: String, mimeType: String, downloadUrl: String, size: Option[Long]) extends UploadStatus
-//
-//}
-//
-//sealed trait CallbackBody {
-//  def reference: Reference
-//}
-//
-//case class ReadyCallbackBody(
-//                              reference: Reference,
-//                              downloadUrl: URL,
-//                              uploadDetails: UploadCallbackDetails
-//                            ) extends CallbackBody
-//
-//case class FailedCallbackBody(
-//                               reference: Reference,
-//                               failureDetails: ErrorDetails
-//                             ) extends CallbackBody
-//
-//case class UploadCallbackDetails(
-//                                  uploadTimestamp: Instant,
-//                                  checksum: String,
-//                                  fileMimeType: String,
-//                                  fileName: String,
-//                                  size: Long
-//                                )
-//
+import play.api.data.FormError
+
+case class UploadViewModel(acceptedFileType: String,
+                            maxFileSize: String,
+                            formFields: Map[String, String],
+                            error: Option[FormError])
+
+object UploadStatus {
+  sealed trait UploadStatus // needs to be in the same closure as its subtypes for Json.format to work
+
+  case object InProgress extends UploadStatus
+
+  case class Failed(failureDetails: UpscanCallBackErrorDetails) extends UploadStatus
+
+  case class Success(name: String, mimeType: String, downloadUrl: String, size: Option[Long]) extends UploadStatus
+}
+
+sealed trait UpscanCallback {
+  def reference: UpscanReference
+}
+
+case class UpscanCallbackSuccess(
+                                  reference: UpscanReference,
+                                  downloadUrl: URL,
+                                  uploadDetails: UpscanCallbackUploadDetails
+                            ) extends UpscanCallback
+
+case class UpscanCallbackFailure(
+                                  reference: UpscanReference,
+                                  failureDetails: UpscanCallBackErrorDetails
+                             ) extends UpscanCallback
+
+case class UpscanCallbackUploadDetails(
+                                  uploadTimestamp: Instant,
+                                  checksum: String,
+                                  fileMimeType: String,
+                                  fileName: String,
+                                  size: Long
+                                )
+
+case class UpscanRecord(credId: CredId,
+                        reference: UpscanReference,
+                        status: String,
+                        downloadUrl: Option[String],
+                        fileName: Option[String],
+                        failureReason: Option[String],
+                        failureMessage: Option[String])
+
+
+object UpscanRecord {
+  implicit val format: Format[UpscanRecord] = Json.format[UpscanRecord]
+}
+
+case class UpscanCallBackErrorDetails(failureReason: String, message: String)
+
+object UpscanCallback {
+  
+//TODO move some of these to tests as they are only used there and not in actual code
+  // must be in scope to create Reads for ReadyCallbackBody
+  private implicit val urlFormat: Format[URL] = HttpUrlFormat.format
+
+  implicit val uploadDetailsReads: Reads[UpscanCallbackUploadDetails] = Json.reads[UpscanCallbackUploadDetails]
+  
+  implicit val errorDetailsReads: Reads[UpscanCallBackErrorDetails] = Json.reads[UpscanCallBackErrorDetails]
+
+  implicit val readyCallbackBodyReads: Reads[UpscanCallbackSuccess] = Json.reads[UpscanCallbackSuccess]
+
+  implicit val failedCallbackBodyReads: Reads[UpscanCallbackFailure] = Json.reads[UpscanCallbackFailure]
+
+  implicit val UpscanCallbackSuccessFormat: Format[UpscanCallbackSuccess] = Json.format[UpscanCallbackSuccess]
+
+  implicit val UpscanCallbackFailureFormat: Format[UpscanCallbackFailure] = Json.format[UpscanCallbackFailure]
+  
+  implicit val UpscanCallBackErrorDetailsFormat: Format[UpscanCallBackErrorDetails] = Json.format[UpscanCallBackErrorDetails]
+
+  implicit val UpscanCallbackUploadDetailsFormat: Format[UpscanCallbackUploadDetails] = Json.format[UpscanCallbackUploadDetails]
+
+  
+  
+
+  implicit val reads: Reads[UpscanCallback] = (json: JsValue) =>
+    json \ "fileStatus" match {
+      case JsDefined(JsString("READY")) => implicitly[Reads[UpscanCallbackSuccess]].reads(json)
+      case JsDefined(JsString("FAILED")) => implicitly[Reads[UpscanCallbackFailure]].reads(json)
+      case JsDefined(value) => JsError(s"Invalid type distriminator: $value")
+      case JsUndefined() => JsError(s"Missing type distriminator")
+      case _ => JsError(s"Missing type distriminator")
+    }
+}
+
 //case class UploadDetails(
 //                          //key: UploadKey,
 //                          reference: Reference,
 //                          status: UploadStatus.UploadStatus,
 //                          lastUpdated: Instant
 //                        )
-//
-//case class ErrorDetails(failureReason: String, message: String)
-
-//object CallbackBody {
-//  // must be in scope to create Reads for ReadyCallbackBody
-//  private implicit val urlFormat: Format[URL] = HttpUrlFormat.format
-//
-//  implicit val uploadDetailsReads: Reads[UploadCallbackDetails] = Json.reads[UploadCallbackDetails]
-//
-//  implicit val errorDetailsReads: Reads[ErrorDetails] = Json.reads[ErrorDetails]
-//
-//  implicit val readyCallbackBodyReads: Reads[ReadyCallbackBody] = Json.reads[ReadyCallbackBody]
-//
-//  implicit val failedCallbackBodyReads: Reads[FailedCallbackBody] = Json.reads[FailedCallbackBody]
-//
-//  implicit val reads: Reads[CallbackBody] = (json: JsValue) =>
-//    json \ "fileStatus" match {
-//      case JsDefined(JsString("READY")) => implicitly[Reads[ReadyCallbackBody]].reads(json)
-//      case JsDefined(JsString("FAILED")) => implicitly[Reads[FailedCallbackBody]].reads(json)
-//      case JsDefined(value) => JsError(s"Invalid type distriminator: $value")
-//      case JsUndefined() => JsError(s"Missing type distriminator")
-//      case _ => JsError(s"Missing type distriminator")
-//    }
-//}
 
 

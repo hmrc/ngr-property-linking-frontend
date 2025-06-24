@@ -16,33 +16,79 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import play.api.i18n.I18nSupport
+
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PreparedUpload
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanRecord
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadBusinessRatesBillView
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{UploadBusinessRatesBillView, UploadedBusinessRatesBillView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{PropertyLinkingRepo, UpscanRepo}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UploadBusinessRatesBillController @Inject()(view: UploadBusinessRatesBillView,
+class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRatesBillView,
                                                   upscanConnector: UpscanConnector,
+                                                  upscanRepo: UpscanRepo,
+                                                  uploadForm: UploadForm,
                                                   authenticate: AuthRetrievals,
                                                   isRegisteredCheck: RegistrationAction,
+                                                  propertyLinkingRepo: PropertyLinkingRepo,
                                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-
-  def show: Action[AnyContent] =
+  //http://localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill?errorMessage=%27file%27+field+not+found&key=f8ad3406-3992-4d0e-ba36-8ffa339707af&errorCode=InvalidArgument&errorRequestId=SomeRequestId&errorResource=NoFileReference
+  //http: //localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill?errorMessage=Your+proposed+upload+exceeds+the+maximum+allowed+size&key=b3368bf1-20d6-4421-a653-964c3529fb00&errorCode=EntityTooLarge&errorRequestId=SomeRequestId&errorResource=NoFileReference
+  //http://localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill?errorMessage=Your+proposed+upload+is+smaller+than+the+minimum+allowed+size&key=619ce5c8-a28c-4641-9957-01c6c50818ac&errorCode=EntityTooSmall&errorRequestId=SomeRequestId&errorResource=NoFileReference
+  def show(errorCode: Option[String]): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      val upscanInitiateResponse: Future[PreparedUpload] = upscanConnector.initiate
-      //TODO confirm back url
-      Future.successful(Ok(view(createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)))
-    }
+      //Error scenarios 6 (too big) EntityTooLarge, 7 (no file) InvalidArgument, 11 (too small) EntityTooSmall
+      println(Console.MAGENTA + "QQQQQQQQQ" + errorCode.getOrElse("FAILED to get errorCodeString"))
 
+      val errorToDisplay: Option[String] = errorCode match {
+        case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
+        case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
+        case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.fileTooSmall"))
+        case Some("QUARANTINE") => Some(Messages("uploadBusinessRatesBill.error.virusDetected"))
+        case Some("REJECTED") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
+        case Some(reason) if reason.startsWith("UNKNOWN") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
+        case Some(reason) => throw new RuntimeException(s"Error in errorToDisplay: unrecognisable error from upscan '$reason'")
+        case None => None
+      }
+
+      request.credId match {
+        case Some(rawCredId) =>
+          val credId = CredId(rawCredId)
+          upscanConnector.initiate.flatMap { upscanInitiateResponse =>
+            val upscanRecord = UpscanRecord(
+              credId = credId,
+              reference = upscanInitiateResponse.reference,
+              status = "INITIATED", // TODO: replace with status classes?
+              downloadUrl = None,
+              fileName = None,
+              failureReason = None,
+              failureMessage = None
+            )
+
+            upscanRepo.upsertUpscanRecord(upscanRecord).flatMap { _ =>
+              propertyLinkingRepo.findByCredId(credId).map {
+                case Some(property) => Ok(uploadView(uploadForm(), upscanInitiateResponse, errorToDisplay, property.vmvProperty.addressFull, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
+                //TODO move this to the repo class?
+                case None => throw new RuntimeException("Could not get address from property linking repo")
+              }
+            }
+          }
+
+        case None =>
+          //TODO improve message/error
+          Future.failed(new RuntimeException("Missing credId in authenticated request"))
+      }
+    }
 }

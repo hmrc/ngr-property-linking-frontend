@@ -14,43 +14,60 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UploadForm}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.LinkComponent
 
-@this(
-        layout: Layout,
-        formHelper: FormWithCSRF,
+@this(layout: Layout,
+        fileUpload: components.FileUpload,
         saveAndContinueButton: saveAndContinueButton,
-        linkComponent: LinkComponent
+        button: components.button
 )
 
-@(navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+@(form: Form[String], upscanResponse: UpscanInitiateResponse, errorMessage: Option[String], address: String, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("uploadBusinessRatesBill.title")}
+
 @layout(pageTitle = Some(heading), fullWidth = false, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden"></span>@messages("uploadBusinessRatesBill.p1")</h2>
+            <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden"></span>@address</h2>
             <h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
             <p class="govuk-caption-m hmrc-caption-m">
-            @messages("uploadBusinessRatesBill.p2")
+            @messages("uploadBusinessRatesBill.p1")
             </p>
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="file-upload-1">
-                    Upload a file
-                </label>
-                <div
-                class="govuk-drop-zone"
-                data-module="govuk-file-upload">
-                    <input class="govuk-file-upload" id="file-upload-1" name="fileUpload1" type="file">
+            <form action="@upscanResponse.uploadRequest.href" method="POST" enctype="multipart/form-data" id="file-upload-form">
+
+                <div id="file-upload-form-group" class="govuk-form-group @{
+                    if(form.hasErrors) "govuk-form-group--error"
+                }">
+
+                    @upscanResponse.uploadRequest.fields.map { row =>
+                        <input type="hidden" name="@row._1" value="@row._2">
+                    }
+
+                    @fileUpload(
+                        form = form,
+                        errorMessage = errorMessage,
+                        name = "file",
+                        id = "file",
+                        label = "",
+                        isPageHeading = false,
+                        attributes = Map(
+                            //TODO clarify whether this is correct
+                            "accept" -> ".pdf,.doc,.docx,.png,.jpg,.jpeg",
+                            "data-max-file-size" -> "100000000",
+                            "data-min-file-size" -> "1000"
+                        )
+                    )
                 </div>
-            </div>
-            @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
+                @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
+
+            </form>
         </div>
     </div>
 }
-

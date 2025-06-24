@@ -67,7 +67,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.WhatYouNeedController.show.url)
+        redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None).url)
       }
       "Successfully submit when selected No and redirect to correct page" in {
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some("After")))))
@@ -78,7 +78,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.WhatYouNeedController.show.url)
+        redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None).url)
       }
       "Successfully submit when use has come from cya page, selected No and redirect to correct page" in {
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some("After")))))

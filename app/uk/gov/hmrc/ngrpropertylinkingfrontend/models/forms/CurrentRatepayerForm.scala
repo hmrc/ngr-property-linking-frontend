@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
-import play.api.data.Form
+import play.api.data.{Form, Mapping}
 import play.api.data.Forms.{mapping, optional, text}
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError, ValidationResult}
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.{DateTimeException, LocalDate}
+import scala.util.Try
+import java.time.LocalDate
 
-final case class CurrentRatepayerForm(radioValue: String, day: Option[Int], month: Option[Int], year: Option[Int])
+final case class CurrentRatepayerForm(radioValue: String, day: Option[String], month: Option[String], year: Option[String])
 
 object CurrentRatepayerForm extends CommonFormValidators {
   implicit val format: OFormat[CurrentRatepayerForm] = Json.format[CurrentRatepayerForm]
@@ -30,101 +32,128 @@ object CurrentRatepayerForm extends CommonFormValidators {
   private lazy val radioUnselectedError = "currentRatepayer.radio.unselected.error"
   private val currentRatepayerRadio       = "current-ratepayer-radio"
   
-  def unapply(currentRatepayerForm: CurrentRatepayerForm): Option[(String, Option[Int], Option[Int], Option[Int])] =
+  def unapply(currentRatepayerForm: CurrentRatepayerForm): Option[(String, Option[String], Option[String], Option[String])] =
     Some(currentRatepayerForm.radioValue,
       currentRatepayerForm.day,
       currentRatepayerForm.month,
       currentRatepayerForm.year)
 
   private def areDayMonthYearEntered(currentRatepayer: CurrentRatepayerForm): Boolean  =
-    currentRatepayer.day.nonEmpty && currentRatepayer.month.nonEmpty && currentRatepayer.year.nonEmpty
+    currentRatepayer.radioValue.equals("After") && currentRatepayer.day.nonEmpty && currentRatepayer.month.nonEmpty && currentRatepayer.year.nonEmpty
 
-  private def isDateValid(currentRatepayer: CurrentRatepayerForm): Boolean =
-    if (currentRatepayer.radioValue.equals("After") && areDayMonthYearEntered(currentRatepayer)) {
-      val day = currentRatepayer.day.get
-      val month = currentRatepayer.month.get
-      val year = currentRatepayer.year.get
-      try {
-        LocalDate.of(year, month, day)
-        true
-      } catch {
-        case e: DateTimeException => false
+  private def isDayMonthOrYearEntered(currentRatepayer: CurrentRatepayerForm): Boolean =
+    currentRatepayer.radioValue.equals("After") && currentRatepayer.day.nonEmpty || currentRatepayer.month.nonEmpty || currentRatepayer.year.nonEmpty
+
+  private def isDateEmpty(currentRatepayer: CurrentRatepayerForm): Boolean =
+    currentRatepayer.radioValue.equals("After") && currentRatepayer.day.isEmpty && currentRatepayer.month.isEmpty && currentRatepayer.year.isEmpty
+
+  private def getLocalDate(currentRatepayer: CurrentRatepayerForm): LocalDate =
+    val day = currentRatepayer.day.get.toInt
+    val month = currentRatepayer.month.get.toInt
+    val year = currentRatepayer.year.get.toInt
+    LocalDate.of(year, month, day)
+
+  private def isDateNonEmpty[A]: Constraint[A] =
+    Constraint((input: A) =>
+      val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
+      if (isDateEmpty(currentRatepayer))
+        Invalid("currentRatepayer.date.empty.error")
+      else
+        Valid
+    )
+
+  private def isFieldNonEmpty[A](fieldName: String): Constraint[A] =
+    Constraint((input: A) =>
+      val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
+      if (isDayMonthOrYearEntered(currentRatepayer))
+        fieldName match
+          case "day" => if (currentRatepayer.day.nonEmpty) Valid else Invalid("currentRatepayer.day.empty.error")
+          case "month" => if (currentRatepayer.month.nonEmpty) Valid else Invalid("currentRatepayer.month.empty.error")
+          case "year" => if (currentRatepayer.year.nonEmpty) Valid else Invalid("currentRatepayer.year.empty.error")
+      else
+        Valid
+  )
+
+  private def isFieldInvalid[A](fieldName: String): Constraint[A] =
+    Constraint((input: A) =>
+      val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
+      def dayValidation =
+        if (currentRatepayer.day.isEmpty || !dayOrMonthRegexPattern.matcher(currentRatepayer.day.get).matches())
+          Invalid("currentRatepayer.day.format.error", dayOrMonthRegexPattern.pattern())
+        else if (currentRatepayer.day.get.toInt < 1 || currentRatepayer.day.get.toInt > 31)
+          Invalid("currentRatepayer.day.format.error", 1, 31)
+        else
+          Valid
+
+      def monthValidation =
+        if (currentRatepayer.month.isEmpty || !dayOrMonthRegexPattern.matcher(currentRatepayer.month.get).matches())
+          Invalid("currentRatepayer.month.format.error", dayOrMonthRegexPattern.pattern())
+        else if (currentRatepayer.month.get.toInt < 1 || currentRatepayer.month.get.toInt > 12)
+          Invalid("currentRatepayer.month.format.error", 1, 12)
+        else
+          Valid
+
+      def yearValidation =
+        if (currentRatepayer.year.isEmpty || !yearRegexPattern.matcher(currentRatepayer.year.get).matches())
+          Invalid("currentRatepayer.year.format.error", yearRegexPattern.pattern())
+        else
+          Valid
+
+      if (isDayMonthOrYearEntered(currentRatepayer))
+        fieldName match
+          case "day" => dayValidation
+          case "month" => monthValidation
+          case "year" => yearValidation
+      else
+        Valid
+    )
+
+  private def isDateValid[A]: Constraint[A] =
+    Constraint((input: A) =>
+      val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
+      if (areDayMonthYearEntered(currentRatepayer) && Try(getLocalDate(currentRatepayer)).isFailure)
+          Invalid("currentRatepayer.date.format.error")
+      else
+        Valid
+    )
+
+  private def isDateBetween1stApril2026AndToday[A]: Constraint[A] =
+    Constraint((input: A) =>
+      val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
+      if (areDayMonthYearEntered(currentRatepayer) && Try(getLocalDate(currentRatepayer)).isSuccess) {
+        val date = getLocalDate(currentRatepayer)
+        val firstAprilDate = LocalDate.of(2026, 4, 1)
+        if (date.isBefore(firstAprilDate) || date.isAfter(LocalDate.now()))
+          Invalid("currentRatepayer.date.invalid.error")
+        else
+          Valid
+      } else {
+        Valid
       }
-    } else {
-      true
-    }
+    )
 
-  private def isDateBetween1stApril2026AndToday(currentRatepayer: CurrentRatepayerForm): Boolean =
-    if (currentRatepayer.radioValue.equals("After")  && areDayMonthYearEntered(currentRatepayer)) {
-      val day = currentRatepayer.day.get
-      val month = currentRatepayer.month.get
-      val year = currentRatepayer.year.get
-      try {
-        val date = LocalDate.of(year, month, day)
-        val firstAprilDate = LocalDate.of(2025, 3, 31)
-        date.isAfter(firstAprilDate) && date.isBefore(LocalDate.now().plusDays(1))
-      } catch {
-        case e: DateTimeException => false
-      }
-    } else {
-      true
-    }
-
-  private def isFieldNonEmpty(currentRatepayer: CurrentRatepayerForm, fieldName: String): Boolean =
-    if (currentRatepayer.radioValue.equals("After") && currentRatepayer.day.nonEmpty || currentRatepayer.month.nonEmpty || currentRatepayer.year.nonEmpty) {
-      fieldName match
-        case "day" => currentRatepayer.day.nonEmpty
-        case "month" => currentRatepayer.month.nonEmpty
-        case "year" => currentRatepayer.year.nonEmpty
-    } else {
-      true
-    }
-
-  private def isDateNonEmpty(currentRatepayer: CurrentRatepayerForm): Boolean =
-    if (currentRatepayer.radioValue.equals("After")) {
-      currentRatepayer.day.nonEmpty || currentRatepayer.month.nonEmpty || currentRatepayer.year.nonEmpty
-    } else {
-      true
-    }
   def form: Form[CurrentRatepayerForm] = {
     Form(
       mapping(
         currentRatepayerRadio -> text()
           .verifying(isNotEmpty(currentRatepayerRadio, radioUnselectedError)),
-        "day" -> optional(
-          text()
-            .verifying(
-              regexp(dayOrMonthRegexPattern.pattern(), "currentRatepayer.date.format.error")
-            )
-            .transform[Int](_.toInt, _.toString)
-            .verifying(
-              inRange(1, 31, "currentRatepayer.date.format.error")
-            )
-        ),
-        "month" -> optional(
-          text()
-            .verifying(
-              regexp(dayOrMonthRegexPattern.pattern(), "currentRatepayer.date.format.error")
-            )
-            .transform[Int](_.toInt, _.toString)
-            .verifying(
-              inRange(1, 12, "currentRatepayer.date.format.error")
-            )
-        ),
-        "year" -> optional(
-          text()
-            .verifying(
-              regexp(yearRegexPattern.pattern(), "currentRatepayer.date.format.error")
-            )
-            .transform[Int](_.toInt, _.toString)
-        )
+        "day" -> optional(text()),
+        "month" -> optional(text()),
+        "year" -> optional(text())
       )(CurrentRatepayerForm.apply)(CurrentRatepayerForm.unapply)
-        .verifying("currentRatepayer.date.empty.error", currentRatepayer => isDateNonEmpty(currentRatepayer))
-        .verifying("currentRatepayer.day.empty.error", currentRatepayer => isFieldNonEmpty(currentRatepayer, "day"))
-        .verifying("currentRatepayer.month.empty.error", currentRatepayer => isFieldNonEmpty(currentRatepayer, "month"))
-        .verifying("currentRatepayer.year.empty.error", currentRatepayer => isFieldNonEmpty(currentRatepayer, "year"))
-        .verifying("currentRatepayer.date.format.error", currentRatepayer => isDateValid(currentRatepayer))
-        .verifying("currentRatepayer.date.invalid.error", currentRatepayer => isDateBetween1stApril2026AndToday(currentRatepayer))
+        .verifying(
+          firstError(
+            isDateNonEmpty,
+            isFieldNonEmpty("day"),
+            isFieldNonEmpty("month"),
+            isFieldNonEmpty("year"),
+            isFieldInvalid("day"),
+            isFieldInvalid("month"),
+            isFieldInvalid("year"),
+            isDateValid,
+            isDateBetween1stApril2026AndToday
+          )
+        )
     )
   }
 

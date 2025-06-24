@@ -24,10 +24,10 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccountView, CurrentRatepayerView}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
 
 class CurrentRatepayerViewSpec extends ViewBaseSpec {
-  lazy val view: CurrentRatepayerView = inject[CurrentRatepayerView]
+  val view: CurrentRatepayerView = inject[CurrentRatepayerView]
   val address = "5 Brixham Marina, Berry Head Road, Brixham, Devon, TQ5 9BW"
 
   val title = "When did you become the current ratepayer? - GOV.UK"

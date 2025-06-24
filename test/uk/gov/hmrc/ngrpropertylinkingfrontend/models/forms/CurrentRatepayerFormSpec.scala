@@ -35,7 +35,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       boundForm.value shouldBe Some(CurrentRatepayerForm("Before", None, None, None))
     }
 
-    "fail to bind when confirmAddressRadio is missing" in {
+    "fail to bind when current ratepayer radio is missing" in {
       val data = Map.empty[String, String]
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
@@ -92,7 +92,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("", List("currentRatepayer.date.empty.error")))
+      boundForm.errors should contain(FormError("" ,List("currentRatepayer.date.empty.error")))
     }
 
     "fail to bind when current ratepayer day is invalid" in {
@@ -103,7 +103,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("day", List("currentRatepayer.date.format.error"), ArraySeq(1, 31)))
+      boundForm.errors should contain(FormError("", List("currentRatepayer.day.format.error"), ArraySeq(1, 31)))
     }
 
     "fail to bind when current ratepayer day has characters" in {
@@ -114,7 +114,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("day", List("currentRatepayer.date.format.error"), ArraySeq("^[0-9]{1,2}$")))
+      boundForm.errors should contain(FormError("", List("currentRatepayer.day.format.error"), ArraySeq("^[0-9]{1,2}$")))
     }
 
     "fail to bind when current ratepayer month is invalid" in {
@@ -125,7 +125,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("month", List("currentRatepayer.date.format.error"), ArraySeq(1, 12)))
+      boundForm.errors should contain(FormError("", List("currentRatepayer.month.format.error"), ArraySeq(1, 12)))
     }
 
     "fail to bind when current ratepayer month has characters" in {
@@ -136,7 +136,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("month", List("currentRatepayer.date.format.error"), ArraySeq("^[0-9]{1,2}$")))
+      boundForm.errors should contain(FormError("", List("currentRatepayer.month.format.error"), ArraySeq("^[0-9]{1,2}$")))
     }
 
     "fail to bind when current ratepayer year has characters" in {
@@ -147,7 +147,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("year", List("currentRatepayer.date.format.error"), ArraySeq("^[0-9]{4}$")))
+      boundForm.errors should contain(FormError("", List("currentRatepayer.year.format.error"), ArraySeq("^[0-9]{4}$")))
     }
 
     "fail to bind when current ratepayer date is invalid" in {
@@ -173,14 +173,14 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
     }
 
     "serialize to JSON correctly" in {
-      val form = CurrentRatepayerForm("After", Some(1), Some(4), Some(2026))
+      val form = CurrentRatepayerForm("After", Some("1"), Some("4"), Some("2026"))
       val json = Json.toJson(form)
 
       json shouldBe Json.obj(
         "radioValue" -> "After",
-        "day" -> 1,
-        "month" -> 4,
-        "year" -> 2026
+        "day" -> "1",
+        "month" -> "4",
+        "year" -> "2026"
       )
     }
 
@@ -194,13 +194,13 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
 
     "deserialize from JSON correctly when selected After" in {
       val json = Json.obj("radioValue" -> "After",
-        "day" -> 1,
-        "month" -> 4,
-        "year" -> 2026)
+        "day" -> "1",
+        "month" -> "4",
+        "year" -> "2026")
       val result = json.validate[CurrentRatepayerForm]
 
       result.isSuccess shouldBe true
-      result.get shouldBe CurrentRatepayerForm("After", Some(1), Some(4), Some(2026))
+      result.get shouldBe CurrentRatepayerForm("After", Some("1"), Some("4"), Some("2026"))
     }
     
     "fail deserialization if confirmAddressRadio is missing" in {

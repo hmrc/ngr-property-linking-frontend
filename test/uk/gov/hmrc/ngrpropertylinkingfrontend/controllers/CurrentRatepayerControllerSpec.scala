@@ -16,29 +16,28 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import org.junit.Ignore
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.mvc.RequestHeader
-import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import play.api.test.Helpers.{await, contentAsString, redirectLocation, status}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import uk.gov.hmrc.auth.core.Nino
-import uk.gov.hmrc.http.HeaderNames
+import uk.gov.hmrc.http.{HeaderNames, NotFoundException}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, CurrentRatepayer, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.DateTextFields
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccountView, CurrentRatepayerView}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
 class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
   implicit val requestHeader: RequestHeader = mock[RequestHeader]
-  lazy val currentRatepayerView: CurrentRatepayerView = inject[CurrentRatepayerView]
-  lazy val dateTextFields: DateTextFields = inject[DateTextFields]
+  val currentRatepayerView: CurrentRatepayerView = inject[CurrentRatepayerView]
+  val dateTextFields: DateTextFields = inject[DateTextFields]
   val pageTitle = "When did you become the current ratepayer?"
 
   def controller() = new CurrentRatepayerController(
@@ -59,15 +58,23 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         val content = contentAsString(result)
         content must include(pageTitle)
       }
+      "Throw exception when no property linking is found" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
+        val exception = intercept[NotFoundException] {
+          await(controller().show(mode = "")(authenticatedFakeRequest))
+        }
+        exception.getMessage contains "failed to find property from mongo" mustBe true
+      }
     }
 
     "method submit" must {
       "Successfully submit when selected Before and redirect to correct page" in {
-        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty,currentRatepayer =  Some(CurrentRatepayer("Before", None))))))
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty,currentRatepayer =  Some(CurrentRatepayer("Before", None))))))
+        mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("current-ratepayer-radio", "Before"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = Some(credId.value), None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
@@ -75,11 +82,37 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show("").url)
       }
 
+      "Successfully submit when selected Before and redirect to correct page when mode is CYA" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer("Before", None))))))
+        mockRequest(hasCredId = true)
+        val result = controller().submit(mode = "CYA")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
+          .withFormUrlEncodedBody(("current-ratepayer-radio", "Before"))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = Some(credId.value), None, None, nino = Nino(true, Some(""))))
+        result.map(result => {
+          result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
+        })
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.show.url)
+      }
+
+      "Submit when can't find credId from the request, exception is thrown" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
+        mockRequest()
+        val exception = intercept[NotFoundException] {
+          await(controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
+            .withFormUrlEncodedBody(("current-ratepayer-radio", "Before"))
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = Some(credId.value), None, None, nino = Nino(true, Some("")))))
+        }
+        exception.getMessage contains "failed to find credId from request" mustBe true
+      }
+
       //When on and after 1 April 2026 is selected, the date must be between 1 April 2026 and today.
       //As we are still in 2025, this test will always fail on validation.
       //Ignored this test for now till we reach 1 April 2026
       "Successfully submit when selected After and redirect to correct page" ignore {
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer("After", Some(LocalDate.now())))))))
+        mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("current-ratepayer-radio", "After"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
@@ -98,6 +131,67 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include(pageTitle)
+      }
+
+      "Submit when selected After and day is missing" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
+        val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
+          .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
+            "day" -> "",
+            "month" -> "12",
+            "year" -> "2025")
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
+        result.map(result => {
+          result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
+        })
+        status(result) mustBe BAD_REQUEST
+        val content = contentAsString(result)
+        content must include("The date you became the current ratepayer must include a day")
+      }
+
+      "Submit when selected After and month is missing" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
+        val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
+          .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
+            "day" -> "31",
+            "month" -> "",
+            "year" -> "2025")
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
+        result.map(result => {
+          result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
+        })
+        status(result) mustBe BAD_REQUEST
+        val content = contentAsString(result)
+        content must include("The date you became the current ratepayer must include a month")
+      }
+
+      "Submit when selected After and year is missing" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
+        val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
+          .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
+            "day" -> "31",
+            "month" -> "12",
+            "year" -> "")
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
+        result.map(result => {
+          result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
+        })
+        status(result) mustBe BAD_REQUEST
+        val content = contentAsString(result)
+        content must include("The date you became the current ratepayer must include a year")
+      }
+
+      "Selected After, day is missing and property linking is not found then throw exception" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
+        val exception = intercept[NotFoundException] {
+          await(controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
+            .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
+              "day" -> "",
+              "month" -> "12",
+              "year" -> "2025")
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = Some(credId.value), None, None, nino = Nino(true, Some("")))))
+        }
+        exception.getMessage contains "failed to find property from mongo" mustBe true
       }
 
       "Submit when selected After and date is before 1 April 2026" in {

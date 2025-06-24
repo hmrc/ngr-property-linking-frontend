@@ -68,18 +68,18 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            //When validating from after apply, formError key is always empty. Bellow allows us to highlight the error field.
-            val correctedFormErrors = formWithErrors.errors.map(formError =>
-              if (formError.key.equals("")) {
-                formError.messages match
-                  case messages if messages.contains("currentRatepayer.day.empty.error") => formError.copy(key = "day")
-                  case messages if messages.contains("currentRatepayer.month.empty.error") => formError.copy(key = "month")
-                  case messages if messages.contains("currentRatepayer.year.empty.error") => formError.copy(key = "year")
-                  case _ => formError
-              } else {
+            //When validating from after apply, formError key is always empty. Below allows us to highlight the error field.
+            val correctedFormErrors = formWithErrors.errors.map { formError =>
+              (formError.key, formError.messages) match
+              case ("", messages) if messages.contains("currentRatepayer.day.empty.error") || messages.contains("currentRatepayer.day.format.error") =>
+                formError.copy(key = "day")
+              case ("", messages) if messages.contains("currentRatepayer.month.empty.error") || messages.contains("currentRatepayer.month.format.error") =>
+                formError.copy(key = "month")
+              case ("", messages) if messages.contains("currentRatepayer.year.empty.error") || messages.contains("currentRatepayer.year.format.error")=>
+                formError.copy(key = "year")
+              case _ =>
                 formError
-              }
-            )
+            }
             val formWithCorrectedErrors = formWithErrors.copy(errors = correctedFormErrors)
             propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
               case Some(property) =>  Future.successful(BadRequest(currentRatepayerView(createDefaultNavBar, formWithCorrectedErrors,
@@ -89,15 +89,17 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
           currentRatepayerForm =>
             def ratepayerDate: Option[LocalDate] =
               if (currentRatepayerForm.radioValue.equals("After"))
-                Some(LocalDate.of(currentRatepayerForm.year.get, currentRatepayerForm.month.get, currentRatepayerForm.day.get))
+                Some(LocalDate.of(currentRatepayerForm.year.get.toInt, currentRatepayerForm.month.get.toInt, currentRatepayerForm.day.get.toInt))
               else
                 None
 
+            val credId = request.credId.getOrElse(throw new NotFoundException("failed to find credId from request"))
             propertyLinkingRepo.insertCurrentRatepayer(
-              credId = CredId(request.credId.getOrElse("")),
+              credId = CredId(credId),
               currentRatepayer = currentRatepayerForm.radioValue,
               becomeRatepayerDate = ratepayerDate
             )
+            
             if(mode == "CYA")
               Future.successful(Redirect(routes.CheckYourAnswersController.show))
             else

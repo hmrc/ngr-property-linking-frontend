@@ -46,6 +46,9 @@ object CurrentRatepayerForm extends CommonFormValidators {
 
   private def isDateEmpty(currentRatepayer: CurrentRatepayerForm): Boolean =
     currentRatepayer.radioValue.equals("After") && currentRatepayer.day.isEmpty && currentRatepayer.month.isEmpty && currentRatepayer.year.isEmpty
+    
+  private def isDateDigits(currentRatepayer: CurrentRatepayerForm): Boolean =
+    Try(currentRatepayer.day.get.toInt).isSuccess && Try(currentRatepayer.month.get.toInt).isSuccess && Try(currentRatepayer.year.get.toInt).isSuccess
 
   private def getLocalDate(currentRatepayer: CurrentRatepayerForm): LocalDate =
     val day = currentRatepayer.day.get.toInt
@@ -111,7 +114,7 @@ object CurrentRatepayerForm extends CommonFormValidators {
   private def isDateValid[A]: Constraint[A] =
     Constraint((input: A) =>
       val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
-      if (areDayMonthYearEntered(currentRatepayer) && Try(getLocalDate(currentRatepayer)).isFailure)
+      if (areDayMonthYearEntered(currentRatepayer) && isDateDigits(currentRatepayer) && Try(getLocalDate(currentRatepayer)).isFailure)
           Invalid("currentRatepayer.date.format.error")
       else
         Valid
@@ -142,29 +145,21 @@ object CurrentRatepayerForm extends CommonFormValidators {
         "year" -> optional(text())
       )(CurrentRatepayerForm.apply)(CurrentRatepayerForm.unapply)
         .verifying(
-          firstError(
-            isFieldNonEmpty("day"),
-            isFieldInvalid("day")
-          )
-        )
-        .verifying(
-          firstError(
-            isFieldNonEmpty("month"),
-            isFieldInvalid("month")
-          )
-        )
-        .verifying(
-          firstError(
-            isFieldNonEmpty("year"),
-            isFieldInvalid("year"),
-            isDateValid
-          )
-        )
-        .verifying(
-          firstError(
+            firstError(
+              isFieldNonEmpty("day"),
+              isFieldInvalid("day")
+            ),
+            firstError(
+              isFieldNonEmpty("month"),
+              isFieldInvalid("month")
+            ),
+            firstError(
+              isFieldNonEmpty("year"),
+              isFieldInvalid("year")
+            ),
             isDateNonEmpty,
+            isDateValid,
             isDateBetween1stApril2026AndToday
-          )
         )
     )
   }

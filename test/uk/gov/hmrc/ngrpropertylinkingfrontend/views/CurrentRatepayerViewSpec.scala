@@ -65,9 +65,9 @@ class CurrentRatepayerViewSpec extends ViewBaseSpec {
 
   object Selectors {
     val navTitle = "head > title"
-    val heading = "#main-content > div > div > form > div > div > h1"
-    val addressCaption = "#main-content > div > div > form > div > div > span"
-    val p1 = "#main-content > div > div > form > div > div > p"
+    val heading = "#main-content > div > div.govuk-grid-column-two-thirds > form > h1"
+    val addressCaption = "#main-content > div > div.govuk-grid-column-two-thirds > form > span"
+    val p1 = "#main-content > div > div.govuk-grid-column-two-thirds > form > p"
     val detailsSummary = "#how-to-tell-if-you-are-the-current-rate-payer > summary > span"
     val contentP1 = "#how-to-tell-if-you-are-the-current-rate-payer > div > p:nth-child(1)"
     val contentL1 = "#how-to-tell-if-you-are-the-current-rate-payer > div > li:nth-child(2)"

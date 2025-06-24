@@ -143,14 +143,26 @@ object CurrentRatepayerForm extends CommonFormValidators {
       )(CurrentRatepayerForm.apply)(CurrentRatepayerForm.unapply)
         .verifying(
           firstError(
-            isDateNonEmpty,
             isFieldNonEmpty("day"),
+            isFieldInvalid("day")
+          )
+        )
+        .verifying(
+          firstError(
             isFieldNonEmpty("month"),
+            isFieldInvalid("month")
+          )
+        )
+        .verifying(
+          firstError(
             isFieldNonEmpty("year"),
-            isFieldInvalid("day"),
-            isFieldInvalid("month"),
             isFieldInvalid("year"),
-            isDateValid,
+            isDateValid
+          )
+        )
+        .verifying(
+          firstError(
+            isDateNonEmpty,
             isDateBetween1stApril2026AndToday
           )
         )

@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.FullWidthLayout
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.TwoThirdsLayout
 @import uk.gov.hmrc.hmrcfrontend.config.ContactFrontendConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
@@ -31,6 +32,7 @@
   hmrcLanguageSelectHelper: HmrcLanguageSelectHelper,
   standardBetaBanner: StandardBetaBanner,
   fullWidthLayout: FullWidthLayout,
+  twoThirdsLayout: TwoThirdsLayout,
   hmrcStandardPage: HmrcStandardPage,
   stylesheets: Stylesheets,
   navigationBarComponent: navigationBarComponent
@@ -46,7 +48,7 @@ navigationBarContent: Option[NavigationBarContent] = None
     @stylesheets()
 }
 
-@navBar = {
+@navbar = {
     @navigationBarContent.map { content =>
         @navigationBarComponent(content, showBackLink)
     }
@@ -57,9 +59,6 @@ navigationBarContent: Option[NavigationBarContent] = None
 }
 
 @content = {
-    @if(navigationBarContent != None){
-        @navBar
-    }
     @if(appConfig.features.welshLanguageSupportEnabled()) {
         @languageSelector
     }
@@ -70,8 +69,12 @@ navigationBarContent: Option[NavigationBarContent] = None
     HmrcStandardPageParams(
         pageTitle = pageTitle.map(title => messages("service.base.title", title)),
         templateOverrides = TemplateOverrides(
-            mainContentLayout = if(fullWidth) Some(fullWidthLayout(_)) else None,
-            additionalHeadBlock = Some(headScripts)
+        mainContentLayout = if (fullWidth) {
+            Some((_: Html) => fullWidthLayout(content, navbar))
+        } else {
+            Some((_: Html) => twoThirdsLayout(content, navbar))
+        },
+        additionalHeadBlock = Some(headScripts)
         ),
         backLink = None,
         banners = Banners(

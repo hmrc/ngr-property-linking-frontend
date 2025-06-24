@@ -27,9 +27,10 @@ import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, PropertyLinkingUserAnswers}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, CurrentRatepayer, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccountView, BusinessRatesBillView, CurrentRatepayerView}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class BusinessRatesBillControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
@@ -59,7 +60,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
     "method submit" must {
       "Successfully submit when selected Yes and redirect to correct page" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty,currentRatepayer =  Some("Before")))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty,currentRatepayer =  Some(CurrentRatepayer("Before", None))))))
         val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
           .withFormUrlEncodedBody(("business-rates-bill-radio", "Yes"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
@@ -70,7 +71,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None).url)
       }
       "Successfully submit when selected No and redirect to correct page" in {
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some("After")))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer("After", Some(LocalDate.now())))))))
         val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
           .withFormUrlEncodedBody(("business-rates-bill-radio", "No"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
@@ -81,7 +82,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None).url)
       }
       "Successfully submit when use has come from cya page, selected No and redirect to correct page" in {
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some("After")))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer("After", Some(LocalDate.now())))))))
         val result = controller().submit("CYA")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
           .withFormUrlEncodedBody(("business-rates-bill-radio", "No"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))

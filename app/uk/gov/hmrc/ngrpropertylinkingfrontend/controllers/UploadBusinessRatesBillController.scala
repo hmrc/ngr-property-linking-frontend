@@ -50,8 +50,6 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
   def show(errorCode: Option[String]): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       //Error scenarios 6 (too big) EntityTooLarge, 7 (no file) InvalidArgument, 11 (too small) EntityTooSmall
-      println(Console.MAGENTA + "QQQQQQQQQ" + errorCode.getOrElse("FAILED to get errorCodeString"))
-
       val errorToDisplay: Option[String] = errorCode match {
         case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
         case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))

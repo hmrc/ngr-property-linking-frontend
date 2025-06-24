@@ -17,9 +17,8 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
 import play.api.data.{Form, FormError, Forms}
-import play.api.data.Forms.{mapping, single, text}
+import play.api.data.Forms.single
 import play.api.data.format.Formatter
-import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.RadioEntry
 
 sealed trait ConnectionToPropertyForm extends RadioEntry

@@ -57,7 +57,6 @@ class UpscanCallbackController @Inject()(upscanRepo: UpscanRepo,
       upscanRepo.findByReference(upscanCallback.reference).flatMap {
         case Some(existingUpscanRecord) =>
           val updatedRecord: UpscanRecord = buildUpdatedUpscanRecord(upscanCallback, existingUpscanRecord.credId)
-          println("updatedRecord is: " + updatedRecord)
           upscanRepo.upsertUpscanRecord(updatedRecord).map(_ => Ok)
         case None =>
           Future.failed(new RuntimeException("Upscan record not found for reference: " + upscanCallback.reference.value))

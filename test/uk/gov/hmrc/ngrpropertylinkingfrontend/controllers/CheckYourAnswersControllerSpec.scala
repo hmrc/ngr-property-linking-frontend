@@ -27,14 +27,14 @@ import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{ControllerSpecSupport, TestData}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow, PropertyLinkingUserAnswers}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{CurrentRatepayer, Link, NGRSummaryListRow, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CheckYourAnswersView
 
 import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData with DefaultAwaitTimeout{
   lazy val view: CheckYourAnswersView = inject[CheckYourAnswersView]
-  lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some("Before"), businessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"))
+  lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer("Before", None)), businessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"))
 
   def controller() = new CheckYourAnswersController(
     view,

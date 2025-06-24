@@ -24,6 +24,8 @@ trait CommonFormValidators  {
 
   val postcodeRegexPattern: Pattern = Pattern.compile("^([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})$")
   val rateableValuePattern: Pattern = Pattern.compile("^([0-9]|,|\\s|£|\\.)+$")
+  val dayOrMonthRegexPattern: Pattern = Pattern.compile("^[0-9]{1,2}$")
+  val yearRegexPattern: Pattern = Pattern.compile("^[0-9]{4}$")
 
   protected def firstError[A](constraints: Constraint[A]*): Constraint[A] =
     Constraint { input =>
@@ -73,6 +75,17 @@ trait CommonFormValidators  {
         Valid
       } else {
         Invalid(errorKey, maximum)
+      }
+    }
+
+  protected def inRange[A](minimum: A, maximum: A, errorKey: String)(implicit ev: Ordering[A]): Constraint[A] =
+    Constraint { input =>
+      import ev._
+
+      if (input >= minimum && input <= maximum) {
+        Valid
+      } else {
+        Invalid(errorKey, minimum, maximum)
       }
     }
 }

@@ -22,7 +22,7 @@ import play.api.mvc.RequestHeader
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, PropertyLinkingUserAnswers}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, CurrentRatepayer, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ConnectionToPropertyView
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
@@ -30,6 +30,7 @@ import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
@@ -60,7 +61,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
     "method submit" must {
       "Successfully submit when selected Before and redirect to correct page" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some("Before"), connectionToProperty = Some("Owner")))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer("Before", None)), connectionToProperty = Some("Owner")))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ConnectionToPropertyController.submit)
           .withFormUrlEncodedBody((ConnectionToPropertyForm.formName, "Owner"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
@@ -71,7 +72,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
         redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.show.url)
       }
       "Successfully submit when selected After and redirect to correct page" in {
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some("After"), connectionToProperty = Some("Occupier")))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer("After", Some(LocalDate.now()))), connectionToProperty = Some("Occupier")))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ConnectionToPropertyController.submit)
           .withFormUrlEncodedBody((ConnectionToPropertyForm.formName, "Occupier"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))

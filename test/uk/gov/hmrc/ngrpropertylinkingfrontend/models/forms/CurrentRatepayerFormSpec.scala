@@ -27,12 +27,23 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
 
   "CurrentRatepayerForm" should {
 
-    "bind successfully with a valid confirmAddressRadio value" in {
+    "bind successfully with a valid current ratepayer radio value" in {
       val data = Map("current-ratepayer-radio" -> "Before") // Use the correct key
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe false
       boundForm.value shouldBe Some(CurrentRatepayerForm("Before", None, None, None))
+    }
+
+    "bind successfully with a valid current ratepayer radio value and invalid date" in {
+      val data = Map("current-ratepayer-radio" -> "Before",
+        "day" -> "AS",
+        "month" -> "",
+        "year" -> "2026")
+      val boundForm = CurrentRatepayerForm.form.bind(data)
+
+      boundForm.hasErrors shouldBe false
+      boundForm.value shouldBe Some(CurrentRatepayerForm("Before", Some("AS"), None, Some("2026")))
     }
 
     "fail to bind when current ratepayer radio is missing" in {

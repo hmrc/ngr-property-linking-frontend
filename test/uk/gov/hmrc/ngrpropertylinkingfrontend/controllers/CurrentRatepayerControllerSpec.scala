@@ -125,6 +125,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
 
       "Submit with radio buttons unselected and display error message" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
+        mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("current-ratepayer-radio", ""))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
@@ -135,6 +136,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
 
       "Submit when selected After and day is missing" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
+        mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
             "day" -> "",
@@ -151,6 +153,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
 
       "Submit when selected After and month is missing" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
+        mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
             "day" -> "31",
@@ -167,6 +170,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
 
       "Submit when selected After and year is missing" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
+        mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
             "day" -> "31",
@@ -183,6 +187,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
 
       "Selected After, day is missing and property linking is not found then throw exception" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
+        mockRequest(hasCredId = true)
         val exception = intercept[NotFoundException] {
           await(controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
             .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
@@ -196,6 +201,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
 
       "Submit when selected After and date is before 1 April 2026" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
+        mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
             "day" -> "31",
@@ -213,6 +219,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
       "Submit when selected After and date is after today" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
         val date = LocalDate.now().plusDays(7)
+        mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
             "day" -> date.getDayOfMonth.toString,
@@ -225,6 +232,20 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include("The date you became the current ratepayer must be between 1 April 2026 and today")
+      }
+
+      "Selected After, day is missing and credId is not found then throw exception" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
+        mockRequest()
+        val exception = intercept[NotFoundException] {
+          await(controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
+            .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
+              "day" -> "",
+              "month" -> "12",
+              "year" -> "2025")
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = Some(credId.value), None, None, nino = Nino(true, Some("")))))
+        }
+        exception.getMessage contains "failed to find credId from request" mustBe true
       }
     }
   }

@@ -29,7 +29,7 @@ final case class CurrentRatepayerForm(radioValue: String, day: Option[String], m
 object CurrentRatepayerForm extends CommonFormValidators {
   implicit val format: OFormat[CurrentRatepayerForm] = Json.format[CurrentRatepayerForm]
 
-  private lazy val radioUnselectedError = "currentRatepayer.radio.unselected.error"
+  private val radioUnselectedError = "currentRatepayer.radio.unselected.error"
   private val currentRatepayerRadio       = "current-ratepayer-radio"
   
   def unapply(currentRatepayerForm: CurrentRatepayerForm): Option[(String, Option[String], Option[String], Option[String])] =

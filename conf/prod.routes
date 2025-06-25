@@ -2,4 +2,4 @@
 ->         /ngr-property-linking-frontend              app.Routes
 ->         /                                           health.Routes
 
-POST       /callback-from-upscan                uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UpscanCallbackController.handleUpscanCallback
+POST       /callback-from-upscan                uk.gov.hmrc.ngrpropertylinkingfrontend.internalcontrollers.UpscanCallbackController.handleUpscanCallback

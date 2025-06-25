@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
+package uk.gov.hmrc.ngrpropertylinkingfrontend.internalcontrollers
 
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanCallback, UpscanCallbackFailure, UpscanCallbackSuccess, UpscanRecord}

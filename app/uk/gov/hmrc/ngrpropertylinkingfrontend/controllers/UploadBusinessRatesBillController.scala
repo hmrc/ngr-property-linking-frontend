@@ -54,6 +54,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
         case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
         case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
         case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.fileTooSmall"))
+        case Some("InvalidFileType") => Some(Messages("uploadBusinessRatesBill.error.invalidFileType"))
         case Some("QUARANTINE") => Some(Messages("uploadBusinessRatesBill.error.virusDetected"))
         case Some("REJECTED") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
         case Some(reason) if reason.startsWith("UNKNOWN") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))

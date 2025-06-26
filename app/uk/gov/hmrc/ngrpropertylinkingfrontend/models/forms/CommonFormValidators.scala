@@ -23,7 +23,7 @@ import java.util.regex.Pattern
 trait CommonFormValidators  {
 
   val postcodeRegexPattern: Pattern = Pattern.compile("^([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})$")
-  val rateableValuePattern: Pattern = Pattern.compile("^([0-9]|,|\\s|£|\\.)+$")
+  val rateableValuePattern: Pattern = Pattern.compile("^(£{0,1}[0-9]{1,}((,|\\s|\\.){0,}[0-9]{0,})+)$")
   val dayOrMonthRegexPattern: Pattern = Pattern.compile("^[0-9]{1,2}$")
   val yearRegexPattern: Pattern = Pattern.compile("^[0-9]{4}$")
 

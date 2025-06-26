@@ -18,6 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
 import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, text}
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Postcode, ScatCode}
 
@@ -29,12 +30,12 @@ final case class ManualPropertySearchForm(addressLine1: String,
                                           town: String,
                                           county: Option[String],
                                           postcode: Postcode,
-                                          propertyReference: Option[String],
-                                          council: Option[String],
-                                          scatCode: Option[ScatCode],
-                                          descriptionCode: Option[String],
-                                          miniRateableValue: Option[Long],
-                                          maxRateableValue: Option[Long])
+                                          propertyReference: Option[String] = None,
+                                          council: Option[String] = None,
+                                          scatCode: Option[ScatCode] = None,
+                                          descriptionCode: Option[String] = None,
+                                          miniRateableValue: Option[Long] = None,
+                                          maxRateableValue: Option[Long] = None)
 
 object ManualPropertySearchForm extends CommonFormValidators {
   implicit val format:OFormat[ManualPropertySearchForm] = Json.format[ManualPropertySearchForm]
@@ -56,10 +57,9 @@ object ManualPropertySearchForm extends CommonFormValidators {
       manualPropertySearchForm.maxRateableValue)
 
   private def roundUpIntoLong(value: String): Long = {
-    val doubleValue: Double = value.replaceAll("[£|,|\\s]", "").toDouble
-    math.round(doubleValue)
+     math.round(value.replaceAll("[£|,|\\s]", "").toDouble)
   }
-
+  
   def form: Form[ManualPropertySearchForm] = {
     Form(
       mapping(
@@ -81,7 +81,7 @@ object ManualPropertySearchForm extends CommonFormValidators {
         "town" -> text()
           .verifying(
             firstError(
-              isNotEmpty("city", "manualSearchProperty.city.required.error"),
+              isNotEmpty("town", "manualSearchProperty.city.required.error"),
 //              miniLength(3, "manualSearchProperty.city.miniLength.error"),
               maxLength(maxLineLength, "manualSearchProperty.city.maxLength.error")
             )
@@ -107,6 +107,7 @@ object ManualPropertySearchForm extends CommonFormValidators {
             .transform[Postcode](Postcode.apply, _.value),
         "propertyReference" -> optional(
           text()
+            .verifying(maxLength(100, "manualSearchProperty.propertyReference.maxLength.error"))
         ),
         "council" -> optional(
           text()
@@ -123,6 +124,7 @@ object ManualPropertySearchForm extends CommonFormValidators {
           text()
             .transform[String](_.strip(), identity)
             .verifying(
+              maxLength(20, "manualSearchProperty.miniRateableValue.maxLength.error"),
               regexp(rateableValuePattern.pattern(), "manualSearchProperty.miniRateableValue.invalid.error")
             )
             .transform[Long](roundUpIntoLong, _.toString)
@@ -133,6 +135,7 @@ object ManualPropertySearchForm extends CommonFormValidators {
         "maxRateableValue" -> optional(
           text()
             .verifying(
+              maxLength(20, "manualSearchProperty.maxRateableValue.maxLength.error"),
               regexp(rateableValuePattern.pattern(), "manualSearchProperty.maxRateableValue.invalid.error")
             )
             .transform[Long](roundUpIntoLong, _.toString)

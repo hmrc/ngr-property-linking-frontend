@@ -560,7 +560,7 @@ uploadedBusinessRatesBill.uploaded=Uploaded
 #scenario 6
 uploadBusinessRatesBill.error.exceedsMaximumSize = The selected file must be smaller than 100MB
 #scenario 7
-uploadBusinessRatesBill.error.noFileSelected = Select a [whatever the file to upload is]
+uploadBusinessRatesBill.error.noFileSelected = Select a PDF or PNG
 #scenario 11
 uploadBusinessRatesBill.error.emptyFileUploaded = The selected file is empty
 uploadBusinessRatesBill.error.fileTooSmall = The selected file is too small
@@ -572,7 +572,7 @@ uploadBusinessRatesBill.error.problemWithUpload = The selected file could not be
 uploadBusinessRatesBill.error.fileAlreadyExists = The selected file has already been uploaded
 
 #dont need?
-uploadBusinessRatesBill.error.invalidFileType = The selected file must be a [list of acceptable file types]
+uploadBusinessRatesBill.error.invalidFileType = The selected file must be a PDF or PNG
 
 
 #AddPropertyRequestSent

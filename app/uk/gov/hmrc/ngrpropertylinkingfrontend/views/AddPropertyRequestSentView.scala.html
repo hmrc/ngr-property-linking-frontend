@@ -26,7 +26,7 @@ panel: GovukPanel,
 govukSummaryList : GovukSummaryList,
 )
 
-@(reference: String, summaryList: SummaryList, navigationBarContent: NavigationBarContent)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+@(reference: String, summaryList: SummaryList, navigationBarContent: NavigationBarContent, email: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("addPropertyRequestSent.title")}
 
@@ -50,7 +50,7 @@ HtmlFormat.raw("<br><strong>"),
 
 @govukSummaryList(summaryList)
 
-<p class="govuk-body">@Messages("addPropertyRequestSent.p1")</p>
+<p class="govuk-body">@Messages("addPropertyRequestSent.p1",email)</p>
 <h2 class="govuk-heading-m">@Messages("addPropertyRequestSent.h2")</h2>
 <p class="govuk-body">@Messages("addPropertyRequestSent.p2")</p>
 <p class="govuk-body">@Messages("addPropertyRequestSent.p3")</p>

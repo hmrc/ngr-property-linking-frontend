@@ -51,12 +51,13 @@ class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentVie
 
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
+      val email: String = request.email.getOrElse(throw new NotFoundException("email not found on account"))
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(answers) =>
           val property = answers.vmvProperty
           val ref = answers.requestSentReference.getOrElse("")
           val summaryRows = createSummaryRows(property)
-          Future.successful(Ok(view(ref, SummaryList(summaryRows), createDefaultNavBar)))
+          Future.successful(Ok(view(ref, SummaryList(summaryRows), createDefaultNavBar,email)))
         case None => throw new NotFoundException("failed to find property from mongo")
       }
 

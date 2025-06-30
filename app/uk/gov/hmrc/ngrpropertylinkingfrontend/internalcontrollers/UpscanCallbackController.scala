@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.internalcontrollers
 
+import play.api.i18n.I18nSupport
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanCallback, UpscanCallbackFailure, UpscanCallbackSuccess, UpscanRecord}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -25,6 +26,9 @@ import play.api.i18n.I18nSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,6 +50,7 @@ class UpscanCallbackController @Inject()(
   def handleUpscanCallback: Action[JsValue] = Action.async(parse.json) { implicit request =>
     withJsonBody[UpscanCallback] {
       case success @ UpscanCallbackSuccess(reference, _, uploadDetails) =>
+        println(Console.MAGENTA + "UPSCAN CALLBACK SUCCESS")
         val validatedCallback =
           if (allowedMimeTypes.contains(uploadDetails.fileMimeType)) {
             success
@@ -58,6 +63,7 @@ class UpscanCallbackController @Inject()(
         processCallback(validatedCallback)
 
       case failure: UpscanCallbackFailure =>
+        println(Console.MAGENTA + "UPSCAN CALLBACK FAILURE")
         processCallback(failure)
     }
   }

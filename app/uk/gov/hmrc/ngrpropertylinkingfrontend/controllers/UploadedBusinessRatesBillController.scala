@@ -30,7 +30,6 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{PropertyLinkingRepo, UpscanR
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -74,7 +73,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
         upscanRepo.findByCredId(credId).flatMap {
           case Some(record) =>
             //TODO should we error out here?
-            val fileName = record.fileName.getOrElse("missing name")
+            val fileName = record.fileName.getOrElse(throw new NotFoundException("Missing Name"))
             propertyLinkingRepo.findByCredId(credId).map {
               case Some(property) =>
                 record.failureReason match {
@@ -84,7 +83,8 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
                     Ok(uploadedView(
                       createDefaultNavBar,
                       createSummaryList(fileName, record.status, record.downloadUrl),
-                      property.vmvProperty.addressFull
+                      property.vmvProperty.addressFull,
+                      false
                     ))
                 }
               case None =>
@@ -103,7 +103,21 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
 
   def submit: Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      Future.successful(Redirect(routes.ConnectionToPropertyController.show.url))
+      val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("Not found credId on account")))
+      upscanRepo.findByCredId(credId).flatMap { upScan =>
+        val fileName: String = upScan.flatMap(_.fileName).getOrElse(throw new Exception("Not found file name"))
+        propertyLinkingRepo.insertEvidenceDocument(credId = credId, evidenceDocument = fileName).flatMap {
+          case Some(answers) => {
+            if (answers.connectionToProperty.isDefined) {
+              Future.successful(Redirect(routes.CheckYourAnswersController.show.url))
+            } else {
+              Future.successful(Redirect(routes.ConnectionToPropertyController.show.url))
+            }
+          }
+          case None => throw new NotFoundException("No responses found")
+        }
+
+      }
     }
   }
 }

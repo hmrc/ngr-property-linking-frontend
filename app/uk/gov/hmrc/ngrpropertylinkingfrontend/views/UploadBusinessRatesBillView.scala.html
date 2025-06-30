@@ -23,8 +23,7 @@
 
 @this(layout: Layout,
         fileUpload: components.FileUpload,
-        saveAndContinueButton: saveAndContinueButton,
-        button: components.button
+        saveAndContinueButton: saveAndContinueButton
 )
 
 @(form: Form[String], upscanResponse: UpscanInitiateResponse, errorMessage: Option[String], address: String, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)

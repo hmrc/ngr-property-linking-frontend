@@ -72,15 +72,18 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
             val correctedFormErrors = formWithErrors.errors.map { formError =>
               (formError.key, formError.messages) match
               case ("", messages) if messages.contains("currentRatepayer.day.empty.error") || messages.contains("currentRatepayer.day.format.error") =>
-                formError.copy(key = "day")
+                formError.copy(key = "ratepayerDate.day")
               case ("", messages) if messages.contains("currentRatepayer.month.empty.error") || messages.contains("currentRatepayer.month.format.error") =>
-                formError.copy(key = "month")
+                formError.copy(key = "ratepayerDate.month")
               case ("", messages) if messages.contains("currentRatepayer.year.empty.error") || messages.contains("currentRatepayer.year.format.error")=>
-                formError.copy(key = "year")
+                formError.copy(key = "ratepayerDate.year")
+              case ("", messages) =>
+                formError.copy(key = "ratepayerDate")
               case _ =>
                 formError
             }
             val formWithCorrectedErrors = formWithErrors.copy(errors = correctedFormErrors)
+            println(Console.GREEN + formWithCorrectedErrors + Console.RESET)
             propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(throw new NotFoundException("failed to find credId from request")))).flatMap{
               case Some(property) =>  Future.successful(BadRequest(currentRatepayerView(createDefaultNavBar, formWithCorrectedErrors,
                 buildRadios(formWithCorrectedErrors, ngrRadio(formWithCorrectedErrors)), address = property.vmvProperty.addressFull, mode = mode)))
@@ -89,7 +92,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
           currentRatepayerForm =>
             def ratepayerDate: Option[LocalDate] =
               if (currentRatepayerForm.radioValue.equals("After"))
-                Some(LocalDate.of(currentRatepayerForm.year.get.toInt, currentRatepayerForm.month.get.toInt, currentRatepayerForm.day.get.toInt))
+                currentRatepayerForm.ratepayerDate.map(_.ratepayerDate)
               else
                 None
 

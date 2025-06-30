@@ -25,8 +25,8 @@ import play.api.mvc.{Action, MessagesControllerComponents, Result}
 import play.api.i18n.I18nSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -71,6 +71,7 @@ class UpscanCallbackController @Inject()(
   private def processCallback(callback: UpscanCallback): Future[Result] = {
     upscanRepo.findByReference(callback.reference).flatMap {
       case Some(existingUpscanRecord) =>
+        println(Console.MAGENTA + "PROCESS CALLBACK")
         val updatedRecord = buildUpdatedUpscanRecord(callback, existingUpscanRecord.credId)
         upscanRepo.upsertUpscanRecord(updatedRecord).map(_ => Ok)
 

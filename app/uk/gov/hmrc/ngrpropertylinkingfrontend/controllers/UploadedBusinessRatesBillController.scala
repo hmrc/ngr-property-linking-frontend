@@ -72,7 +72,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
 
         upscanRepo.findByCredId(credId).flatMap {
           case Some(record) =>
-            //TODO should we error out here?
+            println(Console.MAGENTA + s"RECORD: $record")
             val fileName = record.fileName.getOrElse(throw new NotFoundException("Missing Name"))
             propertyLinkingRepo.findByCredId(credId).map {
               case Some(property) =>

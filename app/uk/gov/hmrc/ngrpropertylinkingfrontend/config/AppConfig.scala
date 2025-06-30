@@ -26,6 +26,7 @@ trait AppConfig {
   val features: Features
   val nextGenerationRatesHost: String
   val ngrLoginRegistrationHost: String
+  val ngrPropertyLinkingFrontend: String
   val upscanHost: String
   val ngrDashboardUrl: String
   val ngrLogoutUrl: String
@@ -39,6 +40,7 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val features = new Features()(config)
   override val nextGenerationRatesHost: String = servicesConfig.baseUrl("next-generation-rates")
   override val ngrLoginRegistrationHost: String = servicesConfig.baseUrl("ngr-login-register-frontend")
+  override val ngrPropertyLinkingFrontend: String = servicesConfig.baseUrl("ngr-property-linking-frontend")
   override val upscanHost: String = servicesConfig.baseUrl("upscan")
   override val ngrDashboardUrl: String = s"$dashboardHost/ngr-dashboard-frontend/dashboard"
   override val ngrLogoutUrl: String = s"$dashboardHost/ngr-dashboard-frontend/signout"

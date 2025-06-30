@@ -109,6 +109,10 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
     findAndUpdateByCredId(credId, Updates.set("businessRatesBill", businessRatesBill))
   }
   
+  def insertEvidenceDocument(credId: CredId, evidenceDocument: String): Future[Option[PropertyLinkingUserAnswers]] = {
+    findAndUpdateByCredId(credId, Updates.set("evidenceDocument", evidenceDocument))
+  }
+  
   def insertRequestSentReference(credId: CredId, ref: String): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.set("requestSentReference", ref))
   }

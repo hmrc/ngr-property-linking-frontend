@@ -74,8 +74,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
       NGRSummaryListRow(
         messages("checkYourAnswers.EvidenceDocument"),
         None,
-        Seq(userAnswers.credId.value),
-        changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "evidence-document", messageKey = "service.change", visuallyHiddenMessageKey = Some("evidence-document")))
+        Seq(userAnswers.evidenceDocument.getOrElse(throw new NotFoundException("evidence document not found"))),
+        changeLink = Some(Link(href = routes.UploadBusinessRatesBillController.show(None), linkId = "evidence-document", messageKey = "service.change", visuallyHiddenMessageKey = Some("evidence-document")))
       ), //TODO CHANGE CURRENT RATEPAYER
       NGRSummaryListRow(
         messages("checkYourAnswers.PropertyConnection"),

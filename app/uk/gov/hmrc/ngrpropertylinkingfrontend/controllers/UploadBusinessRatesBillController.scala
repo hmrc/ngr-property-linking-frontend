@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
@@ -30,7 +29,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{PropertyLinkingRepo, UpscanRepo}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,12 +42,15 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
                                                   propertyLinkingRepo: PropertyLinkingRepo,
                                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-  //http://localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill?errorMessage=%27file%27+field+not+found&key=f8ad3406-3992-4d0e-ba36-8ffa339707af&errorCode=InvalidArgument&errorRequestId=SomeRequestId&errorResource=NoFileReference
-  //http: //localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill?errorMessage=Your+proposed+upload+exceeds+the+maximum+allowed+size&key=b3368bf1-20d6-4421-a653-964c3529fb00&errorCode=EntityTooLarge&errorRequestId=SomeRequestId&errorResource=NoFileReference
-  //http://localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill?errorMessage=Your+proposed+upload+is+smaller+than+the+minimum+allowed+size&key=619ce5c8-a28c-4641-9957-01c6c50818ac&errorCode=EntityTooSmall&errorRequestId=SomeRequestId&errorResource=NoFileReference
+  
+  val attributes: Map[String, String] = Map(
+    "accept" -> ".pdf,.png",
+    "data-max-file-size" -> "100000000",
+    "data-min-file-size" -> "1000"
+  )
+  
   def show(errorCode: Option[String]): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      //Error scenarios 6 (too big) EntityTooLarge, 7 (no file) InvalidArgument, 11 (too small) EntityTooSmall
       val errorToDisplay: Option[String] = errorCode match {
         case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
         case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
@@ -78,7 +79,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
 
             upscanRepo.upsertUpscanRecord(upscanRecord).flatMap { _ =>
               propertyLinkingRepo.findByCredId(credId).map {
-                case Some(property) => Ok(uploadView(uploadForm(), upscanInitiateResponse, errorToDisplay, property.vmvProperty.addressFull, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
+                case Some(property) => Ok(uploadView(uploadForm(), upscanInitiateResponse, attributes, errorToDisplay, property.vmvProperty.addressFull, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
                 //TODO move this to the repo class?
                 case None => throw new RuntimeException("Could not get address from property linking repo")
               }

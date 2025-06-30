@@ -55,9 +55,6 @@ object CurrentRatepayerForm extends CommonFormValidators with Mappings {
   private def isDateDigits(ratepayerDate: RatepayerDate): Boolean =
     Try(ratepayerDate.day.toInt).isSuccess && Try(ratepayerDate.month.toInt).isSuccess && Try(ratepayerDate.year.toInt).isSuccess
 
-  private def getLocalDate(ratepayerDate: RatepayerDate): LocalDate =
-    LocalDate.of(ratepayerDate.day.toInt, ratepayerDate.month.toInt, ratepayerDate.year.toInt)
-
   private def isDateNonEmpty[A]: Constraint[A] =
     Constraint ((input: A) =>
       val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
@@ -79,7 +76,7 @@ object CurrentRatepayerForm extends CommonFormValidators with Mappings {
           case (true, false, false) => Invalid("currentRatepayer.day.empty.error")
           case (false, true, false) => Invalid("currentRatepayer.month.empty.error")
           case (false, false, true) => Invalid("currentRatepayer.year.empty.error")
-          case (_, _, _) => Valid
+          case (_, _, _)            => Valid
       else
         Valid
   )
@@ -117,7 +114,6 @@ object CurrentRatepayerForm extends CommonFormValidators with Mappings {
         val validationErrors: Seq[ValidationError] = Seq(dayValidationError, monthValidationError, yearValidationError)
           .filterNot(_.isEmpty)
           .map(_.get)
-        println(Console.YELLOW + "============= " + validationErrors + Console.RESET)
         if (validationErrors.isEmpty) Valid else Invalid(validationErrors)
       else
         Valid
@@ -173,19 +169,6 @@ object CurrentRatepayerForm extends CommonFormValidators with Mappings {
             isDateBetween1stApril2026AndToday
           )
         )
-//        .verifying(
-//            firstError(
-//              isFieldNonEmpty("month"),
-//              isFieldInvalid("month")
-//            ),
-//            firstError(
-//              isFieldNonEmpty("year"),
-//              isFieldInvalid("year")
-//            ),
-//            isDateNonEmpty,
-//            isDateValid,
-//            isDateBetween1stApril2026AndToday
-//        )
     )
   }
 

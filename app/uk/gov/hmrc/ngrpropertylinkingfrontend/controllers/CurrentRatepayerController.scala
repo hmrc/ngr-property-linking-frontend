@@ -83,7 +83,6 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
                 formError
             }
             val formWithCorrectedErrors = formWithErrors.copy(errors = correctedFormErrors)
-            println(Console.GREEN + formWithCorrectedErrors + Console.RESET)
             propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(throw new NotFoundException("failed to find credId from request")))).flatMap{
               case Some(property) =>  Future.successful(BadRequest(currentRatepayerView(createDefaultNavBar, formWithCorrectedErrors,
                 buildRadios(formWithCorrectedErrors, ngrRadio(formWithCorrectedErrors)), address = property.vmvProperty.addressFull, mode = mode)))

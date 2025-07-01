@@ -72,11 +72,13 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
             val correctedFormErrors = formWithErrors.errors.map { formError =>
               (formError.key, formError.messages) match
               case ("", messages) if messages.contains("currentRatepayer.day.empty.error") || messages.contains("currentRatepayer.day.format.error") =>
-                formError.copy(key = "day")
+                formError.copy(key = "maybeRatepayerDate.day")
               case ("", messages) if messages.contains("currentRatepayer.month.empty.error") || messages.contains("currentRatepayer.month.format.error") =>
-                formError.copy(key = "month")
+                formError.copy(key = "maybeRatepayerDate.month")
               case ("", messages) if messages.contains("currentRatepayer.year.empty.error") || messages.contains("currentRatepayer.year.format.error")=>
-                formError.copy(key = "year")
+                formError.copy(key = "maybeRatepayerDate.year")
+              case ("", messages) =>
+                formError.copy(key = "maybeRatepayerDate")
               case _ =>
                 formError
             }
@@ -87,9 +89,9 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
               case None => throw new NotFoundException("failed to find property from mongo")
             },
           currentRatepayerForm =>
-            def ratepayerDate: Option[LocalDate] =
+            def maybeRatepayerDate: Option[LocalDate] =
               if (currentRatepayerForm.radioValue.equals("After"))
-                Some(LocalDate.of(currentRatepayerForm.year.get.toInt, currentRatepayerForm.month.get.toInt, currentRatepayerForm.day.get.toInt))
+                currentRatepayerForm.maybeRatepayerDate.map(_.ratepayerDate)
               else
                 None
 
@@ -97,7 +99,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
             propertyLinkingRepo.insertCurrentRatepayer(
               credId = CredId(credId),
               currentRatepayer = currentRatepayerForm.radioValue,
-              becomeRatepayerDate = ratepayerDate
+              maybeRatepayerDate = maybeRatepayerDate
             )
             
             if(mode == "CYA")

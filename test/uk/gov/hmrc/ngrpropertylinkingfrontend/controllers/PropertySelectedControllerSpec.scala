@@ -131,7 +131,6 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
           .thenReturn(Future.successful(None))
         when(mockPropertyLinkingRepo.upsertProperty(any())).thenReturn(Future.successful(true))
         mockRequest()
-        val result = controller().submit(index = 0)(requestWithFormValue("Yes"))
         val exception = intercept[NotFoundException] {
           await(controller().submit(index = 0)(requestWithFormValue("Yes")))
         }

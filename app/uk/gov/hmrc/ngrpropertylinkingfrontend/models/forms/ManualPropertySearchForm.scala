@@ -18,7 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
 import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, text}
-import play.api.data.validation.{Constraint, Invalid, Valid}
+import play.api.data.validation.Constraint
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Postcode, ScatCode}
 

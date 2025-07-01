@@ -19,7 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateResponse.{format, uploadFormFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateResponse.uploadFormFormat
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanReference.{referenceReader, referenceWrites}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateRequest.format
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanInitiateResponse.format

@@ -24,7 +24,6 @@ import scala.concurrent.Future
 class UpscanConnectorSpec extends MockHttpV2 {
   private val upscanConnector: UpscanConnector = new UpscanConnector(mockHttpClientV2, mockConfig)
   private val reference: String = "testReference"
-  private val postTarget: String = "testPostTarget"
   private val formFields: Map[String, String] = Map("key" -> "value")
 
   "initiate()" when {

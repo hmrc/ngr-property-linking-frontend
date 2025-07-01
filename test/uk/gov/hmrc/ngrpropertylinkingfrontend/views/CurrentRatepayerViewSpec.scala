@@ -59,7 +59,7 @@ class CurrentRatepayerViewSpec extends ViewBaseSpec {
   private val beforeButton: NGRRadioButtons = NGRRadioButtons("Before", Before)
   private val afterButton: NGRRadioButtons = NGRRadioButtons("After", After)
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("confirm-address-radio"), Seq(beforeButton, afterButton))
-  val form = CurrentRatepayerForm.form.fillAndValidate(CurrentRatepayerForm("Before", None, None, None))
+  val form = CurrentRatepayerForm.form.fillAndValidate(CurrentRatepayerForm("Before", None))
   val radio: Radios = buildRadios(form, ngrRadio)
   val mode: String = ""
 

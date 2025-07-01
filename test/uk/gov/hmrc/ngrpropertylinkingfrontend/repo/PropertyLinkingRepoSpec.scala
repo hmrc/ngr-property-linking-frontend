@@ -62,7 +62,7 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
           testVmvProperty
         )))
         isSuccessful shouldBe true
-        await(repository.insertCurrentRatepayer(credId = credId, currentRatepayer = "Before", becomeRatepayerDate = None))
+        await(repository.insertCurrentRatepayer(credId = credId, currentRatepayer = "Before", maybeRatepayerDate = None))
         val actual: PropertyLinkingUserAnswers = await(repository.findByCredId(credId)).get
         val expected = PropertyLinkingUserAnswers(credId, testVmvProperty, Some(CurrentRatepayer("Before", None)))
         actual shouldBe expected

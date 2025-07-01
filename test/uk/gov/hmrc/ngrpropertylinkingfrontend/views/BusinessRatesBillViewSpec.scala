@@ -23,8 +23,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{BusinessRatesBillForm, CurrentRatepayerForm}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccountView, BusinessRatesBillView, CurrentRatepayerView}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.BusinessRatesBillForm
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.BusinessRatesBillView
 
 class BusinessRatesBillViewSpec extends ViewBaseSpec {
   lazy val view: BusinessRatesBillView = inject[BusinessRatesBillView]
@@ -55,11 +55,11 @@ class BusinessRatesBillViewSpec extends ViewBaseSpec {
 
   object Selectors {
     val navTitle = "head > title"
-    val heading = "#main-content > div > div > form > div > h1"
-    val addressCaption = "#main-content > div > div > form > div > span"
+    val heading = "#main-content > div > div.govuk-grid-column-two-thirds > form > h1"
+    val addressCaption = "#main-content > div > div.govuk-grid-column-two-thirds > form > span"
     val hint = "#business-rates-bill-radio-hint"
-    val radio1 = "#main-content > div > div > form > div > div > div > div:nth-child(1) > label"
-    val radio2 = "#main-content > div > div > form > div > div > div > div:nth-child(2) > label"
+    val radio1 = "#main-content > div > div.govuk-grid-column-two-thirds > form > div > div.govuk-radios.govuk-radios > div:nth-child(1) > label"
+    val radio2 = "#main-content > div > div.govuk-grid-column-two-thirds > form > div > div.govuk-radios.govuk-radios > div:nth-child(2) > label"
   }
 
   "CurrentRatepayerView" must {

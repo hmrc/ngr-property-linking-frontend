@@ -20,11 +20,11 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.DateTextFields
 
 class DateTextFieldsSpec extends ViewBaseSpec {
-  val form: Form[FindAProperty] = FindAProperty.form()
+  val form: Form[CurrentRatepayerForm] = CurrentRatepayerForm.form
   val dateTextFields: DateTextFields = inject[DateTextFields]
 
   val heading = "Enter the date you became the current ratepayer"
@@ -34,11 +34,11 @@ class DateTextFieldsSpec extends ViewBaseSpec {
   val yearLabel = "Year"
 
   object Selectors {
-    val heading = "h1"
-    val hint = "#ratepayersince-date-hint"
-    val dayLabel = "#date > div:nth-child(1) > div > label"
-    val monthLabel = "#date > div:nth-child(2) > div > label"
-    val yearLabel = "#date > div:nth-child(3) > div > label"
+    val heading = "div > fieldset > legend > h1"
+    val hint = "#ratepayerDate-hint"
+    val dayLabel = "#ratepayerDate > div:nth-child(1) > div > label"
+    val monthLabel = "#ratepayerDate > div:nth-child(2) > div > label"
+    val yearLabel = "#ratepayerDate > div:nth-child(3) > div > label"
   }
 
 

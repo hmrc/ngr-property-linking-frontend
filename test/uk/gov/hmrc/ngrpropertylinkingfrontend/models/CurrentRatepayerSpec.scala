@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.libs.json.{JsString, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
 import java.time.LocalDate

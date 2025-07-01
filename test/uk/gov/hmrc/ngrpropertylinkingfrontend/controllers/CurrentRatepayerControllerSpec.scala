@@ -139,9 +139,9 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
-            "day" -> "",
-            "month" -> "12",
-            "year" -> "2025")
+            "ratepayerDate.day" -> "",
+            "ratepayerDate.month" -> "12",
+            "ratepayerDate.year" -> "2025")
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
@@ -156,9 +156,9 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
-            "day" -> "31",
-            "month" -> "",
-            "year" -> "2025")
+            "ratepayerDate.day" -> "31",
+            "ratepayerDate.month" -> "",
+            "ratepayerDate.year" -> "2025")
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
@@ -173,9 +173,9 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
-            "day" -> "31",
-            "month" -> "12",
-            "year" -> "")
+            "ratepayerDate.day" -> "31",
+            "ratepayerDate.month" -> "12",
+            "ratepayerDate.year" -> "")
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
@@ -191,9 +191,9 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         val exception = intercept[NotFoundException] {
           await(controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
             .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
-              "day" -> "",
-              "month" -> "12",
-              "year" -> "2025")
+              "ratepayerDate.day" -> "",
+              "ratepayerDate.month" -> "12",
+              "ratepayerDate.year" -> "2025")
             .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = Some(credId.value), None, None, nino = Nino(true, Some("")))))
         }
         exception.getMessage contains "failed to find property from mongo" mustBe true
@@ -204,9 +204,9 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
-            "day" -> "31",
-            "month" -> "12",
-            "year" -> "2025")
+            "ratepayerDate.day" -> "31",
+            "ratepayerDate.month" -> "12",
+            "ratepayerDate.year" -> "2025")
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
@@ -222,9 +222,9 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
-            "day" -> date.getDayOfMonth.toString,
-            "month" -> date.getMonthValue.toString,
-            "year" -> date.getYear.toString)
+            "ratepayerDate.day" -> date.getDayOfMonth.toString,
+            "ratepayerDate.month" -> date.getMonthValue.toString,
+            "ratepayerDate.year" -> date.getYear.toString)
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
@@ -240,9 +240,9 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         val exception = intercept[NotFoundException] {
           await(controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
             .withFormUrlEncodedBody("current-ratepayer-radio" -> "After",
-              "day" -> "",
-              "month" -> "12",
-              "year" -> "2025")
+              "ratepayerDate.day" -> "",
+              "ratepayerDate.month" -> "12",
+              "ratepayerDate.year" -> "2025")
             .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = Some(credId.value), None, None, nino = Nino(true, Some("")))))
         }
         exception.getMessage contains "failed to find credId from request" mustBe true

@@ -14,21 +14,21 @@
  * limitations under the License.
  *@
 
-@this(inputText: InputText)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm
+
+@this(govukDateInput: GovukDateInput)
 @(
- form: Form[_]
+ form: Form[CurrentRatepayerForm]
 )(implicit messages: Messages)
 
-<h1 class="govuk-heading-s">Enter the date you became the current ratepayer</h1>
-<div id="ratepayersince-date-hint" class="govuk-hint">For example, 24 05 2026.</div>
-<div class="govuk-date-input" id="date">
- <div class="govuk-date-input__item">
-  @inputText(form = form, id = "day", name = "day", label = "Day", isVisible = true, classes = Some("govuk-input govuk-input--width-2"))
- </div>
- <div class="govuk-date-input__item">
-  @inputText(form = form, id = "month", name = "month", label = "Month", isVisible = true, classes = Some("govuk-input govuk-input--width-2"))
- </div>
- <div class="govuk-date-input__item">
-  @inputText(form = form, id = "year", name = "year", label = "Year", isVisible = true, classes = Some("govuk-input govuk-input--width-4"))
- </div>
-</div>
+@govukDateInput(DateInput(
+id = form("ratepayerDate").id,
+namePrefix = None,
+fieldset = Some(Fieldset(
+legend = Some(Legend(content = HtmlContent(s"<h1 class='govuk-heading-s'>${messages("currentRatepayer.date.heading")}</h1>")))
+)),
+hint = Some(Hint(content = Text(messages("currentRatepayer.date.hint")))),
+errorMessage = form("ratepayerDate").error.map(e => ErrorMessage.errorMessageWithDefaultStringsTranslated(content = Text(messages(e.message, e.args:_*))))
+).withDayMonthYearFormField(form("ratepayerDate")))

@@ -16,31 +16,15 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import play.api.i18n.I18nSupport
 import play.api.libs.json.JsValue
-import play.api.mvc.{Action, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanCallback, UpscanCallbackFailure, UpscanCallbackSuccess, UpscanRecord}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.api.data.FormError
+import play.api.mvc.{Action, MessagesControllerComponents}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UploadViewModel, UpscanRecord}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{UploadBusinessRatesBillView, UploadedBusinessRatesBillView}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

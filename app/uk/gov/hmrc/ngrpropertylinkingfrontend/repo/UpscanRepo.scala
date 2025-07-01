@@ -27,7 +27,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.FrontendAppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanReference, UpscanCallback, UpscanCallbackFailure, UpscanCallbackSuccess, UpscanRecord}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanReference, UpscanRecord}
 
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject

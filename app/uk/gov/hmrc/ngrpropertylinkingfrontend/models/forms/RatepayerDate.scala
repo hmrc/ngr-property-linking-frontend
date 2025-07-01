@@ -25,7 +25,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 final case class RatepayerDate(day: String, month: String, year: String) {
-  lazy val ratepayerDate = LocalDate.of(year.toInt, month.toInt, day.toInt) //date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+  lazy val ratepayerDate = LocalDate.of(year.toInt, month.toInt, day.toInt)
 }
 
 object RatepayerDate {

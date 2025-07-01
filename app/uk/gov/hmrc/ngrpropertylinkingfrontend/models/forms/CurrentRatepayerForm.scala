@@ -37,12 +37,12 @@ object CurrentRatepayerForm extends CommonFormValidators with Mappings {
       currentRatepayerForm.ratepayerDate)
 
   private def areDayMonthYearEntered(currentRatepayer: CurrentRatepayerForm): Boolean  =
-    val ratepayerDate = currentRatepayer.ratepayerDate
+    val ratepayerDate: Option[RatepayerDate] = currentRatepayer.ratepayerDate
     isDateDefined(currentRatepayer) && ratepayerDate.get.day.nonEmpty &&
       ratepayerDate.get.month.nonEmpty && ratepayerDate.get.year.nonEmpty
 
   private def isDayMonthOrYearEntered(currentRatepayer: CurrentRatepayerForm): Boolean =
-    val ratepayerDate = currentRatepayer.ratepayerDate
+    val ratepayerDate: Option[RatepayerDate] = currentRatepayer.ratepayerDate
     isDateDefined(currentRatepayer) && (ratepayerDate.get.day.nonEmpty ||
       ratepayerDate.get.month.nonEmpty || ratepayerDate.get.year.nonEmpty)
 

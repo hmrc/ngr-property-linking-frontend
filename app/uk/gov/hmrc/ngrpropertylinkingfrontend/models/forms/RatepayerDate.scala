@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
-import play.api.data.Forms.{mapping, optional, text}
+import play.api.data.Forms.{mapping, text}
 import play.api.data.Mapping
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CommonFormValidators
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 final case class RatepayerDate(day: String, month: String, year: String) {
   lazy val ratepayerDate = LocalDate.of(year.toInt, month.toInt, day.toInt)

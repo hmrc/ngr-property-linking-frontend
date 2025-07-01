@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.mvc.RequestHeader
@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, CurrentRatepayer, PropertyLinkingUserAnswers}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccountView, BusinessRatesBillView, CurrentRatepayerView}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.BusinessRatesBillView
 
 import java.time.LocalDate
 import scala.concurrent.Future

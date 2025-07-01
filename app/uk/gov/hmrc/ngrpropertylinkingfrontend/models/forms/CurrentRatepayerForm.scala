@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
-import play.api.data.{Form, Mapping}
+import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, text}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.libs.json.{Json, OFormat}
@@ -24,36 +24,45 @@ import play.api.libs.json.{Json, OFormat}
 import scala.util.Try
 import java.time.LocalDate
 
-final case class CurrentRatepayerForm(radioValue: String, ratepayerDate: Option[RatepayerDate])
+final case class CurrentRatepayerForm(radioValue: String, maybeRatepayerDate: Option[RatepayerDate])
 
 object CurrentRatepayerForm extends CommonFormValidators with Mappings {
   implicit val format: OFormat[CurrentRatepayerForm] = Json.format[CurrentRatepayerForm]
 
   private val radioUnselectedError = "currentRatepayer.radio.unselected.error"
-  private val currentRatepayerRadio       = "current-ratepayer-radio"
+  private val currentRatepayerRadio = "current-ratepayer-radio"
   
   def unapply(currentRatepayerForm: CurrentRatepayerForm): Option[(String, Option[RatepayerDate])] =
     Some(currentRatepayerForm.radioValue,
-      currentRatepayerForm.ratepayerDate)
+      currentRatepayerForm.maybeRatepayerDate)
 
-  private def areDayMonthYearEntered(currentRatepayer: CurrentRatepayerForm): Boolean  =
-    val ratepayerDate: Option[RatepayerDate] = currentRatepayer.ratepayerDate
-    isDateDefined(currentRatepayer) && ratepayerDate.get.day.nonEmpty &&
-      ratepayerDate.get.month.nonEmpty && ratepayerDate.get.year.nonEmpty
+  private def areDayMonthYearEntered(currentRatepayer: CurrentRatepayerForm): Boolean = {
+    val maybeRatepayerDate: Option[RatepayerDate] = currentRatepayer.maybeRatepayerDate
 
-  private def isDayMonthOrYearEntered(currentRatepayer: CurrentRatepayerForm): Boolean =
-    val ratepayerDate: Option[RatepayerDate] = currentRatepayer.ratepayerDate
-    isDateDefined(currentRatepayer) && (ratepayerDate.get.day.nonEmpty ||
-      ratepayerDate.get.month.nonEmpty || ratepayerDate.get.year.nonEmpty)
+    isDateDefined(currentRatepayer) && maybeRatepayerDate.get.day.nonEmpty &&
+      maybeRatepayerDate.get.month.nonEmpty && maybeRatepayerDate.get.year.nonEmpty
+  }
 
-  private def isDateEmpty(currentRatepayer: CurrentRatepayerForm): Boolean =
-    currentRatepayer.radioValue.equals("After") && currentRatepayer.ratepayerDate.isEmpty
+  private def isDayMonthOrYearEntered(currentRatepayer: CurrentRatepayerForm): Boolean = {
+    val maybeRatepayerDate: Option[RatepayerDate] = currentRatepayer.maybeRatepayerDate
 
-  private def isDateDefined(currentRatepayer: CurrentRatepayerForm): Boolean =
-    currentRatepayer.radioValue.equals("After") && currentRatepayer.ratepayerDate.nonEmpty
+    isDateDefined(currentRatepayer) && (maybeRatepayerDate.get.day.nonEmpty ||
+      maybeRatepayerDate.get.month.nonEmpty || maybeRatepayerDate.get.year.nonEmpty)
+  }
 
-  private def isDateDigits(ratepayerDate: RatepayerDate): Boolean =
-    Try(ratepayerDate.day.toInt).isSuccess && Try(ratepayerDate.month.toInt).isSuccess && Try(ratepayerDate.year.toInt).isSuccess
+  private def isDateEmpty(currentRatepayer: CurrentRatepayerForm): Boolean = {
+    currentRatepayer.radioValue.equals("After") && currentRatepayer.maybeRatepayerDate.isEmpty
+  }
+
+  private def isDateDefined(currentRatepayer: CurrentRatepayerForm): Boolean = {
+    currentRatepayer.radioValue.equals("After") && currentRatepayer.maybeRatepayerDate.nonEmpty
+  }
+
+  private def isDateDigits(ratepayerDate: RatepayerDate): Boolean = {
+    Try(ratepayerDate.day.toInt).isSuccess &&
+      Try(ratepayerDate.month.toInt).isSuccess &&
+      Try(ratepayerDate.year.toInt).isSuccess
+  }
 
   private def isDateNonEmpty[A]: Constraint[A] =
     Constraint ((input: A) =>
@@ -68,7 +77,7 @@ object CurrentRatepayerForm extends CommonFormValidators with Mappings {
     Constraint((input: A) =>
       val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
       if (isDateDefined(currentRatepayer))
-        val ratepayerDate = currentRatepayer.ratepayerDate.get
+        val ratepayerDate = currentRatepayer.maybeRatepayerDate.get
         (ratepayerDate.day.isEmpty, ratepayerDate.month.isEmpty, ratepayerDate.year.isEmpty) match
           case (true, true, false)  => Invalid("currentRatepayer.day.month.empty.error")
           case (true, false, true)  => Invalid("currentRatepayer.day.year.empty.error")
@@ -107,13 +116,14 @@ object CurrentRatepayerForm extends CommonFormValidators with Mappings {
           None
 
       if (isDayMonthOrYearEntered(currentRatepayer))
-        val ratepayerDate = currentRatepayer.ratepayerDate.get
+        val ratepayerDate = currentRatepayer.maybeRatepayerDate.get
         val dayValidationError = if (ratepayerDate.day.nonEmpty) dayValidation(ratepayerDate) else None
         val monthValidationError = if (ratepayerDate.month.nonEmpty) monthValidation(ratepayerDate) else None
         val yearValidationError = if (ratepayerDate.year.nonEmpty) yearValidation(ratepayerDate) else None
         val validationErrors: Seq[ValidationError] = Seq(dayValidationError, monthValidationError, yearValidationError)
           .filterNot(_.isEmpty)
           .map(_.get)
+
         if (validationErrors.isEmpty) Valid else Invalid(validationErrors)
       else
         Valid
@@ -122,8 +132,8 @@ object CurrentRatepayerForm extends CommonFormValidators with Mappings {
   private def isDateValid[A]: Constraint[A] =
     Constraint((input: A) =>
       val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
-      if (areDayMonthYearEntered(currentRatepayer) && isDateDigits(currentRatepayer.ratepayerDate.get) &&
-        Try(currentRatepayer.ratepayerDate.get.ratepayerDate).isFailure)
+      if (areDayMonthYearEntered(currentRatepayer) && isDateDigits(currentRatepayer.maybeRatepayerDate.get) &&
+        Try(currentRatepayer.maybeRatepayerDate.get.ratepayerDate).isFailure)
           Invalid("currentRatepayer.date.format.error")
       else
         Valid
@@ -132,8 +142,8 @@ object CurrentRatepayerForm extends CommonFormValidators with Mappings {
   private def isDateBetween1stApril2026AndToday[A]: Constraint[A] =
     Constraint((input: A) =>
       val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
-      if (areDayMonthYearEntered(currentRatepayer) && Try(currentRatepayer.ratepayerDate.get.ratepayerDate).isSuccess) {
-        val date = currentRatepayer.ratepayerDate.get.ratepayerDate
+      if (areDayMonthYearEntered(currentRatepayer) && Try(currentRatepayer.maybeRatepayerDate.get.ratepayerDate).isSuccess) {
+        val date = currentRatepayer.maybeRatepayerDate.get.ratepayerDate
         val firstAprilDate = LocalDate.of(2026, 4, 1)
         if (date.isBefore(firstAprilDate) || date.isAfter(LocalDate.now()))
           Invalid("currentRatepayer.date.invalid.error")

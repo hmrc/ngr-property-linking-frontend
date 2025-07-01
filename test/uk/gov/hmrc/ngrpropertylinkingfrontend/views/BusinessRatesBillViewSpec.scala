@@ -23,8 +23,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{BusinessRatesBillForm, CurrentRatepayerForm}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccountView, BusinessRatesBillView, CurrentRatepayerView}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.BusinessRatesBillForm
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.BusinessRatesBillView
 
 class BusinessRatesBillViewSpec extends ViewBaseSpec {
   lazy val view: BusinessRatesBillView = inject[BusinessRatesBillView]

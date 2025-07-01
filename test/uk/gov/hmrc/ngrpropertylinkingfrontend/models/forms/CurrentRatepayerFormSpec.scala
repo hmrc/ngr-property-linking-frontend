@@ -21,7 +21,6 @@ import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.FormError
 import play.api.libs.json.Json
 
-import java.time.LocalDate
 import scala.collection.immutable.ArraySeq
 
 class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
@@ -41,15 +40,14 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
     //has to fall between 1 April 2026 and today.
     //Below test will automatically use today's date as become ratepayer date.
     "bind successfully with current ratepayer radio value as After and valid date" ignore {
-      val today = LocalDate.now()
       val data = Map("current-ratepayer-radio" -> "After",
-        "ratepayerDate.day" -> today.getDayOfMonth.toString,
-        "ratepayerDate.month" -> today.getMonthValue.toString,
-        "ratepayerDate.year" -> today.getYear.toString)
+        "ratepayerDate.day" -> "1",
+        "ratepayerDate.month" -> "4",
+        "ratepayerDate.year" -> "2026")
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe false
-      boundForm.value shouldBe Some(CurrentRatepayerForm("After", Some(RatepayerDate(today.getDayOfMonth.toString, today.getMonthValue.toString, today.getYear.toString))))
+      boundForm.value shouldBe Some(CurrentRatepayerForm("After", Some(RatepayerDate("1", "4", "2026"))))
     }
 
     "bind successfully with a valid current ratepayer radio value and invalid date" in {
@@ -240,7 +238,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
 
       json shouldBe Json.obj(
         "radioValue" -> "After",
-        "ratepayerDate" -> Json.obj(
+        "maybeRatepayerDate" -> Json.obj(
           "day" -> "1",
           "month" -> "4",
           "year" -> "2026"
@@ -258,7 +256,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
 
     "deserialize from JSON correctly when selected After" in {
       val json = Json.obj("radioValue" -> "After",
-        "ratepayerDate" -> Json.obj(
+        "maybeRatepayerDate" -> Json.obj(
           "day" -> "1",
           "month" -> "4",
           "year" -> "2026"

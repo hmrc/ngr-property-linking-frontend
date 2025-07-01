@@ -24,7 +24,6 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 
-import java.net.URL
 import java.time.Instant
 import scala.concurrent.Future
 

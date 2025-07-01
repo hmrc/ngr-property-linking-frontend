@@ -19,7 +19,6 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.FormError
-import play.api.libs.json.Json
 
 class ConnectionToPropertyFormSpec extends AnyWordSpec with Matchers {
 

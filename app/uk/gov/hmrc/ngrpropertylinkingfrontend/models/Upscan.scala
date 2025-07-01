@@ -24,7 +24,6 @@ import registration.CredId
 
 case class UpscanReference(value: String)
 
-//TODO check we use all the classes and whether they can be cleaned up
 object UpscanReference {
   implicit val referenceReader: Reads[UpscanReference] = Reads.StringReads.map(UpscanReference(_))
   implicit val referenceWrites: Writes[UpscanReference] = Writes.StringWrites.contramap(_.value)
@@ -116,8 +115,6 @@ case class UpscanCallBackErrorDetails(failureReason: String, message: String)
 
 object UpscanCallback {
   
-//TODO move some of these to tests as they are only used there and not in actual code
-  // must be in scope to create Reads for ReadyCallbackBody
   private implicit val urlFormat: Format[URL] = HttpUrlFormat.format
 
   implicit val uploadDetailsReads: Reads[UpscanCallbackUploadDetails] = Json.reads[UpscanCallbackUploadDetails]
@@ -148,12 +145,5 @@ object UpscanCallback {
       case _ => JsError(s"Missing type distriminator")
     }
 }
-
-//case class UploadDetails(
-//                          //key: UploadKey,
-//                          reference: Reference,
-//                          status: UploadStatus.UploadStatus,
-//                          lastUpdated: Instant
-//                        )
 
 

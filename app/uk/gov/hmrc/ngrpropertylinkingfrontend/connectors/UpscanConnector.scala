@@ -32,9 +32,9 @@ class UpscanConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig
   def initiate(implicit headerCarrier: HeaderCarrier): Future[UpscanInitiateResponse] = {
     val upscanInitiateUri = s"${appConfig.upscanHost}/upscan/v2/initiate"
     val request = UpscanInitiateRequest(
-      callbackUrl = s"${appConfig.ngrPropertyLinkingFrontend}/internal/callback-from-upscan",
-      successRedirect = Some(s"${appConfig.ngrPropertyLinkingFrontend}/ngr-property-linking-frontend/uploaded-business-rates-bill"),
-      errorRedirect = Some(s"${appConfig.ngrPropertyLinkingFrontend}/ngr-property-linking-frontend/upload-business-rates-bill"),
+      callbackUrl = s"${appConfig.ngrPropertyLinkingFrontendInternalUrl}/callback-from-upscan",
+      successRedirect = Some(s"${appConfig.ngrPropertyLinkingFrontendUrl}/uploaded-business-rates-bill"),
+      errorRedirect = Some(s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill"),
       maximumFileSize = Some(25000000),//25MB
       minimumFileSize = Some(100))
     

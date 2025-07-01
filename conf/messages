@@ -558,7 +558,9 @@ uploadBusinessRatesBill.p1=The file must be a Word document, PDF or image (PNG) 
 uploadBusinessRatesBill.noFileChosen=No file chosen
 
 #UploadedBusinessRatesBill
-uploadedBusinessRatesBill.uploaded=Uploaded
+uploadedBusinessRatesBill.uploaded = Uploaded
+uploadedBusinessRatesBill.uploaded-virus = The selected file contains a virus
+uploadedBusinessRatesBill.uploaded-unknown = The selected file could not be uploaded - try again
 
 #error message for uploads
 

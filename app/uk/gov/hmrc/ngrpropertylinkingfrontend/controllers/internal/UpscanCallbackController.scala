@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.internalcontrollers
+package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.internal
 
 import play.api.i18n.I18nSupport
 import play.api.libs.json.JsValue
@@ -41,29 +41,12 @@ class UpscanCallbackController @Inject()(
                                           mcc: MessagesControllerComponents
                                         )(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-
-  private val allowedMimeTypes: Set[String] = Set(
-    "application/pdf",
-    "image/png"
-  )
-
+  
   def handleUpscanCallback: Action[JsValue] = Action.async(parse.json) { implicit request =>
     withJsonBody[UpscanCallback] {
       case success @ UpscanCallbackSuccess(reference, _, uploadDetails) =>
-        println(Console.MAGENTA + "UPSCAN CALLBACK SUCCESS")
-        val validatedCallback =
-          if (allowedMimeTypes.contains(uploadDetails.fileMimeType)) {
-            success
-          } else {
-            UpscanCallbackFailure(
-              reference,
-              UpscanCallBackErrorDetails("InvalidFileType", "User has uploaded unsupported file type")
-            )
-          }
-        processCallback(validatedCallback)
-
+        processCallback(success)
       case failure: UpscanCallbackFailure =>
-        println(Console.MAGENTA + "UPSCAN CALLBACK FAILURE")
         processCallback(failure)
     }
   }
@@ -74,7 +57,6 @@ class UpscanCallbackController @Inject()(
         println(Console.MAGENTA + "PROCESS CALLBACK")
         val updatedRecord = buildUpdatedUpscanRecord(callback, existingUpscanRecord.credId)
         upscanRepo.upsertUpscanRecord(updatedRecord).map(_ => Ok)
-
       case None =>
         Future.failed(new RuntimeException(s"Upscan record not found for reference: ${callback.reference.value}"))
     }

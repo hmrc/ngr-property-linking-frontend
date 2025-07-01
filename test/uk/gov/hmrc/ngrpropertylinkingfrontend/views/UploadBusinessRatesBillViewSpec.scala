@@ -31,7 +31,7 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
   val title = "Upload your business rates bill - GOV.UK"
   val heading = "Upload your business rates bill"
   val p1 = "1 Mulholland Drive, LA, 6BH 4PE"
-  val p2 = "The file must be a Word document, PDF or image (PNG or JPG) and be less than 25MB."
+  val p2 = "The file must be a Word document, PDF or image (PNG) and be less than 25MB."
   val continueButton = "Continue"
 
   val content: NavigationBarContent = NavBarPageContents.CreateNavBar(
@@ -49,7 +49,7 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
     val navTitle = "head > title"
     val heading = "h1.govuk-heading-l"
     val caption = "h2.govuk-caption-l"
-    val paragraph = "p.govuk-caption-m"
+    val paragraph = "#main-content > div > div.govuk-grid-column-two-thirds > div > p"
     val fileInput = "input#file-upload-1"
     val continueButton = "button.govuk-button"
   }
@@ -61,15 +61,29 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
   "UploadBusinessRatesBillView" must {
     "render consistently using apply and render" must {
 
+      val rendered = view.apply(
+        form = form,
+        upscanResponse = upscanResponse,
+        attributes = Map("accept" -> ".pdf,.png,.docx",
+        "data-max-file-size" -> "100000000",
+        "data-min-file-size" -> "1000"),
+        errorMessage = None,
+        address = "address",
+        navigationBarContent = content,
+        searchAgainUrl = "searchAgain",
+        dashboardUrl = "dashboard")(request, messages, mockConfig)
 
-
-      val rendered = view.apply(form, upscanResponse, None, "address", navigationBarContent = content, searchAgainUrl = "searchAgain", dashboardUrl = "dashboard")(request, messages, mockConfig)
-      val renderedHtml = view.render(form, upscanResponse, None, "address", navigationBarContent = content, searchAgainUrl = "searchAgain", dashboardUrl = "dashboard", request, messages, mockConfig).body
-      lazy val htmlF = view.f(form, upscanResponse, None, "address", content, "searchAgain", "dashboard")
-
-      "htmlF is not empty" in {
-        htmlF.toString() must not be empty
-      }
+      val renderedHtml = view.render(
+        form = form,
+        upscanResponse = upscanResponse,
+        attributes = Map("accept" -> ".pdf,.png,.docx",
+        "data-max-file-size" -> "100000000",
+        "data-min-file-size" -> "1000"),
+        errorMessage =  None,
+        address = "address",
+        navigationBarContent = content,
+        searchAgainUrl = "searchAgain",
+        dashboardUrl = "dashboard", request, messages, mockConfig).body
 
       "apply must be the same as render" in {
         rendered.body mustBe renderedHtml
@@ -82,7 +96,17 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
 
     "display the correct static content" must {
       implicit val document: Document =
-        Jsoup.parse(view(form, upscanResponse, None, "address", content, "searchAgain", "dashboard").body)
+        Jsoup.parse(view(
+          form,
+          upscanResponse,
+          attributes = Map("accept" -> ".pdf,.png,.docx",
+          "data-max-file-size" -> "100000000",
+          "data-min-file-size" -> "1000"),
+          None,
+          "address",
+          content,
+          "searchAgain",
+          "dashboard").body)
 
       "have the correct page title" in {
         elementText(Selectors.navTitle) mustBe title

@@ -20,6 +20,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.internal.UpscanCallbackController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId

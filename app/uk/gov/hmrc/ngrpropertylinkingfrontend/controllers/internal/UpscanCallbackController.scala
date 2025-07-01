@@ -54,7 +54,6 @@ class UpscanCallbackController @Inject()(
   private def processCallback(callback: UpscanCallback): Future[Result] = {
     upscanRepo.findByReference(callback.reference).flatMap {
       case Some(existingUpscanRecord) =>
-        println(Console.MAGENTA + "PROCESS CALLBACK")
         val updatedRecord = buildUpdatedUpscanRecord(callback, existingUpscanRecord.credId)
         upscanRepo.upsertUpscanRecord(updatedRecord).map(_ => Ok)
       case None =>

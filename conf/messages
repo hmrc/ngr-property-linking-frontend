@@ -569,7 +569,7 @@ uploadedBusinessRatesBill.uploaded-unknown = The selected file could not be uplo
 #scenario 6
 uploadBusinessRatesBill.error.exceedsMaximumSize = The selected file must be smaller than 100MB
 #scenario 7
-uploadBusinessRatesBill.error.noFileSelected = Select a PDF or image (PNG)
+uploadBusinessRatesBill.error.noFileSelected = Select an up-to-date business rates bill
 #scenario 11
 uploadBusinessRatesBill.error.emptyFileUploaded = The selected file is empty
 uploadBusinessRatesBill.error.fileTooSmall = The selected file is too small

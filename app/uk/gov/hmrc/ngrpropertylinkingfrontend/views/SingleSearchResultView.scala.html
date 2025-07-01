@@ -28,6 +28,7 @@
     govukPagination : GovukPagination,
     govukTable : GovukTable,
     govukDetails : GovukDetails,
+    govukSelect: GovukSelect
 )
 
 @(navigationBarContent: NavigationBarContent,
@@ -69,6 +70,12 @@
             Showing <strong>@pageBottom</strong> to <strong>@pageTop</strong> of <strong>@totalProperties</strong> items.
             <a href= @searchAgainUrl class="govuk-link">@messages("singleSearchResultPage.details.link")</a>
         </p>
+        @govukSelect(
+            Select(
+                id = "sort",
+                name = "sort",
+                label = Label(content = Text(messages("singleSearchResultPage.sortBy.label")))
+        ))
         @govukTable(propertySearchResultTable)
         @govukPagination(paginationData.toPagination)
     </div>

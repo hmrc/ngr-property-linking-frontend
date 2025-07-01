@@ -67,11 +67,6 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
     request.credId match {
       case Some(rawCredId) =>
         val credId = CredId(rawCredId)
-
-        //TODO address this Thread.sleep. Short term it may be possible to reduce the wait time, long term replace it
-        // Keeping delay (NOTE: this blocks a thread — avoid in production)
-        Thread.sleep(500)
-
         upscanRepo.findByCredId(credId).flatMap {
           case Some(record) =>
             val fileName = record.fileName.getOrElse(throw new NotFoundException("Missing Name"))

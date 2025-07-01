@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.{I18nSupport, Messages}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
@@ -44,16 +44,15 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
                                                   propertyLinkingRepo: PropertyLinkingRepo,
                                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-  
+
   val attributes: Map[String, String] = Map(
     "accept" -> ".pdf,.png,.docx",
-    "data-max-file-size" -> "1000000000000000",
-    "data-min-file-size" -> "1000000000000000"
+    "data-max-file-size" -> "100000000",
+    "data-min-file-size" -> "1000"
   )
-  
+
   def show(errorCode: Option[String]): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      println(Console.MAGENTA + errorCode + Console.RESET)
       val errorToDisplay: Option[String] = errorCode match {
         case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
         case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
@@ -69,41 +68,44 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
       request.credId match {
         case Some(rawCredId) =>
           val credId = CredId(rawCredId)
-
-          val upload: Future[Result] = for {
+          for {
             upscanInitiateResponse <- upscanConnector.initiate
-            upscanRecord = UpscanRecord(
-              credId = credId,
-              reference = upscanInitiateResponse.reference,
-              status = "INITIATED", // TODO: replace with status classes?
-              downloadUrl = None,
-              fileName = None,
-              failureReason = None,
-              failureMessage = None
+            _ <- upscanRepo.upsertUpscanRecord(
+              UpscanRecord(
+                credId = credId,
+                reference = upscanInitiateResponse.reference,
+                status = "INITIATED", // TODO: replace with status classes?
+                downloadUrl = None,
+                fileName = None,
+                failureReason = None,
+                failureMessage = None
+              )
             )
-            _ <- upscanRepo.upsertUpscanRecord(upscanRecord)
-            propertyOpt <- propertyLinkingRepo.findByCredId(credId)
-          } yield {
-            propertyOpt match {
+            maybeProperty <- propertyLinkingRepo.findByCredId(credId)
+            result <- maybeProperty match {
               case Some(property) =>
-                Ok(
-                  uploadView(
-                    uploadForm(),
-                    upscanInitiateResponse,
-                    attributes,
-                    errorToDisplay,
-                    upload = , 
-                    createDefaultNavBar,
-                    routes.FindAPropertyController.show.url,
-                    appConfig.ngrDashboardUrl
+                Future.successful(
+                  Ok(
+                    uploadView(
+                      uploadForm(),
+                      upscanInitiateResponse,
+                      attributes,
+                      errorToDisplay,
+                      property.vmvProperty.addressFull,
+                      createDefaultNavBar,
+                      routes.FindAPropertyController.show.url,
+                      appConfig.ngrDashboardUrl
+                    )
                   )
                 )
               case None =>
-                NotFound("Property not found") // or appropriate error handling
+                Future.failed(new NotFoundException("Could not find address from property linking repo"))
             }
-          }
+          } yield result
+
         case None =>
-          Future.failed(throw new NotFoundException("Missing credId in authenticated request"))
+          Future.failed(new NotFoundException("Missing credId in authenticated request"))
       }
+
     }
 }

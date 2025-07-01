@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.{I18nSupport, Messages}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
@@ -47,12 +47,13 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
   
   val attributes: Map[String, String] = Map(
     "accept" -> ".pdf,.png,.docx",
-    "data-max-file-size" -> "100000000",
-    "data-min-file-size" -> "1000"
+    "data-max-file-size" -> "1000000000000000",
+    "data-min-file-size" -> "1000000000000000"
   )
   
   def show(errorCode: Option[String]): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
+      println(Console.MAGENTA + errorCode + Console.RESET)
       val errorToDisplay: Option[String] = errorCode match {
         case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
         case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
@@ -68,8 +69,10 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
       request.credId match {
         case Some(rawCredId) =>
           val credId = CredId(rawCredId)
-          upscanConnector.initiate.flatMap { upscanInitiateResponse =>
-            val upscanRecord = UpscanRecord(
+
+          val upload: Future[Result] = for {
+            upscanInitiateResponse <- upscanConnector.initiate
+            upscanRecord = UpscanRecord(
               credId = credId,
               reference = upscanInitiateResponse.reference,
               status = "INITIATED", // TODO: replace with status classes?
@@ -78,11 +81,25 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
               failureReason = None,
               failureMessage = None
             )
-            upscanRepo.upsertUpscanRecord(upscanRecord).flatMap { _ =>
-              propertyLinkingRepo.findByCredId(credId).map {
-                case Some(property) => Ok(uploadView(uploadForm(), upscanInitiateResponse, attributes, errorToDisplay, property.vmvProperty.addressFull, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
-                case None => throw new NotFoundException("Could not find address from property linking repo")
-              }
+            _ <- upscanRepo.upsertUpscanRecord(upscanRecord)
+            propertyOpt <- propertyLinkingRepo.findByCredId(credId)
+          } yield {
+            propertyOpt match {
+              case Some(property) =>
+                Ok(
+                  uploadView(
+                    uploadForm(),
+                    upscanInitiateResponse,
+                    attributes,
+                    errorToDisplay,
+                    upload = , 
+                    createDefaultNavBar,
+                    routes.FindAPropertyController.show.url,
+                    appConfig.ngrDashboardUrl
+                  )
+                )
+              case None =>
+                NotFound("Property not found") // or appropriate error handling
             }
           }
         case None =>

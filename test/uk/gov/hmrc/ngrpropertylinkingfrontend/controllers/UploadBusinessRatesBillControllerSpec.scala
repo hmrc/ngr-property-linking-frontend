@@ -21,7 +21,8 @@ import org.mockito.Mockito.when
 import org.scalatest.RecoverMethods.recoverToExceptionIf
 import play.api.http.Status.OK
 import play.api.i18n.Messages
-import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
+import play.api.test.Helpers.{await, contentAsString, defaultAwaitTimeout, status}
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{PropertyLinkingUserAnswers, UpscanInitiateResponse, UpscanReference}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadBusinessRatesBillView
@@ -72,13 +73,12 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
         when(mockUpscanConnector.initiate(any())).thenReturn(Future.successful(UpscanInitiateResponse(UpscanReference("ref"), uploadForm)))
         when(mockUpscanRepo.upsertUpscanRecord(any())).thenReturn(Future.successful(true))
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-        recoverToExceptionIf[RuntimeException] {
-          controller.show(None)(authenticatedFakeRequest)
-        }.map { ex =>
-          ex.getMessage mustBe "Missing credId in authenticated request"
-        }
-      }
 
+        val exception = intercept[NotFoundException] {
+          await(controller.show(None)(authenticatedFakeRequest))
+        }
+        exception.getMessage contains "Missing credId in authenticated request" mustBe true
+      }
 
       def testErrorCase(errorCode: String, expectedMessage: String): Unit = {
         mockRequest(hasCredId = true)

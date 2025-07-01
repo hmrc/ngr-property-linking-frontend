@@ -49,11 +49,15 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
         NGRSummaryListRow(
           fileName,
           None,
-          Seq(if (status.equals("READY")) "Uploaded" else status),
-          //TODO this needs to change the status of the file upload in the DB to 'Removed'
+          Seq( status match{
+            case status if status.equals("READY") => messages("uploadedBusinessRatesBill.uploaded")
+            case status if status.equals("REJECTED") => messages("uploadedBusinessRatesBill.uploaded")
+            case status if status.equals("QUARANTINE") => messages("uploadedBusinessRatesBill.uploaded-virus")
+            case status if status.equals("UNKNOWN") => messages("uploadedBusinessRatesBill.uploaded-unknown")
+          }),
           Some(Link(Call("GET", routes.UploadBusinessRatesBillController.show(None).url), "remove-link", "Remove")),
           Some(Link(Call("GET", downloadUrl.getOrElse("")), "file-download-link", "")),
-          if (status.equals("READY")) Some("govuk-tag govuk-tag--green") else None,
+          if (status.equals("READY")) Some("govuk-tag govuk-tag--green") else Some("govuk-tag govuk-tag--red"),
           "govuk-summary-list__key_width"
         )
       ).map(summarise)

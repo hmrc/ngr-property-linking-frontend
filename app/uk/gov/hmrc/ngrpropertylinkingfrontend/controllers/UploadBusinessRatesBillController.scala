@@ -18,6 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
@@ -29,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{PropertyLinkingRepo, UpscanRepo}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,7 +46,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
   extends FrontendController(mcc) with I18nSupport {
   
   val attributes: Map[String, String] = Map(
-    "accept" -> ".pdf,.png",
+    "accept" -> ".pdf,.png,.docx",
     "data-max-file-size" -> "100000000",
     "data-min-file-size" -> "1000"
   )
@@ -76,19 +78,15 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
               failureReason = None,
               failureMessage = None
             )
-
             upscanRepo.upsertUpscanRecord(upscanRecord).flatMap { _ =>
               propertyLinkingRepo.findByCredId(credId).map {
                 case Some(property) => Ok(uploadView(uploadForm(), upscanInitiateResponse, attributes, errorToDisplay, property.vmvProperty.addressFull, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
-                //TODO move this to the repo class?
-                case None => throw new RuntimeException("Could not get address from property linking repo")
+                case None => throw new NotFoundException("Could not find address from property linking repo")
               }
             }
           }
-
         case None =>
-          //TODO improve message/error
-          Future.failed(new RuntimeException("Missing credId in authenticated request"))
+          Future.failed(throw new NotFoundException("Missing credId in authenticated request"))
       }
     }
 }

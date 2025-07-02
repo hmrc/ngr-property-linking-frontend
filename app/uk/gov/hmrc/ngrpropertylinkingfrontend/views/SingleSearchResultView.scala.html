@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
@@ -39,6 +40,7 @@
   pageBottom: Int,
   paginationData: PaginationData,
   propertySearchResultTable: Table,
+  sortingSelectItems: Seq[SelectItem]
 )(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @dropDownContent = {
@@ -74,7 +76,8 @@
             Select(
                 id = "sort",
                 name = "sort",
-                label = Label(content = Text(messages("singleSearchResultPage.sortBy.label")))
+                label = Label(content = Text(messages("singleSearchResultPage.sortBy.label"))),
+                items = sortingSelectItems
         ))
         @govukTable(propertySearchResultTable)
         @govukPagination(paginationData.toPagination)

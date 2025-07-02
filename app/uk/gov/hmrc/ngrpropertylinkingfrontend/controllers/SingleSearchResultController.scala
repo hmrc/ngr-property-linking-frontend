@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Table
+import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
@@ -52,6 +53,14 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
     }
   }
 
+  private def generateSortingSelectItems(implicit messages: Messages): Seq[SelectItem] =
+    (1 until 8).map(index =>
+      SelectItem(
+        value = Some(index.toString),
+        text = messages(s"singleSearchResultPage.sortBy.item$index")
+      )
+    )
+  
   def show(page: Int = 1): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
@@ -122,6 +131,7 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
                   pageBottom = pageBottom,
                   paginationData = PaginationData(totalPages = totalPages, currentPage = page, baseUrl = "/ngr-property-linking-frontend/results", pageSize = defaultPageSize),
                   propertySearchResultTable = generateTable(properties.vmvProperties.properties),
+                  sortingSelectItems = generateSortingSelectItems
                 ))
               )
         case None => Future.successful(Redirect(routes.FindAPropertyController.show))

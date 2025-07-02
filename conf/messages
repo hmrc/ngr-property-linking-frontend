@@ -476,6 +476,8 @@ singleSearchResultPage.sortBy.item3 = Property Reference (Low to High)
 singleSearchResultPage.sortBy.item4 = Property Reference (High to Low )
 singleSearchResultPage.sortBy.item5 = Description ( A to Z)
 singleSearchResultPage.sortBy.item6 = Description (Z to A)
+singleSearchResultPage.sortBy.item7 = Rateable value ( Low to High)
+singleSearchResultPage.sortBy.item8 = Rateable value ( High to Low)
 
 #CurrentRatepayer
 currentRatepayer.title = When did you become the current ratepayer?

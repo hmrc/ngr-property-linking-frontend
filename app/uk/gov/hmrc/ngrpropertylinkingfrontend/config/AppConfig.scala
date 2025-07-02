@@ -34,6 +34,7 @@ trait AppConfig {
   val ngrStubHost: String
   def getString(key: String): String
   val timeToLive: String
+  val callbackEndpointTarget: String
 }
 
 @Singleton
@@ -48,6 +49,7 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val ngrLogoutUrl: String = s"$dashboardHost/ngr-dashboard-frontend/signout"
   override val ngrStubHost: String = getString("microservice.services.ngr-stub.host")
   override val timeToLive: String = servicesConfig.getString("time-to-live.time")
+  override val callbackEndpointTarget: String = getString("upscan.callback-endpoint")
 
   def getString(key: String): String =
     config.getOptional[String](key).filter(!_.isBlank).getOrElse(throwConfigNotFoundError(key))

@@ -67,28 +67,31 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
     request.credId match {
       case Some(rawCredId) =>
         val credId = CredId(rawCredId)
-        upscanRepo.findByCredId(credId).flatMap {
-          case Some(record) =>
-            val fileName = record.fileName.getOrElse(throw new NotFoundException("Missing Name"))
-            propertyLinkingRepo.findByCredId(credId).map {
-              case Some(property) =>
-                record.failureReason match {
-                  case Some(errorToDisplay) =>
-                    Redirect(routes.UploadBusinessRatesBillController.show(Some(errorToDisplay)))
-                  case None =>
-                    Ok(uploadedView(
-                      createDefaultNavBar,
-                      createSummaryList(fileName, record.status, record.downloadUrl),
-                      property.vmvProperty.addressFull,
-                      false
-                    ))
-                }
-              case None =>
-                throw new NotFoundException("failed to find property from mongo")
-            }
-          case None =>
-            throw new RuntimeException(s"No UpscanRecord found for credId: ${credId.value}")
+        val resultFut = for {
+          record <- upscanRepo.findByCredId(credId).map {
+            case Some(r) => r
+            case None => throw new RuntimeException(s"No UpscanRecord found for credId: ${credId.value}")
+          }
+          property <- propertyLinkingRepo.findByCredId(credId).map {
+            case Some(p) => p
+            case None => throw new NotFoundException("failed to find property from mongo")
+          }
+        } yield {
+          val fileName = record.fileName.getOrElse(throw new NotFoundException("Missing Name"))
+          record.failureReason match {
+            case Some(errorToDisplay) =>
+              Redirect(routes.UploadBusinessRatesBillController.show(Some(errorToDisplay)))
+            case None =>
+              Ok(uploadedView(
+                createDefaultNavBar,
+                createSummaryList(fileName, record.status, record.downloadUrl),
+                property.vmvProperty.addressFull,
+                false
+              ))
+          }
         }
+        resultFut
+
       case None =>
         Future.failed(new RuntimeException("No credId found in request"))
     }

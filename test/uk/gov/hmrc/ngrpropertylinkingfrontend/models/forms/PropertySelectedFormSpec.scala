@@ -38,7 +38,7 @@ class PropertySelectedFormSpec extends AnyWordSpec with Matchers {
       val boundForm = PropertySelectedForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("confirm-property-radio", List("error.required")))
+      boundForm.errors should contain(FormError("confirm-property-radio", List("propertySelected.error.required")))
     }
 
     "fail to bind when confirmPropertyRadio is empty" in {
@@ -46,7 +46,7 @@ class PropertySelectedFormSpec extends AnyWordSpec with Matchers {
       val boundForm = PropertySelectedForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("confirm-property-radio", List("error.required")))
+      boundForm.errors should contain(FormError("confirm-property-radio", List("propertySelected.error.required")))
     }
 
 

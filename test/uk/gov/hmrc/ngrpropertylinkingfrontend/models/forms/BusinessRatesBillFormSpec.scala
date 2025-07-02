@@ -38,7 +38,7 @@ class BusinessRatesBillFormSpec extends AnyWordSpec with Matchers {
       val boundForm = BusinessRatesBillForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("business-rates-bill-radio", List("error.required")))
+      boundForm.errors should contain(FormError("business-rates-bill-radio", List("businessRatesBill.error.required")))
     }
 
     "fail to bind when businessRatesBillRadio is empty" in {
@@ -46,7 +46,7 @@ class BusinessRatesBillFormSpec extends AnyWordSpec with Matchers {
       val boundForm = BusinessRatesBillForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("business-rates-bill-radio", List("error.required")))
+      boundForm.errors should contain(FormError("business-rates-bill-radio", List("businessRatesBill.error.required")))
     }
 
 

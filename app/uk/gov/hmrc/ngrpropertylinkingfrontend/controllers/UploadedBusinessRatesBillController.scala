@@ -69,7 +69,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
         val credId = CredId(rawCredId)
         upscanRepo.findByCredId(credId).flatMap {
           case Some(record) =>
-            val fileName = record.fileName.getOrElse(throw new NotFoundException("Missing Name"))
+            val fileName = record.fileName.getOrElse("Missing name")
             propertyLinkingRepo.findByCredId(credId).map {
               case Some(property) =>
                 record.failureReason match {

@@ -14,37 +14,50 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
+package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.internal
 
+import play.api.i18n.I18nSupport
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanCallback, UpscanCallbackFailure, UpscanCallbackSuccess, UpscanRecord}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
-import play.api.mvc.{Action, MessagesControllerComponents}
+import play.api.mvc.{Action, MessagesControllerComponents, Result}
 import play.api.i18n.I18nSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UpscanRepo
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UpscanCallbackController @Inject()(upscanRepo: UpscanRepo,
-                                         authenticate: AuthRetrievals,
-                                         isRegisteredCheck: RegistrationAction,
-                                         mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
+class UpscanCallbackController @Inject()(
+                                          upscanRepo: UpscanRepo,
+                                          authenticate: AuthRetrievals,
+                                          isRegisteredCheck: RegistrationAction,
+                                          mcc: MessagesControllerComponents
+                                        )(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-//TODO move some to service?
+  
   def handleUpscanCallback: Action[JsValue] = Action.async(parse.json) { implicit request =>
-    withJsonBody[UpscanCallback] { upscanCallback =>
-      upscanRepo.findByReference(upscanCallback.reference).flatMap {
-        case Some(existingUpscanRecord) =>
-          val updatedRecord: UpscanRecord = buildUpdatedUpscanRecord(upscanCallback, existingUpscanRecord.credId)
-          upscanRepo.upsertUpscanRecord(updatedRecord).map(_ => Ok)
-        case None =>
-          Future.failed(new RuntimeException("Upscan record not found for reference: " + upscanCallback.reference.value))
-      }
+    withJsonBody[UpscanCallback] {
+      case success @ UpscanCallbackSuccess(reference, _, uploadDetails) =>
+        processCallback(success)
+      case failure: UpscanCallbackFailure =>
+        processCallback(failure)
+    }
+  }
+
+  private def processCallback(callback: UpscanCallback): Future[Result] = {
+    upscanRepo.findByReference(callback.reference).flatMap {
+      case Some(existingUpscanRecord) =>
+        val updatedRecord = buildUpdatedUpscanRecord(callback, existingUpscanRecord.credId)
+        upscanRepo.upsertUpscanRecord(updatedRecord).map(_ => Ok)
+      case None =>
+        Future.failed(new RuntimeException(s"Upscan record not found for reference: ${callback.reference.value}"))
     }
   }
 
@@ -59,6 +72,7 @@ class UpscanCallbackController @Inject()(upscanRepo: UpscanRepo,
         failureReason = None,
         failureMessage = None
       )
+
     case failure: UpscanCallbackFailure =>
       UpscanRecord(
         credId = credId,

@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
@@ -44,16 +44,20 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
                                                   propertyLinkingRepo: PropertyLinkingRepo,
                                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-  //http://localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill?errorMessage=%27file%27+field+not+found&key=f8ad3406-3992-4d0e-ba36-8ffa339707af&errorCode=InvalidArgument&errorRequestId=SomeRequestId&errorResource=NoFileReference
-  //http: //localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill?errorMessage=Your+proposed+upload+exceeds+the+maximum+allowed+size&key=b3368bf1-20d6-4421-a653-964c3529fb00&errorCode=EntityTooLarge&errorRequestId=SomeRequestId&errorResource=NoFileReference
-  //http://localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill?errorMessage=Your+proposed+upload+is+smaller+than+the+minimum+allowed+size&key=619ce5c8-a28c-4641-9957-01c6c50818ac&errorCode=EntityTooSmall&errorRequestId=SomeRequestId&errorResource=NoFileReference
+
+  val attributes: Map[String, String] = Map(
+    "accept" -> ".pdf,.png,.docx",
+    "data-max-file-size" -> "100000000",
+    "data-min-file-size" -> "1000"
+  )
+
   def show(errorCode: Option[String]): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      //Error scenarios 6 (too big) EntityTooLarge, 7 (no file) InvalidArgument, 11 (too small) EntityTooSmall
       val errorToDisplay: Option[String] = errorCode match {
         case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
         case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
         case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.fileTooSmall"))
+        case Some("InvalidFileType") => Some(Messages("uploadBusinessRatesBill.error.invalidFileType"))
         case Some("QUARANTINE") => Some(Messages("uploadBusinessRatesBill.error.virusDetected"))
         case Some("REJECTED") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
         case Some(reason) if reason.startsWith("UNKNOWN") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
@@ -64,29 +68,44 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
       request.credId match {
         case Some(rawCredId) =>
           val credId = CredId(rawCredId)
-          upscanConnector.initiate.flatMap { upscanInitiateResponse =>
-            val upscanRecord = UpscanRecord(
-              credId = credId,
-              reference = upscanInitiateResponse.reference,
-              status = "INITIATED", // TODO: replace with status classes?
-              downloadUrl = None,
-              fileName = None,
-              failureReason = None,
-              failureMessage = None
+          for {
+            upscanInitiateResponse <- upscanConnector.initiate
+            _ <- upscanRepo.upsertUpscanRecord(
+              UpscanRecord(
+                credId = credId,
+                reference = upscanInitiateResponse.reference,
+                status = "INITIATED", // TODO: replace with status classes?
+                downloadUrl = None,
+                fileName = None,
+                failureReason = None,
+                failureMessage = None
+              )
             )
-
-            upscanRepo.upsertUpscanRecord(upscanRecord).flatMap { _ =>
-              propertyLinkingRepo.findByCredId(credId).map {
-                case Some(property) => Ok(uploadView(uploadForm(), upscanInitiateResponse, errorToDisplay, property.vmvProperty.addressFull, createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl))
-                //TODO move this to the repo class?
-                case None => throw new RuntimeException("Could not get address from property linking repo")
-              }
+            maybeProperty <- propertyLinkingRepo.findByCredId(credId)
+            result <- maybeProperty match {
+              case Some(property) =>
+                Future.successful(
+                  Ok(
+                    uploadView(
+                      uploadForm(),
+                      upscanInitiateResponse,
+                      attributes,
+                      errorToDisplay,
+                      property.vmvProperty.addressFull,
+                      createDefaultNavBar,
+                      routes.FindAPropertyController.show.url,
+                      appConfig.ngrDashboardUrl
+                    )
+                  )
+                )
+              case None =>
+                Future.failed(new NotFoundException("Could not find address from property linking repo"))
             }
-          }
+          } yield result
 
         case None =>
-          //TODO improve message/error
-          Future.failed(new RuntimeException("Missing credId in authenticated request"))
+          Future.failed(new NotFoundException("Missing credId in authenticated request"))
       }
+
     }
 }

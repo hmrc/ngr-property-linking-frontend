@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData with DefaultAwaitTimeout{
   lazy val view: CheckYourAnswersView = inject[CheckYourAnswersView]
-  lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer("Before", None)), businessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"))
+  lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer("Before", None)), businessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"), evidenceDocument = Some("Evidence.jpg"))
 
   def controller() = new CheckYourAnswersController(
     view,
@@ -72,8 +72,8 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
     NGRSummaryListRow(
       messages("checkYourAnswers.EvidenceDocument"),
       None,
-      Seq("userAnswers.credId.value.toString"),
-      changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "evidence-document", messageKey = "service.change", visuallyHiddenMessageKey = Some("evidence-document")))
+      Seq("userAnswers.evidenceDocument.getOrElse()"),
+      changeLink = Some(Link(href = routes.UploadBusinessRatesBillController.show(Some("READY")), linkId = "evidence-document", messageKey = "service.change", visuallyHiddenMessageKey = Some("evidence-document")))
     ), //TODO CHANGE CURRENT RATEPAYER
     NGRSummaryListRow(
       messages("checkYourAnswers.PropertyConnection"),

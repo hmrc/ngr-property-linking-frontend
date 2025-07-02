@@ -47,9 +47,9 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
   val existingRecord: UpscanRecord = UpscanRecord(
     credId = credId,
     reference = reference,
-    status = "INITIATED",
+    status = "READY",
     downloadUrl = None,
-    fileName = None,
+    fileName = Some("FileName.jpg"),
     failureReason = None,
     failureMessage = None
   )
@@ -57,9 +57,9 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
   val existingRecordWithFailure: UpscanRecord = UpscanRecord(
     credId = credId,
     reference = reference,
-    status = "INITIATED",
+    status = "UNKNOWN",
     downloadUrl = None,
-    fileName = None,
+    fileName = Some("FileName.jpg"),
     failureReason = Some("QUARANTINE"),
     failureMessage = None
   )

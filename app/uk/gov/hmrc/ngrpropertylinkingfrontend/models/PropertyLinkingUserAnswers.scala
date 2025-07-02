@@ -25,7 +25,8 @@ case class PropertyLinkingUserAnswers (credId: CredId,
                                        currentRatepayer: Option[CurrentRatepayer] = None,
                                        businessRatesBill: Option[String] = None,
                                        connectionToProperty: Option[String] = None,
-                                       requestSentReference: Option[String] = None
+                                       requestSentReference: Option[String] = None,
+                                       evidenceDocument: Option[String] = None
                                       )
 
 object PropertyLinkingUserAnswers {

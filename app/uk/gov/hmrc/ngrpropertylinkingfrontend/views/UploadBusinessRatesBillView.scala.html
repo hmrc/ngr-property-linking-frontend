@@ -26,7 +26,7 @@
         saveAndContinueButton: saveAndContinueButton
 )
 
-@(form: Form[String], upscanResponse: UpscanInitiateResponse, errorMessage: Option[String], address: String, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[String], upscanResponse: UpscanInitiateResponse, attributes: Map[String, String], errorMessage: Option[String], address: String, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 @fileUploadFormClass = {
     @if(form.hasErrors){
         "govuk-form-group govuk-form-group--error"
@@ -36,11 +36,12 @@
 }
 @heading = @{messages("uploadBusinessRatesBill.title")}
 @layout(pageTitle = Some(heading), fullWidth = false, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
-<h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden"></span>@address</h2>
-<h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
-<p class="govuk-caption-m hmrc-caption-m">
-    @messages("uploadBusinessRatesBill.p1")
-</p>
+    <div class="govuk-grid-row">
+            <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden"></span>@address</h2>
+            <h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
+            <p class="govuk-caption-m hmrc-caption-m">
+            @messages("uploadBusinessRatesBill.p1")
+            </p>
 
 <form action="@upscanResponse.uploadRequest.href" method="POST" enctype="multipart/form-data" id="file-upload-form">
 
@@ -50,22 +51,17 @@
     <input type="hidden" name="@row._1" value="@row._2">
     }
 
-    @fileUpload(
-    form = form,
-    errorMessage = errorMessage,
-    name = "file",
-    id = "file",
-    label = "",
-    isPageHeading = false,
-    attributes = Map(
-    //TODO clarify whether this is correct
-    "accept" -> ".pdf,.doc,.docx,.png,.jpg,.jpeg",
-    "data-max-file-size" -> "100000000",
-    "data-min-file-size" -> "1000"
-    )
-    )
+                    @fileUpload(
+                        form = form,
+                        errorMessage = errorMessage,
+                        name = "file",
+                        id = "file",
+                        label = "",
+                        isPageHeading = false,
+                        attributes = attributes
+                    )
+                </div>
+                @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
+            </form>
     </div>
-    @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
-
-</form>
 }

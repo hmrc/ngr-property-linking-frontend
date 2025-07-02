@@ -72,13 +72,13 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
             val correctedFormErrors = formWithErrors.errors.map { formError =>
               (formError.key, formError.messages) match
               case ("", messages) if messages.contains("currentRatepayer.day.empty.error") || messages.contains("currentRatepayer.day.format.error") =>
-                formError.copy(key = "maybeRatepayerDate.day")
+                formError.copy(key = "ratepayerDate.day")
               case ("", messages) if messages.contains("currentRatepayer.month.empty.error") || messages.contains("currentRatepayer.month.format.error") =>
-                formError.copy(key = "maybeRatepayerDate.month")
+                formError.copy(key = "ratepayerDate.month")
               case ("", messages) if messages.contains("currentRatepayer.year.empty.error") || messages.contains("currentRatepayer.year.format.error")=>
-                formError.copy(key = "maybeRatepayerDate.year")
+                formError.copy(key = "ratepayerDate.year")
               case ("", messages) =>
-                formError.copy(key = "maybeRatepayerDate")
+                formError.copy(key = "ratepayerDate")
               case _ =>
                 formError
             }

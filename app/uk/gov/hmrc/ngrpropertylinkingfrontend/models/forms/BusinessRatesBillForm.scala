@@ -17,15 +17,16 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
 import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
+import play.api.data.Forms.mapping
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.mappings.Mappings
 
 final case class BusinessRatesBillForm(radioValue: String)
 
-object BusinessRatesBillForm extends CommonFormValidators {
+object BusinessRatesBillForm extends Mappings {
   implicit val format: OFormat[BusinessRatesBillForm] = Json.format[BusinessRatesBillForm]
 
-  private lazy val radioUnselectedError = "confirmAddress.radio.unselected.error"
+  private lazy val radioUnselectedError = "businessRatesBill.error.required"
   private val businessRatesBillRadio       = "business-rates-bill-radio"
   
   def unapply(currentRatepayerForm: BusinessRatesBillForm): Option[String] = Some(BusinessRatesBillForm.businessRatesBillRadio)
@@ -33,7 +34,7 @@ object BusinessRatesBillForm extends CommonFormValidators {
   def form: Form[BusinessRatesBillForm] = {
     Form(
       mapping(
-        businessRatesBillRadio -> text()
+        businessRatesBillRadio -> text(radioUnselectedError)
           .verifying(isNotEmpty(businessRatesBillRadio, radioUnselectedError))
       )(BusinessRatesBillForm.apply)(BusinessRatesBillForm.unapply)
     )

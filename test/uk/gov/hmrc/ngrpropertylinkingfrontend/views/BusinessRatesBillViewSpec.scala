@@ -18,6 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.data.Form
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.Radios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
@@ -50,7 +51,7 @@ class BusinessRatesBillViewSpec extends ViewBaseSpec {
   private val yesButton: NGRRadioButtons = NGRRadioButtons("Yes", Yes)
   private val noButton: NGRRadioButtons = NGRRadioButtons("No", No)
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("business-rates-bill-radio"), Seq(yesButton, noButton))
-  val form = BusinessRatesBillForm.form.fillAndValidate(BusinessRatesBillForm("Yes"))
+  val form: Form[BusinessRatesBillForm] = BusinessRatesBillForm.form.fillAndValidate(BusinessRatesBillForm("Yes"))
   val radio: Radios = buildRadios(form, ngrRadio)
 
   object Selectors {

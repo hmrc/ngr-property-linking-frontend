@@ -118,7 +118,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
         val result = controller().submit(index = 0)(authenticatedFakeRequest)
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
-        content must include("This field is required")
+        content must include("Select yes if you want to add this property to your account")
       }
       "Return NotFoundException when mongo fails to find property by credId" in {
         def requestWithFormValue(value: String): AuthenticatedUserRequest[AnyContentAsFormUrlEncoded] = AuthenticatedUserRequest(

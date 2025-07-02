@@ -20,13 +20,14 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, text}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.mappings.Mappings
 
 import scala.util.Try
 import java.time.LocalDate
 
 final case class CurrentRatepayerForm(radioValue: String, day: Option[String], month: Option[String], year: Option[String])
 
-object CurrentRatepayerForm extends CommonFormValidators {
+object CurrentRatepayerForm extends Mappings {
   implicit val format: OFormat[CurrentRatepayerForm] = Json.format[CurrentRatepayerForm]
 
   private val radioUnselectedError = "currentRatepayer.radio.unselected.error"
@@ -138,8 +139,7 @@ object CurrentRatepayerForm extends CommonFormValidators {
   def form: Form[CurrentRatepayerForm] = {
     Form(
       mapping(
-        currentRatepayerRadio -> text()
-          .verifying(isNotEmpty(currentRatepayerRadio, radioUnselectedError)),
+        currentRatepayerRadio -> text(radioUnselectedError),
         "day" -> optional(text()),
         "month" -> optional(text()),
         "year" -> optional(text())

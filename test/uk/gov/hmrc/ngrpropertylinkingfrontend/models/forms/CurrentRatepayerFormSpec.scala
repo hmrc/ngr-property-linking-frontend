@@ -51,7 +51,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("current-ratepayer-radio", List("error.required")))
+      boundForm.errors should contain(FormError("current-ratepayer-radio", List("currentRatepayer.radio.unselected.error")))
     }
 
     "fail to bind when current ratepayer radio is empty" in {
@@ -59,7 +59,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("current-ratepayer-radio", List("error.required")))
+      boundForm.errors should contain(FormError("current-ratepayer-radio", List("currentRatepayer.radio.unselected.error")))
     }
 
     "fail to bind when current ratepayer day is empty" in {

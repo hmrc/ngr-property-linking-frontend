@@ -28,8 +28,5 @@ final case class Address(line1: String,
 }
 
 object Address {
-
   implicit val format: OFormat[Address] = Json.format[Address]
-
-
 }

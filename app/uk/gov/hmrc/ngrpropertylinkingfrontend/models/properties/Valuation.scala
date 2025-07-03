@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties
 
 import play.api.libs.json.{Format, Json}
 
 import java.time.LocalDate
 
 case class Valuation(
-                       assessmentStatus: String,
                        assessmentRef: Long,
-                       rateableValue: Long,
-                       scatCode: String,
-                       currentFromDate: LocalDate,
-                       effectiveDate: LocalDate,
+                       assessmentStatus: String,
+                       rateableValue: Option[BigDecimal],
+                       scatCode: Option[String],
                        descriptionText: String,
+                       effectiveDate: LocalDate,
+                       currentFromDate: LocalDate,
                        listYear: String,
                        primaryDescription: String,
                        allowedActions: List[String],
-                       propertyLinkEarliestStartDate: LocalDate,
-                       listType: String
+                       listType: String,
+                       propertyLinkEarliestStartDate: Option[LocalDate],
                      )
 
 object Valuation {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties
 
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
@@ -33,7 +33,7 @@ case class VMVProperty(uarn: Long,
                       )
 
 object VMVProperty {
-  implicit val format: Format[VMVProperty] = Json.format[VMVProperty]
+  implicit val format: OFormat[VMVProperty] = Json.format[VMVProperty]
 }
 
 case class LookUpVMVProperties(credId: CredId, vmvProperties: VMVProperties)

@@ -19,14 +19,23 @@ sm2 --stop  NGR_PROPERTY_LINKING_FRONTEND
 * `cd` to the root of the project.
 * `sbt run`
 * `Note` the service will run on port 1503 by default
-* `Setup your policies:`
+`Setup your policies:`
     *  make sure `centralised-authorisation-policy-config` is running `sbt run`
     *  run the shell script `runMainPolicyJsonGenerator.sh` found in the `centralised-authorisation-policy-config` repo
     *  stop `CENTRALISED_AUTHORISATION_POLICY_SERVER` in `service manager`
     *  start `CENTRALISED_AUTHORISATION_POLICY_SERVER` in `service manager`
-* `Using Stub` 
+  
+`Using our Stub to populate address's` 
 * BH1 -> will return two properties
 * LS1 -> will return No results found
+
+`Using VOA_MODERNISED_API_STUB  you must populate the stub`
+Note: Using VOA_MODERNISED_API_STUB is automatically used for local and shares the same port as VOA_API_PROXY 
+* step one: run the shell script found on VOA_MODERNISED_API_STUB that is called data setup.
+* step two: you can check if this worked by running VOA_MODERNISED_API_STUB and hitting this url:
+* http://localhost:9540/external-ndr-list-api/properties
+* step three: this should return properties from the stub.
+* Note: CB2 3PF is one of the postcodes on the VOA_MODERNISED_API_STUB
 
 ### Running the test suite
 ```

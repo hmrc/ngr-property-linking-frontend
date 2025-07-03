@@ -17,22 +17,29 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ManualPropertySearchForm.form
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.LookUpVMVProperties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ManualPropertySearchView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ManualPropertySearchController @Inject()(manualPropertySearchView: ManualPropertySearchView,
                                                authenticate: AuthRetrievals,
                                                isRegisteredCheck: RegistrationAction,
-                                               mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
+                                               findAPropertyConnector: FindAPropertyConnector,
+                                               findAPropertyRepo: FindAPropertyRepo,
+                                               mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
@@ -56,9 +63,16 @@ class ManualPropertySearchController @Inject()(manualPropertySearchView: ManualP
             Future.successful(BadRequest(manualPropertySearchView(formWithCorrectedErrors, createDefaultNavBar, true)))
           },
           manualPropertySearch => {
-            //TODO: need to direct search result page
-            Future.successful(Redirect(routes.NoResultsFoundController.show.url))
-          }
-        )
+            findAPropertyConnector.findAPropertyManualSearch(manualPropertySearch).flatMap {
+              case Left(error) =>
+                Future.successful(Status(error.code)(Json.toJson(error)))
+              case Right(properties) if properties.properties.isEmpty =>
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
+                Future.successful(Redirect(routes.NoResultsFoundController.show.url))
+              case Right(properties)  =>
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")), properties))
+                Future.successful(Redirect(routes.SingleSearchResultController.show(page = 1).url))
+            }
+          })
     }
 }

@@ -26,8 +26,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperty
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperty
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.AddPropertyRequestSentView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController

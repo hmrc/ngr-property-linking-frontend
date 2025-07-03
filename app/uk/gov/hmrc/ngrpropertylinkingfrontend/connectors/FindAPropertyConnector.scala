@@ -29,10 +29,10 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{FindAProperty, Manua
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperties
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-@singleton
+@Singleton
 class FindAPropertyConnector @Inject()(
                                         http: HttpClientV2,
                                        appConfig: AppConfig,

@@ -31,7 +31,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ManualPropertySearchVie
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ManualPropertySearchController @Inject()(manualPropertySearchView: ManualPropertySearchView,

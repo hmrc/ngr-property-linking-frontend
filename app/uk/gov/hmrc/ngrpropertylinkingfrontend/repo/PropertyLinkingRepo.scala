@@ -95,7 +95,7 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
   def insertCurrentRatepayer(credId: CredId, currentRatepayer: String, maybeRatepayerDate: Option[LocalDate]): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId,
       Seq(
-        Updates.set("currentRatepayer.when", currentRatepayer),
+        Updates.set("currentRatepayer.beforeApril", currentRatepayer),
         Updates.set("currentRatepayer.becomeRatepayerDate", maybeRatepayerDate.getOrElse(null))
       ): _*
     )

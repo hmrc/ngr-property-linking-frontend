@@ -111,7 +111,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
       //As we are still in 2025, this test will always fail on validation.
       //Ignored this test for now till we reach 1 April 2026
       "Successfully submit when selected After and redirect to correct page" ignore {
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer("After", Some(LocalDate.now())))))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer("Before", Some(LocalDate.now())))))))
         mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("current-ratepayer-radio", "After"))

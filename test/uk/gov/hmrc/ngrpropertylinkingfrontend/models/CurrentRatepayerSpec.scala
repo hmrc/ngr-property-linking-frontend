@@ -28,7 +28,7 @@ class CurrentRatepayerSpec extends TestSupport {
   val currentRatepayerJson: JsValue = Json.parse(
     """
       |{
-      |"when": "After",
+      |"beforeApril": "After",
       |"becomeRatepayerDate":{"$date":{"$numberLong":"1750723200000"}}
       |}
       |""".stripMargin

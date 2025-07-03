@@ -21,7 +21,7 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.LocalDate
 
-final case class CurrentRatepayer(when: String, becomeRatepayerDate: Option[LocalDate])
+final case class CurrentRatepayer(beforeApril: String, becomeRatepayerDate: Option[LocalDate])
 
 object CurrentRatepayer {
   implicit val format: OFormat[CurrentRatepayer] = Json.format[CurrentRatepayer]

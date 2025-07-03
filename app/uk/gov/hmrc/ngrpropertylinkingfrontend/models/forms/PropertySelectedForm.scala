@@ -17,15 +17,16 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
 import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
+import play.api.data.Forms.mapping
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.mappings.Mappings
 
 final case class PropertySelectedForm(radioValue: String)
 
-object PropertySelectedForm extends CommonFormValidators {
+object PropertySelectedForm extends Mappings {
   implicit val format:OFormat[PropertySelectedForm] = Json.format[PropertySelectedForm]
 
-  private lazy val radioUnselectedError = "Please select an option"
+  private lazy val radioUnselectedError = "propertySelected.error.required"
   private val confirmPropertyRadio = "confirm-property-radio"
 
   def unapply(propertySelectedForm: PropertySelectedForm): Option[String] = Some(PropertySelectedForm.confirmPropertyRadio)
@@ -33,8 +34,7 @@ object PropertySelectedForm extends CommonFormValidators {
   def form: Form[PropertySelectedForm] = {
     Form(
       mapping(
-        confirmPropertyRadio -> text()
-          .verifying(isNotEmpty(confirmPropertyRadio, radioUnselectedError))
+        confirmPropertyRadio -> text(radioUnselectedError)
       )(PropertySelectedForm.apply)(PropertySelectedForm.unapply)
     )
   }

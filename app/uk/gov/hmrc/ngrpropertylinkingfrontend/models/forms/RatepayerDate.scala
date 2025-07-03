@@ -23,7 +23,7 @@ import play.api.libs.json.{Json, OFormat}
 import java.time.LocalDate
 
 final case class RatepayerDate(day: String, month: String, year: String) {
-  lazy val ratepayerDate = LocalDate.of(year.toInt, month.toInt, day.toInt)
+  lazy val ratepayerDate: LocalDate = LocalDate.of(year.toInt, month.toInt, day.toInt)
 }
 
 object RatepayerDate {
@@ -33,7 +33,7 @@ object RatepayerDate {
     Some(ratepayerDate.day, ratepayerDate.month, ratepayerDate.year)
 }
 
-trait Mappings extends CommonFormValidators {
+trait DateMappings {
   def dateMapping: Mapping[RatepayerDate] = {
     mapping(
       "day" -> text(),

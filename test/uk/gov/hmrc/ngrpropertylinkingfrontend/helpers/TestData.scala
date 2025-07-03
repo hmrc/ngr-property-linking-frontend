@@ -28,8 +28,8 @@ import java.time.{Instant, LocalDate}
 
 trait TestData {
 
-  val testPostcode = Postcode(value = "BH1 7EY")
-  val time = Instant.now()
+  val testPostcode: Postcode = Postcode(value = "BH1 7EY")
+  val time: Instant = Instant.now()
 
   val properties1: VMVProperties = VMVProperties(total = 1,
     properties = List(

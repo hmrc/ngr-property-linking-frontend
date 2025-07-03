@@ -437,6 +437,7 @@ findAProperty.property.invalid.error=Property name or number must be 100 charact
 #PropertySelected
 propertySelected.title= Property selected
 propertySelected.heading= Do you want to add this property to your account?
+propertySelected.error.required = Select yes if you want to add this property to your account
 propertySelected.returnToAccountHome= Return to account home
 
 
@@ -550,6 +551,7 @@ checkYourAnswers.currentRatepayer.after = On or after 1 April 2026
 
 #BusinessRatesBill
 businessRatesBill.title = Do you have a business rates bill for the property?
+businessRatesBill.error.required = Select yes if you have an up-to-date business rates bill for the property
 uploadBusinessRatesBill.hint = You need the most recent bill you have for the property.
 
 #UploadBusinessRatesBill

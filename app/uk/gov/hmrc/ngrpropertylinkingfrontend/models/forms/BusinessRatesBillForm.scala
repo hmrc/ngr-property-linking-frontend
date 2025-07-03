@@ -35,7 +35,6 @@ object BusinessRatesBillForm extends Mappings {
     Form(
       mapping(
         businessRatesBillRadio -> text(radioUnselectedError)
-          .verifying(isNotEmpty(businessRatesBillRadio, radioUnselectedError))
       )(BusinessRatesBillForm.apply)(BusinessRatesBillForm.unapply)
     )
   }

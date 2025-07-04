@@ -22,6 +22,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Table
 import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.SingleSearchResultForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.PaginationData
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.SingleSearchResultView
 
@@ -65,32 +66,43 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
   }
 
   "SingleSearchResultView" must {
+    val form = SingleSearchResultForm
+      .form
+      .fillAndValidate(SingleSearchResultForm("AddressASC"))
     val noResultsFoundView = view(
+      form,
       content,
       searchUrl,
       postcode = "BH1 7ST",
       totalProperties = 1,
       pageTop = 1,
       pageBottom = 1,
-      paginationData = PaginationData(totalPages = 1, currentPage = 1, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = 10),
-      propertySearchResultTable = Table())
+      paginationData = PaginationData(totalPages = 1, currentPage = 1, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = 10, sortBy = "AddressASC"),
+      propertySearchResultTable = Table(),
+      sortingSelectItems = Seq.empty)
     lazy implicit val document: Document = Jsoup.parse(noResultsFoundView.body)
-    val htmlApply = view.apply(content,
+    val htmlApply = view.apply(
+      form,
+      content,
       searchUrl,
       postcode = "BH1 7ST",
       totalProperties = 1,
       pageTop = 1,
       pageBottom = 1,
-      paginationData = PaginationData(totalPages = 1, currentPage = 1, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = 10),
-      propertySearchResultTable = Table()).body
-    val htmlRender = view.render(content,
+      paginationData = PaginationData(totalPages = 1, currentPage = 1, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = 10, sortBy = "AddressASC"),
+      propertySearchResultTable = Table(),
+      sortingSelectItems = Seq.empty).body
+    val htmlRender = view.render(
+      form,
+      content,
       searchUrl,
       postcode = "BH1 7ST",
       totalProperties = 1,
       pageTop = 1,
       pageBottom = 1,
-      paginationData = PaginationData(totalPages = 1, currentPage = 1, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = 10),
-      propertySearchResultTable = Table(), request, messages, mockConfig).body
+      paginationData = PaginationData(totalPages = 1, currentPage = 1, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = 10, sortBy = "AddressASC"),
+      propertySearchResultTable = Table(), request, messages, mockConfig,
+      sortingSelectItems = Seq.empty).body
 
     "apply must be the same as render" in {
       htmlApply mustBe htmlRender

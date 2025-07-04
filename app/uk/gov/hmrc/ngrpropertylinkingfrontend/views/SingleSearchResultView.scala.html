@@ -15,11 +15,13 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.LinkComponent
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.SingleSearchResultForm
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate._
 
 @this(
@@ -32,7 +34,8 @@
     govukSelect: GovukSelect
 )
 
-@(navigationBarContent: NavigationBarContent,
+@(form: Form[SingleSearchResultForm],
+  navigationBarContent: NavigationBarContent,
   searchAgainUrl: String,
   postcode: String,
   totalProperties: Int,
@@ -65,6 +68,7 @@
 
 @heading = @{messages("singleSearchResultPage.title", postcode)}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
+@formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.SingleSearchResultController.sort, Symbol("autoComplete") -> "off") {
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
         <h1 class="govuk-heading-l">@messages("singleSearchResultPage.title", postcode)</h1>
@@ -78,7 +82,8 @@
                 name = "sort",
                 label = Label(content = Text(messages("singleSearchResultPage.sortBy.label"))),
                 items = sortingSelectItems
-        ))
+            ).withFormField(form("sort"))
+        )
         @govukTable(propertySearchResultTable)
         @govukPagination(paginationData.toPagination)
     </div>
@@ -92,4 +97,5 @@
         ))
     </div>
 </div>
+}
 }

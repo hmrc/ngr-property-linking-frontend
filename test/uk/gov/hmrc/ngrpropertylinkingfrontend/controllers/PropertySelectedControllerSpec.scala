@@ -104,7 +104,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
         mockRequest()
         val result = controller().submit(index = 0)(requestWithFormValue("no"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(1).url)
+        redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(1, "AddressASC").url)
       }
       "Return form with errors" in {
         def requestWithFormValue(value: String): AuthenticatedUserRequest[AnyContentAsFormUrlEncoded] = AuthenticatedUserRequest(

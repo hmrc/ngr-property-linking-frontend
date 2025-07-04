@@ -22,7 +22,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.PaginationData
 
 class PaginationDataSpec extends TestSupport {
-  val mockPaginationData: PaginationData = PaginationData(totalPages = 5, currentPage = 1, baseUrl = "baseUrl", pageSize = 5)
+  val mockPaginationData: PaginationData = PaginationData(totalPages = 5, currentPage = 1, baseUrl = "baseUrl", pageSize = 5, sortBy = "AddressASC")
   "PaginationData" when {
     "toPagination produces Pagination" in {
       mockPaginationData.toPagination mustBe Pagination(

@@ -76,7 +76,11 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
               credId = CredId(request.credId.getOrElse("")),
               businessRatesBill = businessRatesBillForm.radioValue
             )
-            if(mode == "CYA") Future.successful(Redirect(routes.CheckYourAnswersController.show.url)) else Future.successful(Redirect(routes.UploadBusinessRatesBillController.show(None)))
+            if (businessRatesBillForm.radioValue == "Yes") { // temporary disable No option
+              if (mode == "CYA") Future.successful(Redirect(routes.CheckYourAnswersController.show.url)) else Future.successful(Redirect(routes.UploadBusinessRatesBillController.show(None)))
+            } else {
+              Future.successful(Redirect(routes.BusinessRatesBillController.show(mode)))
+            }
         )
     }
 }

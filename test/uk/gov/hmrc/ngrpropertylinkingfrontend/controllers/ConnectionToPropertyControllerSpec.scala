@@ -61,7 +61,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
     "method submit" must {
       "Successfully submit when selected Before and redirect to correct page" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer("Before", None)), connectionToProperty = Some("Owner")))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer(true, None)), connectionToProperty = Some("Owner")))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ConnectionToPropertyController.submit)
           .withFormUrlEncodedBody((ConnectionToPropertyForm.formName, "Owner"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
@@ -72,7 +72,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
         redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.show.url)
       }
       "Successfully submit when selected After and redirect to correct page" in {
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer("After", Some(LocalDate.now()))), connectionToProperty = Some("Occupier")))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer(false, Some(""))), connectionToProperty = Some("Occupier")))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ConnectionToPropertyController.submit)
           .withFormUrlEncodedBody((ConnectionToPropertyForm.formName, "Occupier"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))

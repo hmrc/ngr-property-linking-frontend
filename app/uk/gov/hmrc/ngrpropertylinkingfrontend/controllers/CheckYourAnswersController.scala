@@ -61,7 +61,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
         messages("checkYourAnswers.currentRatepayer.title"),
         None,
         Seq(userAnswers.currentRatepayer.map(currentRatepayer =>
-          if(currentRatepayer.beforeApril.equals(Before)) "checkYourAnswers.currentRatepayer.before" else "checkYourAnswers.currentRatepayer.after")
+          if(currentRatepayer.isBeforeApril.equals(Before)) "checkYourAnswers.currentRatepayer.before" else "checkYourAnswers.currentRatepayer.after")
           .getOrElse(throw new NotFoundException("Could not find current ratepayer"))),
         changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "current-ratepayer", messageKey = "service.change", visuallyHiddenMessageKey = Some("current-ratepayer")))
       ), //TODO CHANGE CURRENT RATEPAYER

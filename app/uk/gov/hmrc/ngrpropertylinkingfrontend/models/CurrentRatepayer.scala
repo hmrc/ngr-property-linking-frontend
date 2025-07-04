@@ -16,14 +16,11 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import play.api.libs.json.{Format, Json, OFormat, Reads, Writes}
-import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import play.api.libs.json.{Format, Json}
 
-import java.time.LocalDate
 
-final case class CurrentRatepayer(beforeApril: String, becomeRatepayerDate: Option[LocalDate])
+final case class CurrentRatepayer(isBeforeApril: Boolean, becomeRatepayerDate: Option[String])
 
 object CurrentRatepayer {
-  implicit val format: OFormat[CurrentRatepayer] = Json.format[CurrentRatepayer]
-  implicit val localDateFormat: Format[LocalDate] = MongoJavatimeFormats.localDateFormat
+  implicit val format: Format[CurrentRatepayer] = Json.format[CurrentRatepayer]
 }

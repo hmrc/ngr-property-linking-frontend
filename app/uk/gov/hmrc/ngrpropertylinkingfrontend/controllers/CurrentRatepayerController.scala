@@ -98,8 +98,8 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
             val credId = request.credId.getOrElse(throw new NotFoundException("failed to find credId from request"))
             propertyLinkingRepo.insertCurrentRatepayer(
               credId = CredId(credId),
-              currentRatepayer = currentRatepayerForm.radioValue,
-              maybeRatepayerDate = maybeRatepayerDate
+              currentRatepayer = currentRatepayerForm.radioValue.equals("Before"),
+              maybeRatepayerDate = currentRatepayerForm.maybeRatepayerDate.map(_.makeString)
             )
             
             if(mode == "CYA")

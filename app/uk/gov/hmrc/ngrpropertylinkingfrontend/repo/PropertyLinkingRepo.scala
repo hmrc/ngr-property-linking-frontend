@@ -92,11 +92,11 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
       .toFutureOption()
   }
 
-  def insertCurrentRatepayer(credId: CredId, currentRatepayer: String, maybeRatepayerDate: Option[LocalDate]): Future[Option[PropertyLinkingUserAnswers]] = {
+  def insertCurrentRatepayer(credId: CredId, currentRatepayer: Boolean, maybeRatepayerDate: Option[String]): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId,
       Seq(
-        Updates.set("currentRatepayer.beforeApril", currentRatepayer),
-        Updates.set("currentRatepayer.becomeRatepayerDate", maybeRatepayerDate.getOrElse(null))
+        Updates.set("currentRatepayer.isBeforeApril", currentRatepayer),
+        Updates.set("currentRatepayer.becomeRatepayerDate", maybeRatepayerDate.orNull)
       ): _*
     )
   }

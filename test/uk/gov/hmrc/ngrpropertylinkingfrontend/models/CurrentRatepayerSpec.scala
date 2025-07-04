@@ -23,13 +23,13 @@ import java.time.LocalDate
 
 class CurrentRatepayerSpec extends TestSupport {
 
-  val currentRatepayer: CurrentRatepayer = CurrentRatepayer("After", Some(LocalDate.of(2025, 6, 24)))
+  val currentRatepayer: CurrentRatepayer = CurrentRatepayer(false, Some("2025-6-24"))
 
   val currentRatepayerJson: JsValue = Json.parse(
     """
       |{
-      |"beforeApril": "After",
-      |"becomeRatepayerDate":{"$date":{"$numberLong":"1750723200000"}}
+      |"isBeforeApril": false,
+      |"becomeRatepayerDate":"2025-6-24"
       |}
       |""".stripMargin
   )

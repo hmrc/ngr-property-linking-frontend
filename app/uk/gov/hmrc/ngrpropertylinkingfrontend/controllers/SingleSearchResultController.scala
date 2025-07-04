@@ -23,7 +23,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperty
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
@@ -115,26 +115,23 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
             ).toTable
           }
 
-          def formatRateableValue(rateableValue: Long): String = {
-            val ukFormatter = NumberFormat.getCurrencyInstance(Locale.UK)
-            ukFormatter.format(rateableValue).replaceAll("[.][0-9]{2}", "")
-          }
-
-
-          Future.successful(
-                Ok(singleSearchResultView(
-                  navigationBarContent = createDefaultNavBar,
-                  searchAgainUrl = routes.FindAPropertyController.show.url,
-                  postcode = properties.vmvProperties.properties.head.addressFull.takeRight(8),
-                  totalProperties = totalProperties,
-                  pageTop = pageTop,
-                  pageBottom = pageBottom,
-                  paginationData = PaginationData(totalPages = totalPages, currentPage = page, baseUrl = "/ngr-property-linking-frontend/results", pageSize = defaultPageSize),
-                  propertySearchResultTable = generateTable(properties.vmvProperties.properties),
-                  sortingSelectItems = generateSortingSelectItems
-                ))
-              )
-        case None => Future.successful(Redirect(routes.FindAPropertyController.show))
-      }
+    def formatRateableValue(rateableValue: Long): String = {
+      val ukFormatter = NumberFormat.getCurrencyInstance(Locale.UK)
+      ukFormatter.format(rateableValue).replaceAll("[.][0-9]{2}", "")
     }
+
+    Future.successful(
+      Ok(singleSearchResultView(
+        form = form,
+        navigationBarContent = createDefaultNavBar,
+        searchAgainUrl = routes.FindAPropertyController.show.url,
+        postcode = properties.vmvProperties.properties.head.addressFull.takeRight(8),
+        totalProperties = totalProperties,
+        pageTop = pageTop,
+        pageBottom = pageBottom,
+        paginationData = PaginationData(totalPages = totalPages, currentPage = currentPage, baseUrl = "/ngr-property-linking-frontend/results", pageSize = defaultPageSize, sortBy = sortBy),
+        propertySearchResultTable = generateTable(sortedVMVProperties),
+        sortingSelectItems = generateSortingSelectItems(sortBy)
+      ))
+    )
 }

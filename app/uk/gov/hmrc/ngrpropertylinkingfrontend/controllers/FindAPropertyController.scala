@@ -62,7 +62,7 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
                 Future.successful(Redirect(routes.NoResultsFoundController.show.url))
               case Right(properties) =>
                 findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
-                Future.successful(Redirect(routes.SingleSearchResultController.show(page = 1).url))
+                Future.successful(Redirect(routes.SingleSearchResultController.show(page = 1, sortBy = "AddressASC").url))
             }
           })
     }

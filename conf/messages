@@ -478,6 +478,14 @@ singleSearchResultPage.sortBy.item5 = Description ( A to Z)
 singleSearchResultPage.sortBy.item6 = Description (Z to A)
 singleSearchResultPage.sortBy.item7 = Rateable value ( Low to High)
 singleSearchResultPage.sortBy.item8 = Rateable value ( High to Low)
+singleSearchResultPage.sortBy.item1.value = AddressASC
+singleSearchResultPage.sortBy.item2.value = AddressDESC
+singleSearchResultPage.sortBy.item3.value = ReferenceASC
+singleSearchResultPage.sortBy.item4.value = ReferenceDESC
+singleSearchResultPage.sortBy.item5.value = DescriptionASC
+singleSearchResultPage.sortBy.item6.value = DescriptionDESC
+singleSearchResultPage.sortBy.item7.value = RateableValueASC
+singleSearchResultPage.sortBy.item8.value = RateableValueDESC
 
 #CurrentRatepayer
 currentRatepayer.title = When did you become the current ratepayer?

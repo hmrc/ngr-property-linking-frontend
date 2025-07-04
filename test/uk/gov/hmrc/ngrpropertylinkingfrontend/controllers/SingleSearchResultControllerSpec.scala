@@ -21,16 +21,18 @@ import org.mockito.Mockito.when
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.LookUpVMVProperties
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.LookUpVMVProperties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SortingVMVPropertiesService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 
 import scala.concurrent.Future
 
 class SingleSearchResultControllerSpec extends ControllerSpecSupport {
 
-  lazy val singleSearchResultView: SingleSearchResultView = inject[SingleSearchResultView]
-  lazy val errorView: ErrorTemplate = inject[ErrorTemplate]
+  val singleSearchResultView: SingleSearchResultView = inject[SingleSearchResultView]
+  val errorView: ErrorTemplate = inject[ErrorTemplate]
+  val sortingVMVPropertiesService: SortingVMVPropertiesService = inject[SortingVMVPropertiesService]
 
   def controller() = new SingleSearchResultController(
     singleSearchResultView,
@@ -38,6 +40,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
     mockAuthJourney,
     mockFindAPropertyRepo,
     mockIsRegisteredCheck,
+    sortingVMVPropertiesService,
     mcc
   )(mockConfig)
 

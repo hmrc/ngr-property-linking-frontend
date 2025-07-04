@@ -73,7 +73,7 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, Some("1234"), None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
         //TODO: redirect to result page
-        redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(page = 1).url)
+        redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(page = 1, "AddressASC").url)
       }
 
       "Successfully submit valid postcode without space in between and redirect to no results found page" in {

@@ -70,7 +70,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
     "method submit" must {
       "Successfully submit when selected Before and redirect to correct page" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty,currentRatepayer =  Some(CurrentRatepayer("Before", None))))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty,currentRatepayer =  Some(CurrentRatepayer(true, None))))))
         mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("current-ratepayer-radio", "Before"))
@@ -84,7 +84,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
 
       "Successfully submit when selected Before and redirect to correct page when mode is CYA" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer("Before", None))))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer(true, None))))))
         mockRequest(hasCredId = true)
         val result = controller().submit(mode = "CYA")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("current-ratepayer-radio", "Before"))
@@ -111,7 +111,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
       //As we are still in 2025, this test will always fail on validation.
       //Ignored this test for now till we reach 1 April 2026
       "Successfully submit when selected After and redirect to correct page" ignore {
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer("After", Some(LocalDate.now())))))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer(true, Some("")))))))
         mockRequest(hasCredId = true)
         val result = controller().submit(mode = "")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("current-ratepayer-radio", "After"))

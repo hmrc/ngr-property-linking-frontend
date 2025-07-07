@@ -25,13 +25,13 @@ class SortingVMVPropertiesService @Inject() {
 
   def sort(properties: List[VMVProperty], sortBy: String) = {
     sortBy match
-      case "AddressASC" => properties.sortBy(_.addressFull)
-      case "AddressDESC" => properties.sortBy(_.addressFull).reverse
-      case "ReferenceASC" => properties.sortBy(_.localAuthorityReference)
-      case "ReferenceDESC" => properties.sortBy(_.localAuthorityReference).reverse
-      case "DescriptionASC" => properties.sortBy(_.valuations.last.descriptionText)
-      case "DescriptionDESC" => properties.sortBy(_.valuations.last.descriptionText).reverse
-      case "RateableValueASC" => properties.sortBy(_.valuations.last.rateableValue)
+      case "AddressASC"        => properties.sortBy(_.addressFull)
+      case "AddressDESC"       => properties.sortBy(_.addressFull).reverse
+      case "ReferenceASC"      => properties.sortBy(_.localAuthorityReference)
+      case "ReferenceDESC"     => properties.sortBy(_.localAuthorityReference).reverse
+      case "DescriptionASC"    => properties.sortBy(_.valuations.last.descriptionText)
+      case "DescriptionDESC"   => properties.sortBy(_.valuations.last.descriptionText).reverse
+      case "RateableValueASC"  => properties.sortBy(_.valuations.last.rateableValue)
       case "RateableValueDESC" => properties.sortBy(_.valuations.last.rateableValue).reverse
   }
 }

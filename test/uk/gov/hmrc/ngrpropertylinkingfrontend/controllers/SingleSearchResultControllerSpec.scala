@@ -26,7 +26,7 @@ import uk.gov.hmrc.http.{BadRequestException, HeaderNames}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.LookUpVMVProperties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.LookUpVMVProperties
 import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SortingVMVPropertiesService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 

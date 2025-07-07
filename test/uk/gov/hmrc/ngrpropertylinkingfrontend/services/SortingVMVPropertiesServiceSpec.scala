@@ -26,45 +26,45 @@ class SortingVMVPropertiesServiceSpec extends ControllerSpecSupport {
   "SortingVMVPropertiesService" must {
     "Sort" must {
       "Sorting address ascending correctly" in {
-        val actual = service.sort(properties3.properties, "AddressASC")
+        val actual = service.sort(properties4.properties, "AddressASC")
         actual.map(_.addressFull) shouldBe List("A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
-          "M, RODLEY LANE, RODLEY, LEEDS, BH1 7EY", "Z, RODLEY LANE, RODLEY, LEEDS, BH1 7EY")
+          "M, RODLEY LANE, RODLEY, LEEDS, BH1 7EY", "Q, RODLEY LANE, RODLEY, LEEDS, BH1 7EY", "Z, RODLEY LANE, RODLEY, LEEDS, BH1 7EY")
       }
 
       "Sorting address descending correctly" in {
-        val actual = service.sort(properties3.properties, "AddressDESC")
-        actual.map(_.addressFull) shouldBe List("Z, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
+        val actual = service.sort(properties4.properties, "AddressDESC")
+        actual.map(_.addressFull) shouldBe List("Z, RODLEY LANE, RODLEY, LEEDS, BH1 7EY", "Q, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
           "M, RODLEY LANE, RODLEY, LEEDS, BH1 7EY", "A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY")
       }
 
       "Sorting local authority reference ascending correctly" in {
-        val actual = service.sort(properties3.properties, "ReferenceASC")
-        actual.map(_.localAuthorityReference) shouldBe List("2191322564521", "5191322564521", "9191322564521")
+        val actual = service.sort(properties4.properties, "ReferenceASC")
+        actual.map(_.localAuthorityReference) shouldBe List("1191322564521", "2191322564521", "5191322564521", "9191322564521")
       }
 
       "Sorting local authority reference descending correctly" in {
-        val actual = service.sort(properties3.properties, "ReferenceDESC")
-        actual.map(_.localAuthorityReference) shouldBe List("9191322564521", "5191322564521", "2191322564521")
+        val actual = service.sort(properties4.properties, "ReferenceDESC")
+        actual.map(_.localAuthorityReference) shouldBe List("9191322564521", "5191322564521", "2191322564521", "1191322564521")
       }
 
       "Sorting description text ascending correctly" in {
-        val actual = service.sort(properties3.properties, "DescriptionASC")
-        actual.map(_.valuations.last.descriptionText) shouldBe List("GOLF", "Miniature Railway", "SHOP AND PREMISES")
+        val actual = service.sort(properties4.properties, "DescriptionASC")
+        actual.map(_.valuations.last.descriptionText) shouldBe List("GOLF", "Lifeboat Station", "Miniature Railway", "SHOP AND PREMISES")
       }
 
       "Sorting description text descending correctly" in {
-        val actual = service.sort(properties3.properties, "DescriptionDESC")
-        actual.map(_.valuations.last.descriptionText) shouldBe List("SHOP AND PREMISES", "Miniature Railway", "GOLF")
+        val actual = service.sort(properties4.properties, "DescriptionDESC")
+        actual.map(_.valuations.last.descriptionText) shouldBe List("SHOP AND PREMISES", "Miniature Railway", "Lifeboat Station","GOLF")
       }
 
       "Sorting rateable value ascending correctly" in {
-        val actual = service.sort(properties3.properties, "RateableValueASC")
-        actual.map(_.valuations.last.rateableValue) shouldBe List(9300, 79300, 109300)
+        val actual = service.sort(properties4.properties, "RateableValueASC")
+        actual.map(_.valuations.last.rateableValue.map(_.longValue).getOrElse(0l)) shouldBe List(0, 9300, 79300, 109300)
       }
 
       "Sorting rateable value descending correctly" in {
-        val actual = service.sort(properties3.properties, "RateableValueDESC")
-        actual.map(_.valuations.last.rateableValue) shouldBe List(109300, 79300, 9300)
+        val actual = service.sort(properties4.properties, "RateableValueDESC")
+        actual.map(_.valuations.last.rateableValue.map(_.longValue).getOrElse(0l)) shouldBe List(109300, 79300, 9300, 0)
       }
     }
   }

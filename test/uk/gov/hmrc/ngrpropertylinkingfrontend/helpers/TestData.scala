@@ -64,8 +64,36 @@ trait TestData {
     )
   )
 
-  val properties3: VMVProperties = VMVProperties(total = 3,
+  val properties4: VMVProperties = VMVProperties(total = 4,
     properties = List(
+      VMVProperty(
+        uarn = 11905603000L,
+        localAuthorityReference = "1191322564521",
+        addressFull = "Q, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
+        localAuthorityCode = "4720",
+        valuations = List(
+          Valuation(
+            assessmentStatus = "CURRENT",
+            assessmentRef = 25141561000L,
+            rateableValue = None,
+            scatCode = Some("249"),
+            currentFromDate = LocalDate.of(2023, 4, 1),
+            effectiveDate = LocalDate.of(2023, 4, 1),
+            descriptionText = "Lifeboat Station",
+            listYear = "2023",
+            primaryDescription = "CS",
+            allowedActions = List(
+              "check",
+              "challenge",
+              "viewDetailedValuation",
+              "propertyLink",
+              "similarProperties"
+            ),
+            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1)),
+            listType = "current"
+          )
+        )
+      ),
       VMVProperty(
         uarn = 11905603000L,
         localAuthorityReference = "9191322564521",
@@ -75,8 +103,8 @@ trait TestData {
           Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
-            rateableValue = 9300,
-            scatCode = "249",
+            rateableValue = Some(9300),
+            scatCode = Some("249"),
             currentFromDate = LocalDate.of(2023, 4, 1),
             effectiveDate = LocalDate.of(2023, 4, 1),
             descriptionText = "SHOP AND PREMISES",
@@ -89,7 +117,7 @@ trait TestData {
               "propertyLink",
               "similarProperties"
             ),
-            propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
+            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1)),
             listType = "current"
           )
         )
@@ -103,8 +131,8 @@ trait TestData {
           Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 85141561000L,
-            rateableValue = 109300,
-            scatCode = "249",
+            rateableValue = Some(109300),
+            scatCode = Some("249"),
             currentFromDate = LocalDate.of(2023, 4, 1),
             effectiveDate = LocalDate.of(2023, 4, 1),
             descriptionText = "GOLF",
@@ -117,7 +145,7 @@ trait TestData {
               "propertyLink",
               "similarProperties"
             ),
-            propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
+            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1)),
             listType = "current"
           )
         )
@@ -131,8 +159,8 @@ trait TestData {
           Valuation(
             assessmentStatus = "CURRENT",
             assessmentRef = 5141561000L,
-            rateableValue = 79300,
-            scatCode = "249",
+            rateableValue = Some(79300),
+            scatCode = Some("249"),
             currentFromDate = LocalDate.of(2023, 4, 1),
             effectiveDate = LocalDate.of(2023, 4, 1),
             descriptionText = "Miniature Railway",
@@ -145,7 +173,7 @@ trait TestData {
               "propertyLink",
               "similarProperties"
             ),
-            propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
+            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1)),
             listType = "current"
           )
         )

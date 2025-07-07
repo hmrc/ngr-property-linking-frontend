@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.services
 
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperty
 
 import javax.inject.{Inject, Singleton}
 
@@ -31,7 +31,7 @@ class SortingVMVPropertiesService @Inject() {
       case "ReferenceDESC"     => properties.sortBy(_.localAuthorityReference).reverse
       case "DescriptionASC"    => properties.sortBy(_.valuations.last.descriptionText)
       case "DescriptionDESC"   => properties.sortBy(_.valuations.last.descriptionText).reverse
-      case "RateableValueASC"  => properties.sortBy(_.valuations.last.rateableValue)
-      case "RateableValueDESC" => properties.sortBy(_.valuations.last.rateableValue).reverse
+      case "RateableValueASC"  => properties.sortBy(_.valuations.last.rateableValue.map(_.longValue).getOrElse(0l))
+      case "RateableValueDESC" => properties.sortBy(_.valuations.last.rateableValue.map(_.longValue).getOrElse(0l)).reverse
   }
 }

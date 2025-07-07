@@ -64,10 +64,10 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
   }
 
   def show: Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
-    Thread.sleep(500)
     request.credId match {
       case Some(rawCredId) =>
         val credId = CredId(rawCredId)
+        Thread.sleep(500)
         val resultFut = for {
           record <- upscanRepo.findByCredId(credId).map {
             case Some(r) => r

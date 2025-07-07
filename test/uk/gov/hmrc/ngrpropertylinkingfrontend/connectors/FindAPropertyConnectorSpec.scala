@@ -61,9 +61,9 @@ class FindAPropertyConnectorSpec extends MockHttpV2 with TestData {
         setupMockHttpV2Get(s"${mockConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=LS1")(notFoundResponse)
         val result: Future[Either[ErrorResponse, VMVProperties]] = 
           findAPropertyConnector.findAPropertyManualSearch(ManualPropertySearchForm(
-            addressLine1 = "",
+            addressLine1 = None,
             addressLine2 = None,
-            town = "",
+            town = None,
             county = None,
             postcode = testNoResultsFoundPostCode,
             propertyReference = None,
@@ -79,9 +79,9 @@ class FindAPropertyConnectorSpec extends MockHttpV2 with TestData {
         val internalServerErrorResponse = HttpResponse(status = INTERNAL_SERVER_ERROR, "Invalid postcode has been sent", headers = Map.empty)
         setupMockHttpV2Get(s"${mockConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=LS1")(internalServerErrorResponse)
         val result = findAPropertyConnector.findAPropertyManualSearch(ManualPropertySearchForm(
-          addressLine1 = "",
+          addressLine1 = None,
           addressLine2 = None,
-          town = "",
+          town = None,
           county = None,
           postcode = testNoResultsFoundPostCode,
           propertyReference = None,

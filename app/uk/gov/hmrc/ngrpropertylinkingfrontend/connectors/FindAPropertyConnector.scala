@@ -19,6 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 import play.api.http.Status
 import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK}
 import play.api.libs.json.*
+import java.nio.charset.StandardCharsets.UTF_8
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
@@ -29,6 +30,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{FindAProperty, Manua
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperties
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
+import java.net.{URL, URLEncoder}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,11 +41,36 @@ class FindAPropertyConnector @Inject()(
                                        logger: NGRLogger)
                                       (implicit ec: ExecutionContext) {
 
+
+
+
   def findAPropertyManualSearch(searchParams: ManualPropertySearchForm)(implicit headerCarrier: HeaderCarrier): Future[Either[ErrorResponse, VMVProperties]] = {
     val urlEndpoint =  if(appConfig.features.vmvPropertyLookupTestEnabled()){
       url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${searchParams.postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
     }else{
-      url"${appConfig.addressLookupUrl}/external-ndr-list-api/properties"
+
+      def encode(value: String): String =
+        URLEncoder.encode(value, UTF_8.toString)
+
+      def clean(value: String): String =
+        value.replaceAll("['()]", "")
+
+      val base = s"${appConfig.addressLookupUrl}/external-ndr-list-api/properties?postcode=${encode(searchParams.postcode.value)}"
+
+      val optionalParams = Seq(
+        "propertyNameNumber" -> searchParams.addressLine1.map(clean),
+        "street" -> searchParams.addressLine2.map(clean),
+        "town" -> searchParams.town,
+        "localAuthorityReference" -> searchParams.propertyReference,
+        "fromRateableValue" -> searchParams.miniRateableValue.map(_.toString),
+        "toRateableValue" -> searchParams.maxRateableValue.map(_.toString),
+      )
+
+      val queryString = optionalParams.collect {
+        case (key, Some(value)) => s"$key=${encode(value)}"
+      }.mkString("&")
+
+      if (queryString.nonEmpty){url"$base&$queryString"} else url"$base"
     }
     http.get(urlEndpoint)
       .execute[HttpResponse]
@@ -74,7 +101,7 @@ class FindAPropertyConnector @Inject()(
       url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${searchParams.postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
     } else {
       if(searchParams.propertyName.nonEmpty){
-        url"${appConfig.addressLookupUrl}/external-ndr-list-api/properties?postcode=${searchParams.postcode}&propertyNameNumber=${searchParams.propertyName.get}"
+        url"${appConfig.addressLookupUrl}/external-ndr-list-api/properties?postcode=${searchParams.postcode}&propertyNameNumber=${searchParams.propertyName.map(_.replaceAll("['()]", "")).getOrElse(None)}"
       }else{ url"${appConfig.addressLookupUrl}/external-ndr-list-api/properties?postcode=${searchParams.postcode}"}
     }
     http.get(urlEndpoint)

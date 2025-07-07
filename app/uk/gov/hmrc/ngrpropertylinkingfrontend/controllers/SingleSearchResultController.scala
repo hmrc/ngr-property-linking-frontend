@@ -17,19 +17,22 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.{I18nSupport, Messages}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Table
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
+import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.VMVProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.SingleSearchResultForm.form
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.vmv.{LookUpVMVProperties, VMVProperty}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SortingVMVPropertiesService
 
 import java.text.NumberFormat
 import java.util.Locale
@@ -37,12 +40,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SingleSearchResultController @Inject( singleSearchResultView: SingleSearchResultView,
-                                            errorView: ErrorTemplate,
-                                            authenticate: AuthRetrievals,
-                                            findAPropertyRepo: FindAPropertyRepo,
-                                            isRegisteredCheck: RegistrationAction,
-                                            mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
+class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchResultView,
+                                           errorView: ErrorTemplate,
+                                           authenticate: AuthRetrievals,
+                                           findAPropertyRepo: FindAPropertyRepo,
+                                           isRegisteredCheck: RegistrationAction,
+                                           sortingVMVPropertiesService: SortingVMVPropertiesService,
+                                           mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   private lazy val defaultPageSize: Int = 10
@@ -52,68 +56,93 @@ class SingleSearchResultController @Inject( singleSearchResultView: SingleSearch
       Future.successful(Redirect(routes.PropertySelectedController.show(index)))
     }
   }
-
-  private def generateSortingSelectItems(implicit messages: Messages): Seq[SelectItem] =
-    (1 until 8).map(index =>
-      SelectItem(
-        value = Some(index.toString),
-        text = messages(s"singleSearchResultPage.sortBy.item$index")
-      )
-    )
   
-  def show(page: Int = 1): Action[AnyContent] =
+  def show(page: Option[Int], sortBy: Option[String]): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
         case Some(properties) =>
-          val totalProperties = properties.vmvProperties.total
-          val currentPage = page
-          val pageSize = defaultPageSize
-          val pageTop = PaginationData.pageTop(currentPage = currentPage, pageSize = pageSize, totalLength = totalProperties)
-          val pageBottom = PaginationData.pageBottom(currentPage = currentPage, pageSize = pageSize) + (if (pageTop == 0) 0 else 1)
+          showSingleSearchResultView(properties, page.getOrElse(1), sortBy.getOrElse("AddressASC"))
+        case None => Future.successful(Redirect(routes.FindAPropertyController.show))
+      }
+    }
 
-          def totalPages: Int = math.ceil(properties.vmvProperties.properties.length.toFloat / defaultPageSize.toFloat).toInt
-
-          def splitAddressByPage(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[VMVProperty] = {
-            PaginationData.getPage(currentPage = currentPage, pageSize = pageSize, list = address)
-          }
-
-          def zipWithIndex(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[(VMVProperty, String)] = {
-            val url = (i: Int) => if (page > 1) {
-              routes.SingleSearchResultController.selectedProperty(i + defaultPageSize).url
-            } else {
-              routes.SingleSearchResultController.selectedProperty(i).url
+  def sort: Action[AnyContent] =
+    (authenticate andThen isRegisteredCheck).async { implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.failed(new BadRequestException("Unable to sort, please try again"))
+          ,
+          singleSearchResult => {
+            findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+              case Some(properties) => showSingleSearchResultView(properties, 1, singleSearchResult.sortBy)
+              case None => Future.failed(new BadRequestException("Unable to sort, please try again"))
             }
-            splitAddressByPage(currentPage, pageSize, address).zipWithIndex.map(x => (x._1, url(x._2)))
           }
+        )
+    }
 
-          def capitalizeEnds(input: String): String = {
-            if (input.isEmpty) return input
-            val lowerInput = input.toLowerCase
-            val firstChar = lowerInput.head.toUpper
-            val length = input.length
-            val middle = if (length > 8) lowerInput.slice(1, length - 7) else ""
-            val lastSeven = lowerInput.takeRight(7).toUpperCase
-            s"$firstChar$middle$lastSeven"
-          }
+  private def generateSortingSelectItems(selectedValue: String)(implicit messages: Messages): Seq[SelectItem] =
+    (1 until 9).map(index =>
+      val value: String = messages(s"singleSearchResultPage.sortBy.item$index.value")
+      SelectItem(
+        value = Some(value),
+        text = messages(s"singleSearchResultPage.sortBy.item$index"),
+        selected = value.equals(selectedValue)
+      )
+    )
 
-          def generateTable(propertyList: List[VMVProperty]): Table = {
-            TableData(
-              headers = Seq(
-                TableHeader("Address", "govuk-table__caption--s"),
-                TableHeader("Property reference", "govuk-table__caption--s"),
-                TableHeader("Description", "govuk-table__caption--s"),
-                TableHeader("Relatable Value", "govuk-table__caption--s"),
-                TableHeader("", "")),
-              rows = zipWithIndex(page, defaultPageSize, propertyList)
-                .map(stringValue => Seq(
-                  TableRowText(capitalizeEnds(stringValue._1.addressFull)),
-                  TableRowText(stringValue._1.localAuthorityReference),
-                  TableRowText(stringValue._1.valuations.last.descriptionText.toLowerCase.capitalize),
-                  TableRowText(formatRateableValue(stringValue._1.valuations.last.rateableValue.get.toLong)),
-                  TableRowLink(stringValue._2, "Select property")
-                ))
-            ).toTable
-          }
+  private def showSingleSearchResultView(properties: LookUpVMVProperties, currentPage: Int, sortBy: String)(implicit messages: Messages, request: AuthenticatedUserRequest[AnyContent]): Future[Result] =
+    val totalProperties = properties.vmvProperties.total
+    val pageSize = defaultPageSize
+    val pageTop = PaginationData.pageTop(currentPage = currentPage, pageSize = pageSize, totalLength = totalProperties)
+    val pageBottom = PaginationData.pageBottom(currentPage = currentPage, pageSize = pageSize) + (if (pageTop == 0) 0 else 1)
+    val sortedVMVProperties: List[VMVProperty] = sortingVMVPropertiesService.sort(properties.vmvProperties.properties, sortBy)
+
+    def totalPages: Int = math.ceil(properties.vmvProperties.properties.length.toFloat / defaultPageSize.toFloat).toInt
+
+    def zipWithIndex(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[(VMVProperty, String)] = {
+      val url = (i: Int) => if (currentPage > 1) {
+        routes.SingleSearchResultController.selectedProperty(i + defaultPageSize).url
+      } else {
+        routes.SingleSearchResultController.selectedProperty(i).url
+      }
+      splitAddressByPage(currentPage, pageSize, address).zipWithIndex.map(x => (x._1, url(x._2)))
+    }
+
+    def splitAddressByPage(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[VMVProperty] = {
+      PaginationData.getPage(currentPage = currentPage, pageSize = pageSize, list = address)
+    }
+
+    def capitalizeEnds(input: String): String = {
+      if (input.isEmpty) return input
+      val lowerInput = input.toLowerCase
+      val firstChar = lowerInput.head.toUpper
+      val length = input.length
+      val middle = if (length > 8) lowerInput.slice(1, length - 7) else ""
+      val lastSeven = lowerInput.takeRight(7).toUpperCase
+      s"$firstChar$middle$lastSeven"
+    }
+
+    def generateTable(propertyList: List[VMVProperty]): Table = {
+      TableData(
+        headers = Seq(
+          TableHeader("Address", "govuk-table__caption--s"),
+          TableHeader("Property reference", "govuk-table__caption--s"),
+          TableHeader("Description", "govuk-table__caption--s"),
+          TableHeader("Relatable Value", "govuk-table__caption--s"),
+          TableHeader("", "")),
+        rows = zipWithIndex(currentPage, defaultPageSize, propertyList)
+          .map(stringValue => Seq(
+            TableRowText(capitalizeEnds(stringValue._1.addressFull)),
+            TableRowText(stringValue._1.localAuthorityReference),
+            TableRowText(stringValue._1.valuations.last.descriptionText.toLowerCase.capitalize),
+            TableRowText(formatRateableValue(stringValue._1.valuations.last.rateableValue.get.toLong)),
+            TableRowLink(stringValue._2, "Select property")
+          ))
+      ).toTable
+    }
 
     def formatRateableValue(rateableValue: Long): String = {
       val ukFormatter = NumberFormat.getCurrencyInstance(Locale.UK)

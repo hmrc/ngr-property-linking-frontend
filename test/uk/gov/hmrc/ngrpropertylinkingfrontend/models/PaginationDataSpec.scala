@@ -28,13 +28,13 @@ class PaginationDataSpec extends TestSupport {
       mockPaginationData.toPagination mustBe Pagination(
         items = Some(
           Vector(
-            PaginationItem("baseUrl?page=1", number = Some("1"), current = Some(true)),
-            PaginationItem("baseUrl?page=2", Some("2")),
-            PaginationItem("baseUrl?page=3", Some("3")),
-            PaginationItem("baseUrl?page=4", Some("4")),
-            PaginationItem("baseUrl?page=5", Some("5")))
+            PaginationItem("baseUrl?page=1&sortBy=AddressASC", number = Some("1"), current = Some(true)),
+            PaginationItem("baseUrl?page=2&sortBy=AddressASC", Some("2")),
+            PaginationItem("baseUrl?page=3&sortBy=AddressASC", Some("3")),
+            PaginationItem("baseUrl?page=4&sortBy=AddressASC", Some("4")),
+            PaginationItem("baseUrl?page=5&sortBy=AddressASC", Some("5")))
         ),
-        next = Some(PaginationLink("baseUrl?page=2")))
+        next = Some(PaginationLink("baseUrl?page=2&sortBy=AddressASC")))
     }
 
     "empty data produces Pagination" in {

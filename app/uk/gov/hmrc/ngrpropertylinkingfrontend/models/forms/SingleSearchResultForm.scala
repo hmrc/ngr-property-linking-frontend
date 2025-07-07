@@ -30,7 +30,7 @@ object SingleSearchResultForm extends CommonFormValidators {
   def form: Form[SingleSearchResultForm] =
     Form(
       mapping(
-        "sort" -> text()
+        "sortBy" -> text()
       )(SingleSearchResultForm.apply)(SingleSearchResultForm.unapply)
     )
 }

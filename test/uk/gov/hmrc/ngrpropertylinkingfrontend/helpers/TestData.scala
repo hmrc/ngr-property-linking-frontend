@@ -64,6 +64,95 @@ trait TestData {
     )
   )
 
+  val properties3: VMVProperties = VMVProperties(total = 3,
+    properties = List(
+      VMVProperty(
+        uarn = 11905603000L,
+        localAuthorityReference = "9191322564521",
+        addressFull = "Z, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
+        localAuthorityCode = "4720",
+        valuations = List(
+          Valuation(
+            assessmentStatus = "CURRENT",
+            assessmentRef = 25141561000L,
+            rateableValue = 9300,
+            scatCode = "249",
+            currentFromDate = LocalDate.of(2023, 4, 1),
+            effectiveDate = LocalDate.of(2023, 4, 1),
+            descriptionText = "SHOP AND PREMISES",
+            listYear = "2023",
+            primaryDescription = "CS",
+            allowedActions = List(
+              "check",
+              "challenge",
+              "viewDetailedValuation",
+              "propertyLink",
+              "similarProperties"
+            ),
+            propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
+            listType = "current"
+          )
+        )
+      ),
+      VMVProperty(
+        uarn = 11905603000L,
+        localAuthorityReference = "2191322564521",
+        addressFull = "A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
+        localAuthorityCode = "4720",
+        valuations = List(
+          Valuation(
+            assessmentStatus = "CURRENT",
+            assessmentRef = 85141561000L,
+            rateableValue = 109300,
+            scatCode = "249",
+            currentFromDate = LocalDate.of(2023, 4, 1),
+            effectiveDate = LocalDate.of(2023, 4, 1),
+            descriptionText = "GOLF",
+            listYear = "2023",
+            primaryDescription = "CS",
+            allowedActions = List(
+              "check",
+              "challenge",
+              "viewDetailedValuation",
+              "propertyLink",
+              "similarProperties"
+            ),
+            propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
+            listType = "current"
+          )
+        )
+      ),
+      VMVProperty(
+        uarn = 11905603000L,
+        localAuthorityReference = "5191322564521",
+        addressFull = "M, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
+        localAuthorityCode = "4720",
+        valuations = List(
+          Valuation(
+            assessmentStatus = "CURRENT",
+            assessmentRef = 5141561000L,
+            rateableValue = 79300,
+            scatCode = "249",
+            currentFromDate = LocalDate.of(2023, 4, 1),
+            effectiveDate = LocalDate.of(2023, 4, 1),
+            descriptionText = "Miniature Railway",
+            listYear = "2023",
+            primaryDescription = "CS",
+            allowedActions = List(
+              "check",
+              "challenge",
+              "viewDetailedValuation",
+              "propertyLink",
+              "similarProperties"
+            ),
+            propertyLinkEarliestStartDate = LocalDate.of(2017, 4, 1),
+            listType = "current"
+          )
+        )
+      )
+    )
+  )
+
   val properties11: VMVProperties = VMVProperties(total = 11,
     properties = List(
       VMVProperty(

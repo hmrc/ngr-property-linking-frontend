@@ -12,7 +12,7 @@ POST       /property-search                     uk.gov.hmrc.ngrpropertylinkingfr
 GET        /no-results                          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.NoResultsFoundController.show
 GET        /what-you-need                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.WhatYouNeedController.show
 POST       /what-you-need                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.WhatYouNeedController.next
-GET        /results                             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.show(page: Int, sortBy: String)
+GET        /results                             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.show(page: Option[Int], sortBy: Option[String])
 POST       /results                             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.sort
 GET        /select-property/:index              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.selectedProperty(index: Int)
 GET        /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.show(index: Int)

@@ -19,6 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import uk.gov.hmrc.govukfrontend.views.Aliases.Table
+import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
@@ -37,7 +38,8 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
   val detailsP3 = "Telephones:03000 501501(England)03000 505505(Wales / Cymru)"
   val openTime = "Opening times: Monday to Friday: 9:00am to 4:30pm"
   val searchLink = "Search again"
-  val returnHomeLink = "Return to account home"
+  val sortByLabel = "Sort by"
+  val sortButton = "Sort"
 
   val searchUrl: String = routes.FindAPropertyController.show.url
   val dashboardUrl: String = mockConfig.ngrDashboardUrl
@@ -53,16 +55,26 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
     notifications = Some(1)
   )
 
+  val selectItems: Seq[SelectItem] =
+    (1 until 9).map(index =>
+      val value: String = messages(s"singleSearchResultPage.sortBy.item$index.value")
+      SelectItem(
+        value = Some(value),
+        text = messages(s"singleSearchResultPage.sortBy.item$index")
+      )
+    )
+
   object Selectors {
     val navTitle = "head > title"
-    val heading = "#main-content > div > div > div.govuk-grid-row > div > h1"
-    val p1 = "#main-content > div > div > div.govuk-grid-row > div > p:nth-child(2)"
+    val heading = "#main-content > div > div > form > div:nth-child(1) > div > h1"
+    val p1 = "#main-content > div > div > form > div:nth-child(1) > div > p"
     val detailsSummary = "#help-if-you-cannot-find-your-property > summary"
     val detailsP1 = "#help-if-you-cannot-find-your-property > div > p:nth-child(1)"
     val detailsP2 = "#help-if-you-cannot-find-your-property > div > p:nth-child(4)"
     val opentime = "#help-if-you-cannot-find-your-property > div > p:nth-child(8)"
-    val searchLink = "#main-content > div > div > div.govuk-grid-row > div > p:nth-child(3) > a"
-    val returnHomeLink = "#main-content > div > div > div.govuk-grid-row > div > p:nth-child(4) > a"
+    val searchLink = "#main-content > div > div > form > div:nth-child(1) > div > p > a"
+    val sortByLabel = "#main-content > div > div > form > div:nth-child(1) > div > div > label"
+    val sortButton = "#continue"
   }
 
   "SingleSearchResultView" must {
@@ -79,7 +91,7 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
       pageBottom = 1,
       paginationData = PaginationData(totalPages = 1, currentPage = 1, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = 10, sortBy = "AddressASC"),
       propertySearchResultTable = Table(),
-      sortingSelectItems = Seq.empty)
+      sortingSelectItems = selectItems)
     lazy implicit val document: Document = Jsoup.parse(noResultsFoundView.body)
     val htmlApply = view.apply(
       form,
@@ -91,7 +103,7 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
       pageBottom = 1,
       paginationData = PaginationData(totalPages = 1, currentPage = 1, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = 10, sortBy = "AddressASC"),
       propertySearchResultTable = Table(),
-      sortingSelectItems = Seq.empty).body
+      sortingSelectItems = selectItems).body
     val htmlRender = view.render(
       form,
       content,
@@ -101,8 +113,8 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
       pageTop = 1,
       pageBottom = 1,
       paginationData = PaginationData(totalPages = 1, currentPage = 1, baseUrl = "/ngr-login-register-frontend/address-search-results", pageSize = 10, sortBy = "AddressASC"),
-      propertySearchResultTable = Table(), request, messages, mockConfig,
-      sortingSelectItems = Seq.empty).body
+      propertySearchResultTable = Table(),
+      sortingSelectItems = selectItems, request, messages, mockConfig).body
 
     "apply must be the same as render" in {
       htmlApply mustBe htmlRender
@@ -138,6 +150,18 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
 
     "show correct details open time" in {
       elementText(Selectors.opentime) mustBe openTime
+    }
+
+    "show correct search again link" in {
+      elementText(Selectors.searchLink) mustBe searchLink
+    }
+
+    "show correct sort by select label" in {
+      elementText(Selectors.sortByLabel) mustBe sortByLabel
+    }
+
+    "show correct sort button" in {
+      elementText(Selectors.sortButton) mustBe sortButton
     }
   }
 }

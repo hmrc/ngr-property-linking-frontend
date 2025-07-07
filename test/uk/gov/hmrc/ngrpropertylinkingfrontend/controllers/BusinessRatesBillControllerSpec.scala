@@ -60,7 +60,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
     "method submit" must {
       "Successfully submit when selected Yes and redirect to correct page" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty,currentRatepayer =  Some(CurrentRatepayer("Before", None))))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty,currentRatepayer =  Some(CurrentRatepayer(true, None))))))
         val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
           .withFormUrlEncodedBody(("business-rates-bill-radio", "Yes"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
@@ -71,7 +71,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None).url)
       }
       "Successfully submit when selected No and redirect to correct page" in {
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer("After", Some(LocalDate.now())))))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer(false, Some("")))))))
         val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
           .withFormUrlEncodedBody(("business-rates-bill-radio", "No"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
@@ -82,7 +82,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None).url)
       }
       "Successfully submit when use has come from cya page, selected No and redirect to correct page" in {
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer("After", Some(LocalDate.now())))))))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer(false, Some("")))))))
         val result = controller().submit("CYA")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
           .withFormUrlEncodedBody(("business-rates-bill-radio", "No"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))

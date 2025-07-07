@@ -67,7 +67,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
     request.credId match {
       case Some(rawCredId) =>
         val credId = CredId(rawCredId)
-        Thread.sleep(500)
+        Thread.sleep(2000)
         val resultFut = for {
           record <- upscanRepo.findByCredId(credId).map {
             case Some(r) => r

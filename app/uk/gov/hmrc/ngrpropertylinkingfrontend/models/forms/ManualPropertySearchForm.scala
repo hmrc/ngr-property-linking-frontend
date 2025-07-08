@@ -25,10 +25,10 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Postcode, ScatCode}
 import java.text.NumberFormat
 import java.util.Locale
 
-final case class ManualPropertySearchForm(addressLine1: Option[String],
-                                          addressLine2: Option[String],
-                                          town: Option[String],
-                                          county: Option[String],
+final case class ManualPropertySearchForm(addressLine1: Option[String] = None,
+                                          addressLine2: Option[String] = None,
+                                          town: Option[String] = None,
+                                          county: Option[String] = None,
                                           postcode: Postcode,
                                           propertyReference: Option[String] = None,
                                           council: Option[String] = None,

@@ -19,20 +19,26 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 import play.api.http.Status
 import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK}
 import play.api.libs.json.*
-import java.nio.charset.StandardCharsets.UTF_8
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.ErrorResponse
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{FindAProperty, ManualPropertySearchForm}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperties
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, ManualPropertySearchParams}
 
-import java.net.{URL, URLEncoder}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+
+case class OptionalParams(
+                           propertyNameNumber:Option[String],
+                           street:Option[String],
+                           town:Option[String],
+                           localAuthorityReference:Option[String],
+                           fromRateableValue:Option[String],
+                           toRateableValue:Option[String],
+                         )
 
 @Singleton
 class FindAPropertyConnector @Inject()(
@@ -41,36 +47,21 @@ class FindAPropertyConnector @Inject()(
                                        logger: NGRLogger)
                                       (implicit ec: ExecutionContext) {
 
-
-
-
   def findAPropertyManualSearch(searchParams: ManualPropertySearchForm)(implicit headerCarrier: HeaderCarrier): Future[Either[ErrorResponse, VMVProperties]] = {
     val urlEndpoint =  if(appConfig.features.vmvPropertyLookupTestEnabled()){
       url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${searchParams.postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
     }else{
+      val query = ManualPropertySearchParams(
+        postcode = searchParams.postcode.value,
+        addressLine1 = searchParams.addressLine1,
+        addressLine2 = searchParams.addressLine2,
+        town = searchParams.town,
+        propertyReference = searchParams.propertyReference,
+        miniRateableValue = searchParams.miniRateableValue,
+        maxRateableValue = searchParams.maxRateableValue
+      ).toUrl(appConfig.addressLookupUrl)
 
-      def encode(value: String): String =
-        URLEncoder.encode(value, UTF_8.toString)
-
-      def clean(value: String): String =
-        value.replaceAll("['()]", "")
-
-      val base = s"${appConfig.addressLookupUrl}/external-ndr-list-api/properties?postcode=${encode(searchParams.postcode.value)}"
-
-      val optionalParams = Seq(
-        "propertyNameNumber" -> searchParams.addressLine1.map(clean),
-        "street" -> searchParams.addressLine2.map(clean),
-        "town" -> searchParams.town,
-        "localAuthorityReference" -> searchParams.propertyReference,
-        "fromRateableValue" -> searchParams.miniRateableValue.map(_.toString),
-        "toRateableValue" -> searchParams.maxRateableValue.map(_.toString),
-      )
-
-      val queryString = optionalParams.collect {
-        case (key, Some(value)) => s"$key=${encode(value)}"
-      }.mkString("&")
-
-      if (queryString.nonEmpty){url"$base&$queryString"} else url"$base"
+      url"$query"
     }
     http.get(urlEndpoint)
       .execute[HttpResponse]

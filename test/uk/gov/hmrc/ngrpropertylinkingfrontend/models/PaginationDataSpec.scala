@@ -22,19 +22,19 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.PaginationData
 
 class PaginationDataSpec extends TestSupport {
-  val mockPaginationData: PaginationData = PaginationData(totalPages = 5, currentPage = 1, baseUrl = "baseUrl", pageSize = 5)
+  val mockPaginationData: PaginationData = PaginationData(totalPages = 5, currentPage = 1, baseUrl = "baseUrl", pageSize = 5, sortBy = "AddressASC")
   "PaginationData" when {
     "toPagination produces Pagination" in {
       mockPaginationData.toPagination mustBe Pagination(
         items = Some(
           Vector(
-            PaginationItem("baseUrl?page=1", number = Some("1"), current = Some(true)),
-            PaginationItem("baseUrl?page=2", Some("2")),
-            PaginationItem("baseUrl?page=3", Some("3")),
-            PaginationItem("baseUrl?page=4", Some("4")),
-            PaginationItem("baseUrl?page=5", Some("5")))
+            PaginationItem("baseUrl?page=1&sortBy=AddressASC", number = Some("1"), current = Some(true)),
+            PaginationItem("baseUrl?page=2&sortBy=AddressASC", Some("2")),
+            PaginationItem("baseUrl?page=3&sortBy=AddressASC", Some("3")),
+            PaginationItem("baseUrl?page=4&sortBy=AddressASC", Some("4")),
+            PaginationItem("baseUrl?page=5&sortBy=AddressASC", Some("5")))
         ),
-        next = Some(PaginationLink("baseUrl?page=2")))
+        next = Some(PaginationLink("baseUrl?page=2&sortBy=AddressASC")))
     }
 
     "empty data produces Pagination" in {

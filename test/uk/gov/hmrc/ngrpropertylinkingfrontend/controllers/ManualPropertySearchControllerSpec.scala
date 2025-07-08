@@ -77,7 +77,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
             "postcode" -> "W126WA")
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(page = 1).url)
+        redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(Some(1), Some("AddressASC")).url)
       }
 
       "Submit with no postcode and display error message" in {

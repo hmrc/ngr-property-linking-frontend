@@ -71,7 +71,7 @@ class ManualPropertySearchController @Inject()(manualPropertySearchView: ManualP
                 Future.successful(Redirect(routes.NoResultsFoundController.show.url))
               case Right(properties)  =>
                 findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")), properties))
-                Future.successful(Redirect(routes.SingleSearchResultController.show(page = 1).url))
+                Future.successful(Redirect(routes.SingleSearchResultController.show(Some(1), Some("AddressASC")).url))
             }
           })
     }

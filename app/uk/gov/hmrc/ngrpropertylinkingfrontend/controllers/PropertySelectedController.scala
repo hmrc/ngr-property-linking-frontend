@@ -114,7 +114,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
                 _ <- propertyLinkingRepo.upsertProperty(userAnswers)
               } yield Redirect(routes.CurrentRatepayerController.show(""))
             } else {
-              Future.successful(Redirect(routes.SingleSearchResultController.show(1)))
+              Future.successful(Redirect(routes.SingleSearchResultController.show(Some(1), Some("AddressASC"))))
             }
         }
       )

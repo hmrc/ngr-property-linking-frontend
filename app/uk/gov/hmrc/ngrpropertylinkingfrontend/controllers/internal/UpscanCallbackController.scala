@@ -41,11 +41,28 @@ class UpscanCallbackController @Inject()(
                                           mcc: MessagesControllerComponents
                                         )(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
+
+  private val allowedMimeTypes: Set[String] = Set(
+    "application/msword", // .doc
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+    "application/pdf", // .pdf
+    "image/jpeg", // .jpg and .jpeg
+    "image/png" // .png
+  )
   
   def handleUpscanCallback: Action[JsValue] = Action.async(parse.json) { implicit request =>
     withJsonBody[UpscanCallback] {
       case success @ UpscanCallbackSuccess(reference, _, uploadDetails) =>
-        processCallback(success)
+        val validatedCallback =
+          if (allowedMimeTypes.contains(uploadDetails.fileMimeType)) {
+            success
+          } else {
+            UpscanCallbackFailure(
+              reference,
+              UpscanCallBackErrorDetails("InvalidFileType", "User has uploaded unsupported file type")
+            )
+          }
+        processCallback(validatedCallback)
       case failure: UpscanCallbackFailure =>
         processCallback(failure)
     }

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.shouldBe
@@ -36,7 +37,7 @@ import scala.concurrent.Future
 class BusinessRatesBillControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
   implicit val requestHeader: RequestHeader = mock[RequestHeader]
   lazy val currentRatepayerView: BusinessRatesBillView = inject[BusinessRatesBillView]
-  val pageTitle = "Do you have a business rates bill for the property?"
+  val pageTitle = "Do you have a business rates bill for the property? - GOV.UK"
 
   def controller() = new BusinessRatesBillController(
     currentRatepayerView,
@@ -55,6 +56,17 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         val content = contentAsString(result)
         content must include(pageTitle)
       }
+
+      "Return OK with prepopulated data and the correct view" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, businessRatesBill = Some("Yes")))))
+        val result = controller().show("")(authenticatedFakeRequest)
+        status(result) mustBe OK
+        val content = contentAsString(result)
+        val document = Jsoup.parse(content)
+        document.title() mustBe pageTitle
+        document.select("input[value=Yes]").hasAttr("checked") shouldBe true
+        document.select("input[value=No]").hasAttr("checked") shouldBe false
+      }
     }
 
     "method submit" must {
@@ -70,6 +82,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None).url)
       }
+
       "Successfully submit when selected No and redirect to correct page" in {
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer(false, Some("")))))))
         val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
@@ -81,6 +94,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show("").url)
       }
+
       "Successfully submit when use has come from cya page, selected No and redirect to correct page" in {
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer(false, Some("")))))))
         val result = controller().submit("CYA")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
@@ -92,6 +106,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show("CYA").url)
       }
+
       "Submit with radio buttons unselected and display error message" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
         val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))

@@ -29,7 +29,7 @@ object PropertySelectedForm extends Mappings {
   private lazy val radioUnselectedError = "propertySelected.error.required"
   private val confirmPropertyRadio = "confirm-property-radio"
 
-  def unapply(propertySelectedForm: PropertySelectedForm): Option[String] = Some(PropertySelectedForm.confirmPropertyRadio)
+  def unapply(propertySelectedForm: PropertySelectedForm): Option[String] = Some(propertySelectedForm.radioValue)
 
   def form: Form[PropertySelectedForm] = {
     Form(

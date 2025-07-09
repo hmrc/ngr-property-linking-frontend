@@ -23,4 +23,5 @@ import javax.inject.Inject
 class Features @Inject()(implicit config: Configuration) {
   val welshLanguageSupportEnabled = new Feature("features.welsh-language-support")
   val vmvPropertyLookupTestEnabled = new Feature("vmvPropertyLookupTestEnabled.enabled")
+  val currentRatePayerLocalDateCheckEnabled = new Feature("currentRatePayerLocalDateCheck.enabled")
 }

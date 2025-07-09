@@ -24,7 +24,7 @@ import java.time.LocalDate
 
 final case class RatepayerDate(day: String, month: String, year: String) {
   lazy val ratepayerDate: LocalDate = LocalDate.of(year.toInt, month.toInt, day.toInt)
-  def makeString = {
+  def makeString: String = {
     s"$year-$month-$day"
   }
 }

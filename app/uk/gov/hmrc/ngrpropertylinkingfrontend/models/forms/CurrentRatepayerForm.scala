@@ -20,9 +20,11 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping, optional}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.mappings.Mappings
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import scala.util.Try
 
 final case class CurrentRatepayerForm(radioValue: String, maybeRatepayerDate: Option[RatepayerDate])
@@ -140,13 +142,21 @@ object CurrentRatepayerForm extends CommonFormValidators with DateMappings with 
         Valid
     )
 
-  private def isDateBetween1stApril2026AndToday[A]: Constraint[A] =
+  private def isDateBetween1stApril2026AndToday[A](implicit appConfig: AppConfig): Constraint[A] =
     Constraint((input: A) =>
       val currentRatepayer = input.asInstanceOf[CurrentRatepayerForm]
       if (areDayMonthYearEntered(currentRatepayer) && Try(currentRatepayer.maybeRatepayerDate.get.ratepayerDate).isSuccess) {
         val date = currentRatepayer.maybeRatepayerDate.get.ratepayerDate
         val firstAprilDate = LocalDate.of(2026, 4, 1)
-        if (date.isBefore(firstAprilDate) || date.isAfter(LocalDate.now()))
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        // Use custom date if provided, otherwise use current date
+        val currentDate = appConfig.customDate
+          .flatMap(dateStr => Try(LocalDate.parse(dateStr, dateFormatter)).toOption)
+          .getOrElse(LocalDate.now())
+
+        println("==>> Current Date: " + currentDate)
+        if (date.isBefore(firstAprilDate) || date.isAfter(currentDate))
           Invalid("currentRatepayer.date.invalid.error")
         else
           Valid
@@ -155,7 +165,7 @@ object CurrentRatepayerForm extends CommonFormValidators with DateMappings with 
       }
     )
 
-  def form: Form[CurrentRatepayerForm] = {
+  def form(implicit appConfig: AppConfig): Form[CurrentRatepayerForm] = {
     Form(
       mapping(
         currentRatepayerRadio -> text(radioUnselectedError),

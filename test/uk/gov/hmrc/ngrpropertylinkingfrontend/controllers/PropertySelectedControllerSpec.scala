@@ -26,8 +26,8 @@ import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.{HeaderNames, NotFoundException}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.LookUpVMVProperties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, PropertySelectedView}
 
 import scala.concurrent.Future

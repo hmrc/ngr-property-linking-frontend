@@ -155,7 +155,6 @@ object CurrentRatepayerForm extends CommonFormValidators with DateMappings with 
           .flatMap(dateStr => Try(LocalDate.parse(dateStr, dateFormatter)).toOption)
           .getOrElse(LocalDate.now())
 
-        println("==>> Current Date: " + currentDate)
         if (date.isBefore(firstAprilDate) || date.isAfter(currentDate))
           Invalid("currentRatepayer.date.invalid.error")
         else

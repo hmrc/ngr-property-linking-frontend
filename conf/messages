@@ -517,9 +517,9 @@ currentRatepayer.date.invalid.error = The date you became the current ratepayer 
 
 #ManualSearchProperty
 manualSearchProperty.title = What is the address?
-manualSearchProperty.line1.label = Address line 1
+manualSearchProperty.line1.label = Address line 1 (optional)
 manualSearchProperty.line2.label = Address line 2 (optional)
-manualSearchProperty.city.label = Town or city
+manualSearchProperty.city.label = Town or city (optional)
 manualSearchProperty.county.label = County (optional)
 manualSearchProperty.postcode.label = Postcode
 manualSearchProperty.button = Find address
@@ -553,7 +553,7 @@ connectionToProperty.title = What is your connection to the property?
 connectionToProperty.radio.unselected.error = Select your connection to the property
 connectionToProperty.ownerHint = Owns the property.
 connectionToProperty.occupierHint = Operates from the property.
-connectionToProperty.ownerAndOccupierHint = Owns and Operates from the property.
+connectionToProperty.ownerAndOccupierHint = Owns and operates from the property.
 
 
 #CheckYourAnswers

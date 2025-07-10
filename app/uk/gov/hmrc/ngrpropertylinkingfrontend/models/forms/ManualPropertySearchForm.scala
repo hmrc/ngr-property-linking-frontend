@@ -25,10 +25,10 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Postcode, ScatCode}
 import java.text.NumberFormat
 import java.util.Locale
 
-final case class ManualPropertySearchForm(addressLine1: String,
-                                          addressLine2: Option[String],
-                                          town: String,
-                                          county: Option[String],
+final case class ManualPropertySearchForm(addressLine1: Option[String] = None,
+                                          addressLine2: Option[String] = None,
+                                          town: Option[String] = None,
+                                          county: Option[String] = None,
                                           postcode: Postcode,
                                           propertyReference: Option[String] = None,
                                           council: Option[String] = None,
@@ -63,13 +63,14 @@ object ManualPropertySearchForm extends CommonFormValidators {
   def form: Form[ManualPropertySearchForm] = {
     Form(
       mapping(
-        "addressLine1" -> text()
+        "addressLine1" -> optional(
+          text()
           .verifying(
             firstError(
-              isNotEmpty("addressLine1", "manualSearchProperty.line1.required.error"),
               maxLength(maxLineLength, "manualSearchProperty.line1.maxLength.error")
             )
-          ),
+          )
+        ),
         "addressLine2" -> optional(
           text()
             .verifying(
@@ -78,19 +79,18 @@ object ManualPropertySearchForm extends CommonFormValidators {
               )
             )
         ),
-        "town" -> text()
+        "town" -> optional(
+          text()
           .verifying(
             firstError(
-              isNotEmpty("town", "manualSearchProperty.city.required.error"),
-//              miniLength(3, "manualSearchProperty.city.miniLength.error"),
               maxLength(maxLineLength, "manualSearchProperty.city.maxLength.error")
             )
-          ),
+          )
+        ),
         "county" -> optional(
           text()
             .verifying(
               firstError(
-//                miniLength(3, "manualSearchProperty.city.miniLength.error"),
                 maxLength(maxLineLength, "manualSearchProperty.county.maxLength.error")
               )
             )

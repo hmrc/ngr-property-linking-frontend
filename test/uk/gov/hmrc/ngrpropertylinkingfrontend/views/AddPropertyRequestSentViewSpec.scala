@@ -70,7 +70,7 @@ class AddPropertyRequestSentViewSpec extends ViewBaseSpec {
 
       elementText(Selectors.title) mustBe "Add a property request sent"
       elementText(Selectors.yourRef) must include("Your reference is")
-      elementText(Selectors.print) mustBe "Print or save this page"
+      elementText(Selectors.print) mustBe "Print this page"
       elementText(Selectors.emailSent) mustBe "We have sent a confirmation email to test@testUser.com"
       elementText(Selectors.whatNext) mustBe "What happens next"
       elementText(Selectors.p1) mustBe "We can usually give you a decision on your request to add a property within 15 working days. We will email you with our decision"

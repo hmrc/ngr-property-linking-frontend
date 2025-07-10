@@ -605,7 +605,7 @@ uploadBusinessRatesBill.error.invalidFileType = The selected file must be a PDF 
 #AddPropertyRequestSent
 addPropertyRequestSent.title = Add a property request sent
 addPropertyRequestSent.yourReference = Your reference is
-addPropertyRequestSent.print = Print or save this page
+addPropertyRequestSent.print = Print this page
 addPropertyRequestSent.address = Address
 addPropertyRequestSent.propertyReference = Property reference
 addPropertyRequestSent.p1 = We have sent a confirmation email to {0}

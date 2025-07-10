@@ -16,14 +16,20 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.data.FormError
 import play.api.libs.json.Json
+import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 
 import scala.collection.immutable.ArraySeq
 
 class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
+
+  implicit val config: AppConfig = mock[AppConfig]
+  when(config.customDate).thenReturn(None)
 
   "CurrentRatepayerForm" should {
 
@@ -230,6 +236,30 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.date.invalid.error")))
+    }
+
+    "fail to bind when current ratepayer date is after 1 April 2026 and after the current date of 20 july 2026" in {
+      when(config.customDate).thenReturn(Some("2026-07-20"))
+      val data = Map("current-ratepayer-radio" -> "After",
+        "ratepayerDate.day" -> "21",
+        "ratepayerDate.month" -> "7",
+        "ratepayerDate.year" -> "2026")
+      val boundForm = CurrentRatepayerForm.form.bind(data)
+
+      boundForm.hasErrors shouldBe true
+      boundForm.errors should contain(FormError("", List("currentRatepayer.date.invalid.error")))
+    }
+
+    "bind when valid current ratepayer date input which is After 1 April 2026" in {
+      when(config.customDate).thenReturn(Some("2026-06-02"))
+      val data = Map("current-ratepayer-radio" -> "After",
+        "ratepayerDate.day" -> "31",
+        "ratepayerDate.month" -> "5",
+        "ratepayerDate.year" -> "2026")
+      val boundForm = CurrentRatepayerForm.form().bind(data)
+
+      boundForm.hasErrors shouldBe false
+      boundForm.value shouldBe Some(CurrentRatepayerForm("After", Some(RatepayerDate("31", "5", "2026"))))
     }
 
     "serialize to JSON correctly" in {

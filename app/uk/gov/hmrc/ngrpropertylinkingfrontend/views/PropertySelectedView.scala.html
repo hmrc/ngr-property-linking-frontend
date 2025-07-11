@@ -33,11 +33,11 @@ saveAndContinueButton: saveAndContinueButton,
 linkComponent: LinkComponent
 )
 
-@(form:Form[PropertySelectedForm],radios: Radios, summaryList: SummaryList, navigationBarContent: NavigationBarContent, index: Int, dashboardUrl: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+@(form:Form[PropertySelectedForm],radios: Radios, summaryList: SummaryList, navigationBarContent: NavigationBarContent, index: Int, sortBy: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("propertySelected.title")}
 @layout(pageTitle = Some(heading), fullWidth = false, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
-@formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.PropertySelectedController.submit(index), Symbol("autoComplete") -> "off") {
+@formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.PropertySelectedController.submit(index, sortBy), Symbol("autoComplete") -> "off") {
 @if(form.errors.nonEmpty) {
 @govukErrorSummary(ErrorSummaryViewModel(form))
 }
@@ -49,7 +49,7 @@ linkComponent: LinkComponent
 @govukRadios(radios)
 <div class="govuk-button-group">
 @saveAndContinueButton(msg =  messages("Continue"), isStartButton = false)
- @linkComponent(label = messages("noResultsFound.returnHome.link"), hrefUrl= dashboardUrl)
+ @linkComponent(label = messages("noResultsFound.returnHome.link"), hrefUrl= appConfig.ngrDashboardUrl)
 
 </div>
 }

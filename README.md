@@ -17,7 +17,9 @@ sm2 --stop  NGR_PROPERTY_LINKING_FRONTEND
 ```
 ### Run local changes:
 * `cd` to the root of the project.
-* `sbt run`
+* `sbt run` 
+* To got through the journey of the page When did you become the current ratepayer? by selecting the option 'On or after 1 April 2026' 
+* `sbt -Dcustom-current-date=2026-12-06 run`
 * `Note` the service will run on port 1503 by default
 `Setup your policies:`
     *  make sure `centralised-authorisation-policy-config` is running `sbt run`

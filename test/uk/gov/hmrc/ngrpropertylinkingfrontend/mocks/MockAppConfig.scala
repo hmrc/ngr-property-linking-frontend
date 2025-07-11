@@ -35,5 +35,7 @@ class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
   override val addressLookupUrl: String = "http://localhost:9540"
 
   override def getString(key: String): String = ???
+
+  override val customCurrentDate: Option[String] = None // TODO remove this after 1st April 2026, as it is only used for testing purposes
 }
 

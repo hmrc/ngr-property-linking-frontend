@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
 class ManualPropertySearchParamsSpec extends TestSupport {

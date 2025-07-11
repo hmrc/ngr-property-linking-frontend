@@ -41,10 +41,6 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
       boundForm.value shouldBe Some(CurrentRatepayerForm("Before", None))
     }
 
-    //TODO: change ignore back to in on or after 1 April 2026
-    //This test can only pass on or after 1 April 2026 due to the rule of become ratepayer date
-    //has to fall between 1 April 2026 and today.
-    //Below test will automatically use today's date as become ratepayer date.
     "bind successfully with current ratepayer radio value as After and valid date" in {
       when(config.customCurrentDate).thenReturn(Some("2026-04-01"))
       val data = Map("current-ratepayer-radio" -> "After",

@@ -29,7 +29,7 @@ import scala.collection.immutable.ArraySeq
 class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
 
   implicit val config: AppConfig = mock[AppConfig]
-  when(config.customDate).thenReturn(None)
+  when(config.customCurrentDate).thenReturn(None)
 
   "CurrentRatepayerForm" should {
 
@@ -45,7 +45,8 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
     //This test can only pass on or after 1 April 2026 due to the rule of become ratepayer date
     //has to fall between 1 April 2026 and today.
     //Below test will automatically use today's date as become ratepayer date.
-    "bind successfully with current ratepayer radio value as After and valid date" ignore {
+    "bind successfully with current ratepayer radio value as After and valid date" in {
+      when(config.customCurrentDate).thenReturn(Some("2026-04-01"))
       val data = Map("current-ratepayer-radio" -> "After",
         "ratepayerDate.day" -> "1",
         "ratepayerDate.month" -> "4",
@@ -239,7 +240,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
     }
 
     "fail to bind when current ratepayer date is after 1 April 2026 and after the current date of 20 july 2026" in {
-      when(config.customDate).thenReturn(Some("2026-07-20"))
+      when(config.customCurrentDate).thenReturn(Some("2026-07-20"))
       val data = Map("current-ratepayer-radio" -> "After",
         "ratepayerDate.day" -> "21",
         "ratepayerDate.month" -> "7",
@@ -251,7 +252,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
     }
 
     "bind when valid current ratepayer date input which is After 1 April 2026" in {
-      when(config.customDate).thenReturn(Some("2026-06-02"))
+      when(config.customCurrentDate).thenReturn(Some("2026-06-02"))
       val data = Map("current-ratepayer-radio" -> "After",
         "ratepayerDate.day" -> "31",
         "ratepayerDate.month" -> "5",

@@ -151,7 +151,7 @@ object CurrentRatepayerForm extends CommonFormValidators with DateMappings with 
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         // Use custom date if provided, otherwise use current date
-        val currentDate = appConfig.customDate
+        val currentDate = appConfig.customCurrentDate
           .flatMap(dateStr => Try(LocalDate.parse(dateStr, dateFormatter)).toOption)
           .getOrElse(LocalDate.now())
 

@@ -33,7 +33,7 @@ class NGRRadioSpec extends TestSupport {
       val testnNgrTitle = Some(NGRRadioHeader(title = "radioName", classes = "", isPageHeading = true))
       val ngrRadios = NGRRadio(radioGroupName = ngrRadioName, NGRRadioButtons = Seq(ngrButton1,ngrButton2), ngrTitle = testnNgrTitle)
 
-      lazy val form: Form[CurrentRatepayerForm] =  CurrentRatepayerForm.form
+      lazy val form: Form[CurrentRatepayerForm] =  CurrentRatepayerForm.form()
       NGRRadio.buildRadios(form, ngrRadios) mustBe
         Radios(
           Some(Fieldset(None, Some(Legend(Text("radioName"), "", true)), "", None, Map())),
@@ -51,7 +51,7 @@ class NGRRadioSpec extends TestSupport {
       val testnNgrTitle = Some(NGRRadioHeader(title = "radioName", classes = "", isPageHeading = true))
       val ngrRadios = NGRRadio(radioGroupName = ngrRadioName, NGRRadioButtons = Seq(ngrButton1, ngrButton2), ngrTitle = testnNgrTitle)
 
-      lazy val form: Form[CurrentRatepayerForm] =  CurrentRatepayerForm.form.withError("radioName", "error message")
+      lazy val form: Form[CurrentRatepayerForm] =  CurrentRatepayerForm.form().withError("radioName", "error message")
       NGRRadio.buildRadios(form ,ngrRadios) mustBe
         Radios(Some(Fieldset(None, Some(Legend(Text("radioName"), "", true)), "",
           None, Map())), None, Some(ErrorMessage(None, "", Map(), Some("Error"),

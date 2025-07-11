@@ -39,5 +39,15 @@ class ConnectionToPropertyFormSpec extends AnyWordSpec with Matchers {
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("connection-to-property-radio", List("connectionToProperty.radio.unselected.error")))
     }
+
+    "return valid ConnectionToPropertyForm to the input string" in {
+      ConnectionToPropertyForm.fromString("Owner") shouldBe ConnectionToPropertyForm.Owner
+      ConnectionToPropertyForm.fromString("Occupier") shouldBe ConnectionToPropertyForm.Occupier
+      ConnectionToPropertyForm.fromString("OwnerAndOccupier") shouldBe ConnectionToPropertyForm.OwnerAndOccupier
+    }
+
+    "throw IllegalArgumentException for invalid ConnectionToPropertyForm input" in {
+      an[IllegalArgumentException] should be thrownBy ConnectionToPropertyForm.fromString("InvalidValue")
+    }
   }
 }

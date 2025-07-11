@@ -27,9 +27,9 @@ object BusinessRatesBillForm extends Mappings {
   implicit val format: OFormat[BusinessRatesBillForm] = Json.format[BusinessRatesBillForm]
 
   private lazy val radioUnselectedError = "businessRatesBill.error.required"
-  private val businessRatesBillRadio       = "business-rates-bill-radio"
+  private val businessRatesBillRadio    = "business-rates-bill-radio"
   
-  def unapply(currentRatepayerForm: BusinessRatesBillForm): Option[String] = Some(BusinessRatesBillForm.businessRatesBillRadio)
+  def unapply(businessRatesBillForm: BusinessRatesBillForm): Option[String] = Some(businessRatesBillForm.radioValue)
   
   def form: Form[BusinessRatesBillForm] = {
     Form(

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
@@ -37,7 +38,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
 
   implicit val requestHeader: RequestHeader = mock[RequestHeader]
   lazy val connectionToPropertyView: ConnectionToPropertyView = inject[ConnectionToPropertyView]
-  val pageTitle = "What is your connection to the property?"
+  val pageTitle = "What is your connection to the property? - GOV.UK"
 
   def controller() = new ConnectionToPropertyController(
     connectionToPropertyView,
@@ -55,6 +56,18 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
         status(result) mustBe OK
         val content = contentAsString(result)
         content must include(pageTitle)
+      }
+
+      "Return OK with pre-populated data and the correct view" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, connectionToProperty = Some("Owner")))))
+        val result = controller().show()(authenticatedFakeRequest)
+        status(result) mustBe OK
+        val content = contentAsString(result)
+        val document = Jsoup.parse(content)
+        document.title() mustBe pageTitle
+        document.select("input[type=radio][name=connection-to-property-radio][value=Owner]").hasAttr("checked") mustBe true
+        document.select("input[type=radio][name=connection-to-property-radio][value=Occupier]").hasAttr("checked") mustBe false
+        document.select("input[type=radio][name=connection-to-property-radio][value=OwnerAndOccupier]").hasAttr("checked") mustBe false
       }
     }
 

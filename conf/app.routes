@@ -14,9 +14,9 @@ GET        /what-you-need                       uk.gov.hmrc.ngrpropertylinkingfr
 POST       /what-you-need                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.WhatYouNeedController.next
 GET        /results                             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.show(page: Option[Int], sortBy: Option[String])
 POST       /results                             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.sort
-GET        /select-property/:index              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.selectedProperty(index: Int)
-GET        /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.show(index: Int)
-POST       /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.submit(index: Int)
+GET        /select-property/:index/:sortBy      uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SingleSearchResultController.selectedProperty(index: Int, sortBy: String)
+GET        /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.show(index: Int, sortBy: String)
+POST       /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.submit(index: Int, sortBy: String)
 GET        /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.show
 POST       /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.submit
 POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.submit(mode: String)

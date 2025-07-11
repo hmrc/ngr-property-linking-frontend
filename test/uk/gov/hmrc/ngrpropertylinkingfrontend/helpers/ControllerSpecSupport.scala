@@ -24,6 +24,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, Registrat
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.{FindAPropertyConnector, NGRConnector, UpscanConnector}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo, UpscanRepo}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SortingVMVPropertiesService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,6 +35,7 @@ trait ControllerSpecSupport extends TestSupport {
   val mockFindAPropertyConnector: FindAPropertyConnector = mock[FindAPropertyConnector]
   val mockUpscanConnector: UpscanConnector = mock[UpscanConnector]
   val mockNgrConnector: NGRConnector = mock[NGRConnector]
+  val sortingVMVPropertiesService: SortingVMVPropertiesService = inject[SortingVMVPropertiesService]
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   mockRequest()
   val mockFindAPropertyRepo: FindAPropertyRepo = mock[FindAPropertyRepo]

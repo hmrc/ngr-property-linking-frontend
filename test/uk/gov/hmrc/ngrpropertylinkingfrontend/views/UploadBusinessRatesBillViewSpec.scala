@@ -30,7 +30,7 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
   lazy val view: UploadBusinessRatesBillView = inject[UploadBusinessRatesBillView]
   val title = "Upload your business rates bill - GOV.UK"
   val heading = "Upload your business rates bill"
-  val p1 = "1 Mulholland Drive, LA, 6BH 4PE"
+  val address = "1 Mulholland Drive, LA, 6BH 4PE"
   val p2 = "The file must be a Word document, PDF or image (PNG) and be less than 25MB."
   val continueButton = "Continue"
 
@@ -48,8 +48,8 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
   object Selectors {
     val navTitle = "head > title"
     val heading = "h1.govuk-heading-l"
-    val caption = "h2.govuk-caption-l"
-    val paragraph = "#main-content > div > div.govuk-grid-column-two-thirds > div > p"
+    val span = "#main-content > div > div.govuk-grid-column-two-thirds > span"
+    val paragraph = "#main-content > div > div.govuk-grid-column-two-thirds > p"
     val fileInput = "input#file-upload-1"
     val continueButton = "button.govuk-button"
   }
@@ -68,7 +68,7 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
         "data-max-file-size" -> "100000000",
         "data-min-file-size" -> "1000"),
         errorMessage = None,
-        address = "address",
+        address = address,
         navigationBarContent = content,
         searchAgainUrl = "searchAgain",
         dashboardUrl = "dashboard")(request, messages, mockConfig)
@@ -80,7 +80,7 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
         "data-max-file-size" -> "100000000",
         "data-min-file-size" -> "1000"),
         errorMessage =  None,
-        address = "address",
+        address = address,
         navigationBarContent = content,
         searchAgainUrl = "searchAgain",
         dashboardUrl = "dashboard", request, messages, mockConfig).body
@@ -103,7 +103,7 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
           "data-max-file-size" -> "100000000",
           "data-min-file-size" -> "1000"),
           None,
-          "address",
+          address,
           content,
           "searchAgain",
           "dashboard").body)
@@ -116,8 +116,8 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
         elementText(Selectors.heading) mustBe heading
       }
 
-      "have the correct caption text" in {
-        elementText(Selectors.caption) must include("address")
+      "have the correct address showing" in {
+        elementText(Selectors.span) must include(address)
       }
 
       "have the correct paragraph below heading" in {

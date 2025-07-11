@@ -43,6 +43,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
     mockIsRegisteredCheck,
     mcc,
     mockFindAPropertyRepo,
+    sortingVMVPropertiesService,
     mockPropertyLinkingRepo
   )(mockConfig)
 
@@ -52,7 +53,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
         mockConfig.features.vmvPropertyLookupTestEnabled(true)
         when(mockFindAPropertyRepo.findByCredId(any[CredId]))
           .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties11))))
-        val result = controller().show(index = 0)(authenticatedFakeRequest)
+        val result = controller().show(index = 0, sortBy = "AddressASC")(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)
         content must include("(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY")
@@ -62,18 +63,29 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
         mockConfig.features.vmvPropertyLookupTestEnabled(true)
         when(mockFindAPropertyRepo.findByCredId(any[CredId]))
           .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties11))))
-        val result = controller().show(index = 1)(authenticatedFakeRequest)
+        val result = controller().show(index = 1, sortBy = "AddressASC")(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)
-        content must include("(INCL STORE R/O 5 & 5A) 5B, WEST LANE, WEST KEY, BOURNEMOUTH, BH1 7EY")
+        content must include("(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY")
         content must include("SHOP AND PREMISES")
+      }
+      "Return Ok and the correct view with the property of index 0 with correct sorting by RateableValueDESC" in {
+        mockConfig.features.vmvPropertyLookupTestEnabled(true)
+        when(mockFindAPropertyRepo.findByCredId(any[CredId]))
+          .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties4))))
+        val result = controller().show(index = 0, sortBy = "RateableValueDESC")(authenticatedFakeRequest)
+        status(result) mustBe OK
+        val content = contentAsString(result)
+        content must include("A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY")
+        content must include("GOLF")
+        content must include("£109,300")
       }
       "Return NotFoundException when mongo fails to find property by credId" in{
         mockConfig.features.vmvPropertyLookupTestEnabled(true)
         when(mockFindAPropertyRepo.findByCredId(any[CredId]))
           .thenReturn(Future.successful(None))
         val exception = intercept[NotFoundException] {
-          await(controller().show(index = 1)(authenticatedFakeRequest))
+          await(controller().show(index = 1, sortBy = "AddressASC")(authenticatedFakeRequest))
         }
         exception.getMessage contains "Unable to find matching postcode" mustBe true
       }
@@ -82,40 +94,40 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
       "Return See Other to the correct location when yes is selected" in {
         def requestWithFormValue(value: String): AuthenticatedUserRequest[AnyContentAsFormUrlEncoded] = AuthenticatedUserRequest(
           FakeRequest(
-            routes.PropertySelectedController.submit(index = 0))
+            routes.PropertySelectedController.submit(index = 0, sortBy = "AddressASC"))
             .withFormUrlEncodedBody(("confirm-property-radio", value))
             .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some("")))
         when(mockFindAPropertyRepo.findByCredId(any[CredId]))
           .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties11))))
         when(mockPropertyLinkingRepo.upsertProperty(any())).thenReturn(Future.successful(true))
         mockRequest()
-        val result = controller().submit(index = 0)(requestWithFormValue("Yes"))
+        val result = controller().submit(index = 0, sortBy = "AddressASC")(requestWithFormValue("Yes"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.CurrentRatepayerController.show(mode = "").url)
       }
       "Return See Other to the correct location when no is selected" in {
         def requestWithFormValue(value: String): AuthenticatedUserRequest[AnyContentAsFormUrlEncoded] = AuthenticatedUserRequest(
           FakeRequest(
-            routes.PropertySelectedController.submit(index = 0))
+            routes.PropertySelectedController.submit(index = 0, sortBy = "AddressASC"))
             .withFormUrlEncodedBody(("confirm-property-radio", value))
             .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some("")))
         when(mockFindAPropertyRepo.findByCredId(any[CredId]))
           .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties11))))
         mockRequest()
-        val result = controller().submit(index = 0)(requestWithFormValue("no"))
+        val result = controller().submit(index = 0, sortBy = "AddressASC")(requestWithFormValue("no"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(Some(1), Some("AddressASC")).url)
       }
       "Return form with errors" in {
         def requestWithFormValue(value: String): AuthenticatedUserRequest[AnyContentAsFormUrlEncoded] = AuthenticatedUserRequest(
           FakeRequest(
-            routes.PropertySelectedController.submit(index = 0))
+            routes.PropertySelectedController.submit(index = 0, sortBy = "AddressASC"))
             .withFormUrlEncodedBody(("confirm-property-radio", value))
             .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some("")))
         when(mockFindAPropertyRepo.findByCredId(any[CredId]))
           .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties11))))
         mockRequest()
-        val result = controller().submit(index = 0)(authenticatedFakeRequest)
+        val result = controller().submit(index = 0, sortBy = "AddressASC")(authenticatedFakeRequest)
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include("Select yes if you want to add this property to your account")
@@ -123,7 +135,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
       "Return NotFoundException when mongo fails to find property by credId" in {
         def requestWithFormValue(value: String): AuthenticatedUserRequest[AnyContentAsFormUrlEncoded] = AuthenticatedUserRequest(
           FakeRequest(
-            routes.PropertySelectedController.submit(index = 0))
+            routes.PropertySelectedController.submit(index = 0, sortBy = "AddressASC"))
             .withFormUrlEncodedBody(("confirm-property-radio", value))
             .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some("")))
 
@@ -132,7 +144,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
         when(mockPropertyLinkingRepo.upsertProperty(any())).thenReturn(Future.successful(true))
         mockRequest()
         val exception = intercept[NotFoundException] {
-          await(controller().submit(index = 0)(requestWithFormValue("Yes")))
+          await(controller().submit(index = 0, sortBy = "AddressASC")(requestWithFormValue("Yes")))
         }
         exception.getMessage contains "No properties found on account" mustBe true
       }

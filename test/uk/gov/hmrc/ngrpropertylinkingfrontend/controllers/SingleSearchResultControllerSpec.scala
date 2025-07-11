@@ -27,7 +27,6 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.LookUpVMVProperties
-import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SortingVMVPropertiesService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{ErrorTemplate, SingleSearchResultView}
 
 import scala.concurrent.Future
@@ -36,7 +35,6 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
 
   val singleSearchResultView: SingleSearchResultView = inject[SingleSearchResultView]
   val errorView: ErrorTemplate = inject[ErrorTemplate]
-  val sortingVMVPropertiesService: SortingVMVPropertiesService = inject[SortingVMVPropertiesService]
 
   def controller() = new SingleSearchResultController(
     singleSearchResultView,
@@ -138,9 +136,9 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
     }
     "method selectProperty" must {
       "Return SEE OTHER and pass chosen property index to confirm your address page with mode as check your answers" in {
-        val result = controller().selectedProperty(1)(authenticatedFakeRequest)
+        val result = controller().selectedProperty(1, "AddressASC")(authenticatedFakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.PropertySelectedController.show(1).url)
+        redirectLocation(result) mustBe Some(routes.PropertySelectedController.show(1, "AddressASC").url)
       }
     }
   }

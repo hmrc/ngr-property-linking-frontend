@@ -33,6 +33,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SortingVMVPropertiesService
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.CurrencyHelper
 
 import java.text.NumberFormat
 import java.util.Locale
@@ -47,13 +48,13 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
                                            isRegisteredCheck: RegistrationAction,
                                            sortingVMVPropertiesService: SortingVMVPropertiesService,
                                            mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(mcc) with I18nSupport {
+  extends FrontendController(mcc) with I18nSupport with CurrencyHelper {
 
   private lazy val defaultPageSize: Int = 10
 
-  def selectedProperty(index: Int): Action[AnyContent] = {
+  def selectedProperty(index: Int, sortBy: String): Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck) async { _ =>
-      Future.successful(Redirect(routes.PropertySelectedController.show(index)))
+      Future.successful(Redirect(routes.PropertySelectedController.show(index, sortBy)))
     }
   }
   
@@ -104,9 +105,9 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
 
     def zipWithIndex(currentPage: Int, pageSize: Int, address: Seq[VMVProperty]): Seq[(VMVProperty, String)] = {
       val url = (i: Int) => if (currentPage > 1) {
-        routes.SingleSearchResultController.selectedProperty(i + defaultPageSize).url
+        routes.SingleSearchResultController.selectedProperty(i + defaultPageSize, sortBy).url
       } else {
-        routes.SingleSearchResultController.selectedProperty(i).url
+        routes.SingleSearchResultController.selectedProperty(i, sortBy).url
       }
       splitAddressByPage(currentPage, pageSize, address).zipWithIndex.map(x => (x._1, url(x._2)))
     }
@@ -142,11 +143,6 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
             TableRowLink(stringValue._2, "Select property")
           ))
       ).toTable
-    }
-
-    def formatRateableValue(rateableValue: Long): String = {
-      val ukFormatter = NumberFormat.getCurrencyInstance(Locale.UK)
-      ukFormatter.format(rateableValue).replaceAll("[.][0-9]{2}", "")
     }
 
     Future.successful(

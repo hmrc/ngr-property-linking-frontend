@@ -31,8 +31,10 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.PropertySelectedForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.{VMVProperty, LookUpVMVProperties}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.{LookUpVMVProperties, VMVProperty}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SortingVMVPropertiesService
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.CurrencyHelper
 
 import java.text.NumberFormat
 import java.util.Locale
@@ -44,51 +46,48 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
                                            isRegisteredCheck: RegistrationAction,
                                            mcc: MessagesControllerComponents,
                                            findAPropertyRepo: FindAPropertyRepo,
+                                           sortingVMVPropertiesService: SortingVMVPropertiesService,
                                            propertyLinkingRepo: PropertyLinkingRepo)(implicit appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(mcc) with I18nSupport {
+  extends FrontendController(mcc) with I18nSupport with CurrencyHelper {
 
   private val yesButton: NGRRadioButtons = NGRRadioButtons("Yes",Yes)
   private val noButton: NGRRadioButtons = NGRRadioButtons("No",No)
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("confirm-property-radio"), Seq(yesButton, noButton))
-
-  def formatRateableValue(rateableValue: Long): String = {
-    val ukFormatter = NumberFormat.getCurrencyInstance(Locale.UK)
-    ukFormatter.format(rateableValue).replaceAll("[.][0-9]{2}", "")
-  }
   
   private def createSummaryRows(property: VMVProperty)(implicit messages: Messages): Seq[SummaryListRow] = {
+    val valuation = property.valuations.last
     Seq(
       NGRSummaryListRow(messages("Address"), None, Seq(property.addressFull), None),
       NGRSummaryListRow(messages("Property Reference"), None, Seq(property.localAuthorityReference), None),
       NGRSummaryListRow(messages("Local Council"), None, Seq("Torbay"), None),
-      NGRSummaryListRow(messages("Description"), None, Seq(property.valuations.map(_.descriptionText).last), None),
-      NGRSummaryListRow(messages("Rateable value"), None, Seq(formatRateableValue(property.valuations.last.rateableValue.get.toLong)), None),
+      NGRSummaryListRow(messages("Description"), None, Seq(valuation.descriptionText), None),
+      NGRSummaryListRow(messages("Rateable value"), None, Seq(formatRateableValue(valuation.rateableValue.map(_.longValue).getOrElse(0l))), None),
     ).map(summarise)
   }
 
-  def show(index: Int): Action[AnyContent] = {
+  def show(index: Int, sortBy: String): Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request: AuthenticatedUserRequest[AnyContent] =>
       findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
         case Some(properties) =>
-          val selectedProperty = properties.vmvProperties.properties(index)
+          val selectedProperty = sortingVMVPropertiesService.sort(properties.vmvProperties.properties, sortBy)(index)
           Future.successful(Ok(propertySelectedView(
             form = form,
             radios = buildRadios(form, ngrRadio),
             summaryList = SummaryList(createSummaryRows(property = selectedProperty)),
-            navigationBarContent = createDefaultNavBar(), index = index, dashboardUrl = appConfig.ngrDashboardUrl)))
+            navigationBarContent = createDefaultNavBar(), index = index, sortBy = sortBy)))
         case None => Future.failed(throw new NotFoundException("Unable to find matching postcode"))
       }
     }
   }
 
-  def submit(index: Int): Action[AnyContent] =
+  def submit(index: Int, sortBy: String): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       form.bindFromRequest()
         .fold(
         formWithErrors => {
           findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
             case Some(properties) =>
-              val selectedProperty = properties.vmvProperties.properties(index)
+              val selectedProperty = sortingVMVPropertiesService.sort(properties.vmvProperties.properties, sortBy)(index)
               Future.successful(BadRequest(
                 propertySelectedView(
                   formWithErrors,
@@ -96,7 +95,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
                   SummaryList(createSummaryRows(selectedProperty)),
                   createDefaultNavBar(),
                   index,
-                  appConfig.ngrDashboardUrl
+                  sortBy
                 )
               ))
             case None => Future.successful(Redirect(routes.NoResultsFoundController.show))
@@ -108,9 +107,9 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
               for {
                 response <- findAPropertyRepo.findByCredId(CredId(credId))
                 property = response
-                  .map(_.vmvProperties.properties(index))
+                  .map(lookupVMVProperties => sortingVMVPropertiesService.sort(lookupVMVProperties.vmvProperties.properties, sortBy)(index))
                   .getOrElse(throw new NotFoundException("No properties found on account"))
-                userAnswers = PropertyLinkingUserAnswers(CredId(credId), property)
+                userAnswers = PropertyLinkingUserAnswers(CredId(credId), property.copy(valuations = List(property.valuations.last)))
                 _ <- propertyLinkingRepo.upsertProperty(userAnswers)
               } yield Redirect(routes.CurrentRatepayerController.show(""))
             } else {

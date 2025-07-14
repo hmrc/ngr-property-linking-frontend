@@ -55,7 +55,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
           val propertyAddress = properties.vmvProperty.addressFull
           val preparedForm = properties.connectionToProperty match {
             case None        => form()
-            case Some(value) => form().fill(ConnectionToPropertyForm.fromString(value))
+            case Some(value) => form().fill(ConnectionToPropertyForm.stringToPropertyForm(value))
           }
           
           Future.successful(Ok(connectionToPropertyView(

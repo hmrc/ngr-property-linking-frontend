@@ -33,7 +33,7 @@ object ConnectionToPropertyForm {
 
   val values: Set[ConnectionToPropertyForm] = Set(Owner, Occupier, OwnerAndOccupier)
 
-  def fromString(value: String): ConnectionToPropertyForm = value match {
+  def stringToPropertyForm(value: String): ConnectionToPropertyForm = value match {
     case "Owner" => Owner
     case "Occupier" => Occupier
     case "OwnerAndOccupier" => OwnerAndOccupier

@@ -21,10 +21,10 @@ import play.api.data.Forms.{mapping, optional}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.Utils
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.mappings.Mappings
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import scala.util.Try
 
 final case class CurrentRatepayerForm(radioValue: String, maybeRatepayerDate: Option[RatepayerDate])
@@ -148,11 +148,9 @@ object CurrentRatepayerForm extends CommonFormValidators with DateMappings with 
       if (areDayMonthYearEntered(currentRatepayer) && Try(currentRatepayer.maybeRatepayerDate.get.ratepayerDate).isSuccess) {
         val date = currentRatepayer.maybeRatepayerDate.get.ratepayerDate
         val firstAprilDate = LocalDate.of(2026, 4, 1)
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         // Use custom date if provided, otherwise use current date
         val currentDate = appConfig.customCurrentDate
-          .flatMap(dateStr => Try(LocalDate.parse(dateStr, dateFormatter)).toOption)
+          .flatMap(dateStr => Utils.toLocalDate(dateStr))
           .getOrElse(LocalDate.now())
 
         if (date.isBefore(firstAprilDate) || date.isAfter(currentDate))

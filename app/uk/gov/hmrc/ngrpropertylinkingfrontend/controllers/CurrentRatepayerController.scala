@@ -35,10 +35,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.DateTextFiel
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import java.time.LocalDate
-import java.time.format.{DateTimeFormatter, ResolverStyle}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 @Singleton
 class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepayerView,
@@ -57,13 +55,9 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
   private def ngrRadio(form: Form[CurrentRatepayerForm])(implicit messages: Messages): NGRRadio =
     NGRRadio(NGRRadioName("current-ratepayer-radio"), Seq(beforeButton, afterButton(form)))
 
-  private val dateFormatter = DateTimeFormatter
-    .ofPattern("yyyy-M-d")
-    .withResolverStyle(ResolverStyle.LENIENT)
-
   private def getLocalDate(input: Option[String]): Option[RatepayerDate] =
     input.flatMap { str =>
-      Try(LocalDate.parse(str, dateFormatter)).toOption.map { date =>
+      Utils.toLocalDate(str).map { date =>
         RatepayerDate(
           day = date.getDayOfMonth.toString,
           month = date.getMonthValue.toString,

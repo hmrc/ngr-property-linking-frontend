@@ -18,7 +18,6 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
 import java.time.LocalDate
 import java.time.format.{DateTimeFormatter, DateTimeParseException}
-import scala.util.{Failure, Success, Try}
 
 object Utils {
   def toLocalDate(dateStr: String): Option[LocalDate] = {

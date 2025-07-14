@@ -229,7 +229,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "31",
         "ratepayerDate.month" -> "3",
         "ratepayerDate.year" -> "2026")
-      val boundForm = CurrentRatepayerForm.form().bind(data)
+      val boundForm = CurrentRatepayerForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.date.invalid.error")))

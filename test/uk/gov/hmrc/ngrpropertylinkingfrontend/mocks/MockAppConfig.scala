@@ -33,7 +33,8 @@ class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
   override val ngrPropertyLinkingFrontendUrl: String = "http://localhost:1504/ngr-property-linking-frontend"
   override val callbackEndpointTarget: String = "http://localhost:1504/internal/callback-from-upscan"
   override val addressLookupUrl: String = "http://localhost:9540"
-
+  override val uploadRedirectTargetBase: String = "http://localhost:1504"
+  
   override def getString(key: String): String = ???
 }
 

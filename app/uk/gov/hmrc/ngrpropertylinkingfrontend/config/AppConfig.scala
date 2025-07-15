@@ -36,6 +36,7 @@ trait AppConfig {
   def getString(key: String): String
   val timeToLive: String
   val callbackEndpointTarget: String
+  val uploadRedirectTargetBase: String
 }
 
 @Singleton
@@ -52,6 +53,8 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val ngrStubHost: String = getString("microservice.services.ngr-stub.host")
   override val timeToLive: String = servicesConfig.getString("time-to-live.time")
   override val callbackEndpointTarget: String = getString("upscan.callback-endpoint")
+  override val uploadRedirectTargetBase: String = getString("upload-redirect-target-base")
+
 
   def getString(key: String): String =
     config.getOptional[String](key).filter(!_.isBlank).getOrElse(throwConfigNotFoundError(key))

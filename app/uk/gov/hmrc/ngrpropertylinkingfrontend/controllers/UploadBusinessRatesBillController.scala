@@ -22,6 +22,7 @@ import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanV2Connector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanRecord
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html
@@ -30,6 +31,8 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{PropertyLinkingRepo, UpscanRepo}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.{Reference, UploadId}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.UploadProgressTracker
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,6 +40,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRatesBillView,
                                                   upscanConnector: UpscanConnector,
+                                                  upScanConnectorV2: UpscanV2Connector,
+                                                  uploadProgressTracker: UploadProgressTracker,
                                                   upscanRepo: UpscanRepo,
                                                   uploadForm: UploadForm,
                                                   authenticate: AuthRetrievals,
@@ -53,59 +58,36 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
 
   def show(errorCode: Option[String]): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      val errorToDisplay: Option[String] = errorCode match {
-        case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
-        case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
-        case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.fileTooSmall"))
-        case Some("InvalidFileType") => Some(Messages("uploadBusinessRatesBill.error.invalidFileType"))
-        case Some("QUARANTINE") => Some(Messages("uploadBusinessRatesBill.error.virusDetected"))
-        case Some("REJECTED") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
-        case Some(reason) if reason.startsWith("UNKNOWN") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
-        case Some(reason) => throw new RuntimeException(s"Error in errorToDisplay: unrecognisable error from upscan '$reason'")
-        case None => None
-      }
-
       request.credId match {
         case Some(rawCredId) =>
+          val errorToDisplay: Option[String] = errorCode match {
+            case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
+            case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
+            case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.fileTooSmall"))
+            case Some("InvalidFileType") => Some(Messages("uploadBusinessRatesBill.error.invalidFileType"))
+            case Some("QUARANTINE") => Some(Messages("uploadBusinessRatesBill.error.virusDetected"))
+            case Some("REJECTED") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
+            case Some(reason) if reason.startsWith("UNKNOWN") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
+            case Some(reason) => throw new RuntimeException(s"Error in errorToDisplay: unrecognisable error from upscan '$reason'")
+            case None => None
+          }
           val credId = CredId(rawCredId)
-          for {
-            upscanInitiateResponse <- upscanConnector.initiate
-            _ <- upscanRepo.upsertUpscanRecord(
-              UpscanRecord(
-                credId = credId,
-                reference = upscanInitiateResponse.reference,
-                status = "INITIATED", // TODO: replace with status classes?
-                downloadUrl = None,
-                fileName = None,
-                failureReason = None,
-                failureMessage = None
-              )
-            )
+          val uploadId = UploadId.generate()
+          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId).url}"
+          val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill"
+          for
+            upscanInitiateResponse <- upScanConnectorV2.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
             maybeProperty <- propertyLinkingRepo.findByCredId(credId)
-            result <- maybeProperty match {
-              case Some(property) =>
-                Future.successful(
-                  Ok(
-                    uploadView(
-                      uploadForm(),
-                      upscanInitiateResponse,
-                      attributes,
-                      errorToDisplay,
-                      property.vmvProperty.addressFull,
-                      createDefaultNavBar,
-                      routes.FindAPropertyController.show.url,
-                      appConfig.ngrDashboardUrl
-                    )
-                  )
-                )
-              case None =>
-                Future.failed(new NotFoundException("Could not find address from property linking repo"))
-            }
-          } yield result
-
-        case None =>
-          Future.failed(new NotFoundException("Missing credId in authenticated request"))
+            _ <- uploadProgressTracker.requestUpload(uploadId, Reference(upscanInitiateResponse.fileReference.reference))
+          yield Ok(uploadView(uploadForm(),
+            upscanInitiateResponse,
+            attributes,
+            errorToDisplay,
+            maybeProperty.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
+            createDefaultNavBar,
+            routes.FindAPropertyController.show.url,
+            appConfig.ngrDashboardUrl)
+          )
       }
-
     }
 }

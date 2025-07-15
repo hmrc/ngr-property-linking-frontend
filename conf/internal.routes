@@ -1,1 +1,3 @@
+
 POST       /callback-from-upscan                uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.internal.UpscanCallbackController.handleUpscanCallback
+POST       /upscan-callback                     uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.internal.UploadCallbackController.callback()

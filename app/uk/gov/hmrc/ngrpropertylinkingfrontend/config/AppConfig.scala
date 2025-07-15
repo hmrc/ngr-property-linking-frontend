@@ -36,6 +36,7 @@ trait AppConfig {
   def getString(key: String): String
   val timeToLive: String
   val callbackEndpointTarget: String
+  val uploadRedirectTargetBase: String
   val customCurrentDate: Option[String] // TODO remove this after 1st April 2026, as it is only used for testing purposes
 }
 
@@ -54,6 +55,9 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val timeToLive: String = servicesConfig.getString("time-to-live.time")
   override val callbackEndpointTarget: String = getString("upscan.callback-endpoint")
   override val customCurrentDate: Option[String] = config.getOptional("custom-current-date")
+  override val uploadRedirectTargetBase: String = getString("upload-redirect-target-base")
+
+
   def getString(key: String): String =
     config.getOptional[String](key).filter(!_.isBlank).getOrElse(throwConfigNotFoundError(key))
 

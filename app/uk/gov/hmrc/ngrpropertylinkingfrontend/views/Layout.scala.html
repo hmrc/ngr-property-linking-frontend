@@ -26,6 +26,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.HmrcStandardPageParams
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.navigationBarComponent
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcScripts
 
 @this(
   appConfig: AppConfig,
@@ -35,13 +36,15 @@
   twoThirdsLayout: TwoThirdsLayout,
   hmrcStandardPage: HmrcStandardPage,
   stylesheets: Stylesheets,
-  navigationBarComponent: navigationBarComponent
+  navigationBarComponent: navigationBarComponent,
+  hmrcScripts: HmrcScripts,
 )(implicit cfConfig: ContactFrontendConfig)
 
 @(pageTitle: Option[String] = None,
 showBackLink: Boolean = false,
 fullWidth: Boolean = false,
-navigationBarContent: Option[NavigationBarContent] = None
+navigationBarContent: Option[NavigationBarContent] = None,
+templateOverrides: TemplateOverrides = TemplateOverrides(),
 )(contentBlock: Html)(implicit request: RequestHeader, messages: Messages,  appConfig: AppConfig)
 
 @headScripts = {
@@ -74,7 +77,8 @@ navigationBarContent: Option[NavigationBarContent] = None
         } else {
             Some((_: Html) => twoThirdsLayout(content, navbar))
         },
-        additionalHeadBlock = Some(headScripts)
+        additionalHeadBlock = Some(headScripts),
+        additionalScriptsBlock = Some(hmrcScripts())
         ),
         backLink = None,
         banners = Banners(

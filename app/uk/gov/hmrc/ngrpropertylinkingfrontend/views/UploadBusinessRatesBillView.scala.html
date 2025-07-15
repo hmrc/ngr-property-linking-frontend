@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UploadForm}
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.{UpscanInitiateResponse, UploadForm}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
@@ -42,13 +42,13 @@
     @messages("uploadBusinessRatesBill.p1")
 </p>
 
-<form action="@upscanResponse.uploadRequest.href" method="POST" enctype="multipart/form-data" id="file-upload-form">
+<form action="@upscanResponse.postTarget" method="POST" enctype="multipart/form-data" id="file-upload-form">
 
     <div id="file-upload-form-group" class=@fileUploadFormClass>
 
-    @upscanResponse.uploadRequest.fields.map { row =>
-    <input type="hidden" name="@row._1" value="@row._2">
-    }
+        @for(field <- upscanResponse.formFields) {
+        <input type="hidden" name="@field._1" value="@field._2"/>
+        }
 
                     @fileUpload(
                         form = form,

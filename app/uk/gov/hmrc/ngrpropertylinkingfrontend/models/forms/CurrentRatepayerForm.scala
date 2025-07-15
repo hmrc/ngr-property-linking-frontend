@@ -21,8 +21,8 @@ import play.api.data.Forms.{mapping, optional}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.Utils
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.mappings.Mappings
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.DateUtils
 
 import java.time.LocalDate
 import scala.util.Try
@@ -150,7 +150,7 @@ object CurrentRatepayerForm extends CommonFormValidators with DateMappings with 
         val firstAprilDate = LocalDate.of(2026, 4, 1)
         // Use custom date if provided, otherwise use current date
         val currentDate = appConfig.customCurrentDate
-          .flatMap(dateStr => Utils.toLocalDate(dateStr))
+          .flatMap(dateStr => DateUtils.toLocalDate(dateStr))
           .getOrElse(LocalDate.now())
 
         if (date.isBefore(firstAprilDate) || date.isAfter(currentDate))

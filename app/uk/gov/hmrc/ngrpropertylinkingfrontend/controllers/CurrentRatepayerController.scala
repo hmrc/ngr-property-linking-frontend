@@ -30,6 +30,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm.
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{CurrentRatepayerForm, RatepayerDate}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.DateUtils
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.DateTextFields
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -57,7 +58,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
 
   private def getLocalDate(input: Option[String]): Option[RatepayerDate] =
     input.flatMap { str =>
-      Utils.toLocalDate(str).map { date =>
+      DateUtils.toLocalDate(str).map { date =>
         RatepayerDate(
           day = date.getDayOfMonth.toString,
           month = date.getMonthValue.toString,

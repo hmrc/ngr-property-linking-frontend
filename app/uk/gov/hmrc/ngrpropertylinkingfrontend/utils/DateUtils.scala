@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models
+package uk.gov.hmrc.ngrpropertylinkingfrontend.utils
 
 import java.time.LocalDate
 import java.time.format.{DateTimeFormatter, DateTimeParseException}
 
-object Utils {
+object DateUtils {
   def toLocalDate(dateStr: String): Option[LocalDate] = {
     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d")
     try {

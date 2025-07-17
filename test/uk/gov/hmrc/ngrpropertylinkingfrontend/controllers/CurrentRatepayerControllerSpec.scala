@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.shouldBe
@@ -28,8 +29,8 @@ import uk.gov.hmrc.http.{HeaderNames, NotFoundException}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, CurrentRatepayer, PropertyLinkingUserAnswers}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.DateTextFields
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.DateTextFields
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -38,7 +39,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
   implicit val requestHeader: RequestHeader = mock[RequestHeader]
   val currentRatepayerView: CurrentRatepayerView = inject[CurrentRatepayerView]
   val dateTextFields: DateTextFields = inject[DateTextFields]
-  val pageTitle = "When did you become the current ratepayer?"
+  val pageTitle = "When did you become the current ratepayer? - GOV.UK"
 
   def controller() = new CurrentRatepayerController(
     currentRatepayerView,
@@ -58,6 +59,20 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
         val content = contentAsString(result)
         content must include(pageTitle)
       }
+
+      "Return OK with pre-populated the data, and the correct view" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer(false, Some("2025-12-31")))))))
+        val result = controller().show(mode = "")(authenticatedFakeRequest)
+        status(result) mustBe OK
+        val content = contentAsString(result)
+        val document = Jsoup.parse(content)
+        document.title() mustBe pageTitle
+        document.select("input[type=radio][name=current-ratepayer-radio][value=After]").hasAttr("checked") mustBe true
+        document.select("input[name=ratepayerDate.day]").attr("value") mustBe "31"
+        document.select("input[name=ratepayerDate.month]").attr("value") mustBe "12"
+        document.select("input[name=ratepayerDate.year]").attr("value") mustBe "2025"
+      }
+
       "Throw exception when no property linking is found" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
         val exception = intercept[NotFoundException] {

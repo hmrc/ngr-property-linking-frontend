@@ -21,9 +21,10 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{NGRRadio, NGRRadioButtons, NGRRadioHeader, NGRRadioName, No, Yes}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.BusinessRatesBillForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.BusinessRatesBillForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
@@ -47,11 +48,15 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
     Seq(yesButton, noButton),
     hint = Some("uploadBusinessRatesBill.hint"))
 
-
   def show(mode: String): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
-        case Some(property) =>  Future.successful(Ok(businessRatesBillView(createDefaultNavBar, form, buildRadios(form, ngrRadio), address = property.vmvProperty.addressFull, mode)))
+        case Some(property) =>
+          val preparedForm = property.businessRatesBill match {
+            case None        => form
+            case Some(value) => form.fill(BusinessRatesBillForm(value))
+          }
+          Future.successful(Ok(businessRatesBillView(createDefaultNavBar, preparedForm, buildRadios(preparedForm, ngrRadio), address = property.vmvProperty.addressFull, mode)))
         case None => throw new NotFoundException("failed to find property from mongo")
       }
 

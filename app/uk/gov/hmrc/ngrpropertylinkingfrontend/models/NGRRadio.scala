@@ -25,15 +25,17 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.Radios
 
 case class NGRRadioName(key: String)
-case class NGRRadioButtons(radioContent: String, radioValue: RadioEntry, buttonHint: Option[String] = None, conditionalHtml: Option[Html] = None)
-case class NGRRadioHeader(title: String, classes: String , isPageHeading: Boolean)
 
-case class NGRRadio (radioGroupName: NGRRadioName, NGRRadioButtons: Seq[NGRRadioButtons], ngrTitle: Option[NGRRadioHeader] = None, hint: Option[String] = None)
+case class NGRRadioButtons(radioContent: String, radioValue: RadioEntry, buttonHint: Option[String] = None, conditionalHtml: Option[Html] = None)
+
+case class NGRRadioHeader(title: String, classes: String, isPageHeading: Boolean)
+
+case class NGRRadio(radioGroupName: NGRRadioName, NGRRadioButtons: Seq[NGRRadioButtons], ngrTitle: Option[NGRRadioHeader] = None, hint: Option[String] = None)
 
 object NGRRadio {
 
   def buildRadios[A](
-                      form:Form[A],
+                      form: Form[A],
                       NGRRadios: NGRRadio
                     )(implicit messages: Messages): Radios = {
     Radios(

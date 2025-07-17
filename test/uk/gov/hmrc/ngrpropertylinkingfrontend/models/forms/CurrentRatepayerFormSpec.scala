@@ -35,7 +35,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
 
     "bind successfully with a valid current ratepayer radio value" in {
       val data = Map("current-ratepayer-radio" -> "Before") // Use the correct key
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe false
       boundForm.value shouldBe Some(CurrentRatepayerForm("Before", None))
@@ -47,7 +47,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "1",
         "ratepayerDate.month" -> "4",
         "ratepayerDate.year" -> "2026")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe false
       boundForm.value shouldBe Some(CurrentRatepayerForm("After", Some(RatepayerDate("1", "4", "2026"))))
@@ -58,7 +58,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "AS",
         "ratepayerDate.month" -> "",
         "ratepayerDate.year" -> "2026")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe false
       boundForm.value shouldBe Some(CurrentRatepayerForm("Before", Some(RatepayerDate("AS", "", "2026"))))
@@ -66,7 +66,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
 
     "fail to bind when current ratepayer radio is missing" in {
       val data = Map.empty[String, String]
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("current-ratepayer-radio", List("currentRatepayer.radio.unselected.error")))
@@ -74,7 +74,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
 
     "fail to bind when current ratepayer radio is empty" in {
       val data = Map("currentratepayerradio" -> "")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("current-ratepayer-radio", List("currentRatepayer.radio.unselected.error")))
@@ -85,7 +85,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "",
         "ratepayerDate.month" -> "4",
         "ratepayerDate.year" -> "2026")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.day.empty.error")))
@@ -96,7 +96,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "1",
         "ratepayerDate.month" -> "",
         "ratepayerDate.year" -> "2026")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.month.empty.error")))
@@ -107,7 +107,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "1",
         "ratepayerDate.month" -> "4",
         "ratepayerDate.year" -> "")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.year.empty.error")))
@@ -118,7 +118,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "",
         "ratepayerDate.month" -> "",
         "ratepayerDate.year" -> "2025")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.day.month.empty.error")))
@@ -129,7 +129,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "",
         "ratepayerDate.month" -> "4",
         "ratepayerDate.year" -> "")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.day.year.empty.error")))
@@ -140,7 +140,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "31",
         "ratepayerDate.month" -> "",
         "ratepayerDate.year" -> "")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.month.year.empty.error")))
@@ -151,7 +151,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "day" -> "",
         "month" -> "",
         "year" -> "")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("" ,List("currentRatepayer.date.empty.error")))
@@ -162,7 +162,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "32",
         "ratepayerDate.month" -> "13",
         "ratepayerDate.year" -> "2026")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.day.format.error"), ArraySeq(1, 31)))
@@ -174,7 +174,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "ABC",
         "ratepayerDate.month" -> "4",
         "ratepayerDate.year" -> "2026")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.day.format.error"), ArraySeq("^[0-9]{1,2}$")))
@@ -185,7 +185,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "30",
         "ratepayerDate.month" -> "0",
         "ratepayerDate.year" -> "2026")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.month.format.error"), ArraySeq(1, 12)))
@@ -196,7 +196,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "30",
         "ratepayerDate.month" -> "ABC",
         "ratepayerDate.year" -> "2026")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.month.format.error"), ArraySeq("^[0-9]{1,2}$")))
@@ -207,7 +207,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "30",
         "ratepayerDate.month" -> "12",
         "ratepayerDate.year" -> "ABC")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.year.format.error"), ArraySeq("^[0-9]{4}$")))
@@ -218,7 +218,7 @@ class CurrentRatepayerFormSpec extends AnyWordSpec with Matchers {
         "ratepayerDate.day" -> "30",
         "ratepayerDate.month" -> "2",
         "ratepayerDate.year" -> "2026")
-      val boundForm = CurrentRatepayerForm.form.bind(data)
+      val boundForm = CurrentRatepayerForm.form().bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("", List("currentRatepayer.date.format.error")))

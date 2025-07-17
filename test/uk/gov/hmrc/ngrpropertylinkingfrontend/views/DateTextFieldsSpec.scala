@@ -24,7 +24,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.DateTextFields
 
 class DateTextFieldsSpec extends ViewBaseSpec {
-  val form: Form[CurrentRatepayerForm] = CurrentRatepayerForm.form
+  val form: Form[CurrentRatepayerForm] = CurrentRatepayerForm.form()
   val dateTextFields: DateTextFields = inject[DateTextFields]
 
   val heading = "Enter the date you became the current ratepayer"

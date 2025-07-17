@@ -19,6 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 import play.api.data.{Form, FormError, Forms}
 import play.api.data.Forms.single
 import play.api.data.format.Formatter
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.RadioEntry
 
 sealed trait ConnectionToPropertyForm extends RadioEntry
@@ -30,6 +31,15 @@ object ConnectionToPropertyForm {
   case object Occupier extends ConnectionToPropertyForm
   case object OwnerAndOccupier extends ConnectionToPropertyForm
 
+  val values: Set[ConnectionToPropertyForm] = Set(Owner, Occupier, OwnerAndOccupier)
+
+  def stringToPropertyForm(value: String): ConnectionToPropertyForm = value match {
+    case "Owner" => Owner
+    case "Occupier" => Occupier
+    case "OwnerAndOccupier" => OwnerAndOccupier
+    case _ => throw new IllegalArgumentException(s"Invalid ConnectionToPropertyForm input $value")
+  }
+  
   implicit val connectionToPropertyFormatter: Formatter[ConnectionToPropertyForm] = new Formatter[ConnectionToPropertyForm] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], ConnectionToPropertyForm] = {
       data.get(key).collectFirst {

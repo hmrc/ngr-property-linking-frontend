@@ -21,13 +21,12 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm.form
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm.{Occupier, Owner, OwnerAndOccupier}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm.{Occupier, Owner, OwnerAndOccupier, form}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.Constants
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ConnectionToPropertyView
@@ -54,9 +53,14 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(properties) =>
           val propertyAddress = properties.vmvProperty.addressFull
+          val preparedForm = properties.connectionToProperty match {
+            case None        => form()
+            case Some(value) => form().fill(ConnectionToPropertyForm.stringToPropertyForm(value))
+          }
+          
           Future.successful(Ok(connectionToPropertyView(
-            form = form(),
-            radios = buildRadios(form(), ngrRadio),
+            form = preparedForm,
+            radios = buildRadios(preparedForm, ngrRadio),
             navigationBarContent = createDefaultNavBar(),
             propertyAddress = propertyAddress)))
         case None => Future.failed(throw new NotFoundException("Unable to find matching postcode"))

@@ -26,7 +26,7 @@ class ConnectionToPropertyFormSpec extends AnyWordSpec with Matchers {
 
     "bind successfully with a valid Connection to property value" in {
       val data = Map("connection-to-property-radio" -> "Owner") // Use the correct key
-      val boundForm = ConnectionToPropertyForm.form().bind(data)
+      val boundForm = ConnectionToPropertyForm.form.bind(data)
 
       boundForm.hasErrors shouldBe false
       boundForm.value shouldBe Some(ConnectionToPropertyForm.Owner)
@@ -34,7 +34,7 @@ class ConnectionToPropertyFormSpec extends AnyWordSpec with Matchers {
 
     "fail to bind when connectionToProperty is missing" in {
       val data = Map.empty[String, String]
-      val boundForm = ConnectionToPropertyForm.form().bind(data)
+      val boundForm = ConnectionToPropertyForm.form.bind(data)
 
       boundForm.hasErrors shouldBe true
       boundForm.errors should contain(FormError("connection-to-property-radio", List("connectionToProperty.radio.unselected.error")))

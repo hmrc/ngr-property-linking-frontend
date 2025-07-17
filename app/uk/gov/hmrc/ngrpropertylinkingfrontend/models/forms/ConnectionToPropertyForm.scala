@@ -58,7 +58,7 @@ object ConnectionToPropertyForm {
     )
   }
 
-  def form(): Form[ConnectionToPropertyForm] = Form(
+  def form: Form[ConnectionToPropertyForm] = Form(
       single(formName -> Forms.of[ConnectionToPropertyForm])
     )
 

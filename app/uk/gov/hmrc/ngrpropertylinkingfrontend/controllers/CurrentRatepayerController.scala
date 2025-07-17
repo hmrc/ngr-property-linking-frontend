@@ -72,8 +72,8 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(property) =>
           val preparedForm = property.currentRatepayer match {
-            case None => form()
-            case Some(isBefore: Boolean, ratepayerDate: Option[String]) => form()
+            case None => form
+            case Some(isBefore: Boolean, ratepayerDate: Option[String]) => form
               .fill(CurrentRatepayerForm((if (isBefore) Before else After).toString, getLocalDate(ratepayerDate)))
           }
           Future.successful(Ok(currentRatepayerView(createDefaultNavBar, preparedForm, buildRadios(preparedForm, ngrRadio(preparedForm)), address = property.vmvProperty.addressFull, mode = mode)))
@@ -83,7 +83,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
 
   def submit(mode: String): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      form()
+      form
         .bindFromRequest()
         .fold(
           formWithErrors =>

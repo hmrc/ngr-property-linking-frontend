@@ -54,8 +54,8 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
         case Some(properties) =>
           val propertyAddress = properties.vmvProperty.addressFull
           val preparedForm = properties.connectionToProperty match {
-            case None        => form()
-            case Some(value) => form().fill(ConnectionToPropertyForm.stringToPropertyForm(value))
+            case None        => form
+            case Some(value) => form.fill(ConnectionToPropertyForm.stringToPropertyForm(value))
           }
           
           Future.successful(Ok(connectionToPropertyView(
@@ -70,7 +70,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
 
   def submit: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      form().bindFromRequest().fold(
+      form.bindFromRequest().fold(
         formWithErrors => {
           val credId = request.credId.getOrElse("")
           propertyLinkingRepo.findByCredId(CredId(credId)).flatMap {

@@ -44,12 +44,12 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
 
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      Future.successful(Ok(findAPropertyView(form(), createDefaultNavBar)))
+      Future.successful(Ok(findAPropertyView(form, createDefaultNavBar)))
     }
 
   def submit: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      form()
+      form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(findAPropertyView(formWithErrors, createDefaultNavBar))),

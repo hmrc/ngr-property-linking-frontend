@@ -22,7 +22,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.InputText
 
 class InputTextSpec extends ViewBaseSpec {
-  val form: Form[FindAProperty] = FindAProperty.form()
+  val form: Form[FindAProperty] = FindAProperty.form
   val inputText: InputText = inject[InputText]
 
   "InputText" when {

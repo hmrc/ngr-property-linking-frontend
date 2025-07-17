@@ -64,7 +64,7 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
   "FindAPropertyView" must {
     "produce the same output for apply() and render()" must {
       val form = FindAProperty
-        .form()
+        .form
         .fillAndValidate(FindAProperty(Postcode("TQ5 9BW"), None))
       val findAPropertyView = view(form, content)
       lazy implicit val document: Document = Jsoup.parse(findAPropertyView.body)
@@ -114,7 +114,7 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
     }
     "produce the same output for apply() and render() when valid postcode without space in between" in {
       val form = FindAProperty
-        .form()
+        .form
         .fillAndValidate(FindAProperty(Postcode("TQ59BW"), None))
       val htmlApply = view.apply(form, content).body
       val htmlRender = view.render(form, content, request, messages, mockConfig).body
@@ -125,7 +125,7 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
 
     "produce the same output for apply() and render() with valid property name" in {
       val form = FindAProperty
-        .form()
+        .form
         .fillAndValidate(FindAProperty(Postcode("TQ5 9BW"), Some("5")))
       val htmlApply = view.apply(form, content).body
       val htmlRender = view.render(form, content, request, messages, mockConfig).body
@@ -136,7 +136,7 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
 
     "show missing postcode error correctly" in {
       val form = FindAProperty
-        .form()
+        .form
         .fillAndValidate(FindAProperty(Postcode(""), None))
       val findAPropertyView = view(form, content)
       lazy implicit val document: Document = Jsoup.parse(findAPropertyView.body)
@@ -150,7 +150,7 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
 
     "show invalid postcode error correctly" in {
       val form = FindAProperty
-        .form()
+        .form
         .fillAndValidate(FindAProperty(Postcode("AAA9 9AA"), None))
       val findAPropertyView = view(form, content)
       lazy implicit val document: Document = Jsoup.parse(findAPropertyView.body)
@@ -164,7 +164,7 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
 
     "show property name exceed max length error correctly" in {
       val form = FindAProperty
-        .form()
+        .form
         .fillAndValidate(FindAProperty(Postcode("AA9 9AA"), Some(over100Characters)))
       val findAPropertyView = view(form, content)
       lazy implicit val document: Document = Jsoup.parse(findAPropertyView.body)

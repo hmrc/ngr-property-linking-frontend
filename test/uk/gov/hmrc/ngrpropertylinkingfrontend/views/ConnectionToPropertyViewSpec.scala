@@ -53,7 +53,7 @@ class ConnectionToPropertyViewSpec extends ViewBaseSpec {
   private val occupierButton: NGRRadioButtons = NGRRadioButtons("Occupier", Occupier, Some("Operates from the property."))
   private val bothButton: NGRRadioButtons = NGRRadioButtons("Owner and occupier", OwnerAndOccupier, Some("Owns and Operates from the property."))
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("connection-to-property-radio"), Seq(ownerButton, occupierButton, bothButton))
-  val form = ConnectionToPropertyForm.form().fillAndValidate(ConnectionToPropertyForm.Owner)
+  val form = ConnectionToPropertyForm.form.fillAndValidate(ConnectionToPropertyForm.Owner)
 
   val radio: Radios = buildRadios(form, ngrRadio)
 

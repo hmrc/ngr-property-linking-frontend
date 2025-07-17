@@ -36,7 +36,7 @@ object FindAProperty extends CommonFormValidators {
 
   def unapply(findAProperty: FindAProperty): Option[(Postcode, Option[String])] = Some((findAProperty.postcode, findAProperty.propertyName))
 
-  def form(): Form[FindAProperty] =
+  def form: Form[FindAProperty] =
     Form(
       mapping(
         postcode -> text()

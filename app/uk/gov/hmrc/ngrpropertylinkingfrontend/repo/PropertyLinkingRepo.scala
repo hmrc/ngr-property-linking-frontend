@@ -85,7 +85,7 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
     }
   }
 
-  def findAndUpdateByCredId(credId: CredId, updates: Bson*): Future[Option[PropertyLinkingUserAnswers]] = {
+  private def findAndUpdateByCredId(credId: CredId, updates: Bson*): Future[Option[PropertyLinkingUserAnswers]] = {
     collection.findOneAndUpdate(filterByCredId(credId),
         combine(updates :+ Updates.set("createdAt", Instant.now()): _*),
         FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER))
@@ -93,12 +93,12 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
   }
 
   def insertCurrentRatepayer(credId: CredId, currentRatepayer: Boolean, maybeRatepayerDate: Option[String]): Future[Option[PropertyLinkingUserAnswers]] = {
-    findAndUpdateByCredId(credId,
-      Seq(
-        Updates.set("currentRatepayer.isBeforeApril", currentRatepayer),
-        Updates.set("currentRatepayer.becomeRatepayerDate", maybeRatepayerDate.orNull)
-      ): _*
-    )
+    val update = Seq(Updates.set("currentRatepayer.isBeforeApril", currentRatepayer))
+    val updates = maybeRatepayerDate match {
+      case Some(date) => update :+ Updates.set("currentRatepayer.becomeRatepayerDate", date)
+      case None => update
+    }
+    findAndUpdateByCredId(credId, updates: _*)
   }
   
   def insertConnectionToProperty(credId: CredId, connectionToProperty: String): Future[Option[PropertyLinkingUserAnswers]] = {

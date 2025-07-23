@@ -19,7 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.internal
 import play.api.Logging
 import play.api.libs.json.*
 import play.api.mvc.*
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.Reference
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.Reference
 import uk.gov.hmrc.ngrpropertylinkingfrontend.services.UpscanCallbackDispatcher
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.HttpUrlFormat
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController

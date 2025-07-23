@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan
 
-import play.api.libs.json.{Json, Format}
+case class UpscanFileReference(
+                                reference: String
+                              )
 
-case class UploadForm(
-                       href  : String,
-                       fields: Map[String, String]
-                     )
+case class UpscanInitiateResponse(
+                                   fileReference: UpscanFileReference,
+                                   postTarget   : String,
+                                   formFields   : Map[String, String]
+                                 )
 
-object UploadForm {
-  
-  implicit val format: Format[UploadForm] = Json.format[UploadForm]
-  
-}
+

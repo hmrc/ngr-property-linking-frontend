@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan
 
-case class UpscanFileReference(
-                                reference: String
-                              )
+import play.api.libs.json.Json
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
-case class UpscanInitiateResponse(
-                                   fileReference: UpscanFileReference,
-                                   postTarget   : String,
-                                   formFields   : Map[String, String]
-                                 )
+class UpscanInitiateRequestSpec extends TestSupport{
 
+  "UpscanInitiateRequest" should {
 
+    "serialize to json" in {
+      println(Json.toJson(upScanInitiateRequestModel))
+      Json.toJson(upScanInitiateRequestModel) mustBe upscanInitiateRequestJson
+    }
+
+    "deserialize from json" in {
+      upscanInitiateRequestJson.as[UpscanInitiateRequest] mustBe upScanInitiateRequestModel
+    }
+
+  }
+
+}

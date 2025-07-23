@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
-case class PreparedUpload(
-                           reference   : Reference,
-                           uploadRequest: UploadForm
-                         )
-
-object PreparedUpload {
+class PrepareUploadSpec extends TestSupport{
   
-  implicit val format: Format[PreparedUpload] = Json.format[PreparedUpload]
+  "PreparedUpload" should {
+    
+    "serialize to json" in {
+      Json.toJson(preparedUploadModel) mustBe preparedUploadJson
+    }
+    
+    "deserialize from json" in {
+      preparedUploadJson.as[PreparedUpload] mustBe preparedUploadModel
+    }
+    
+  }
   
+
 }

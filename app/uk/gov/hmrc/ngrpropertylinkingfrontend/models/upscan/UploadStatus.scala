@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan
 
 import org.bson.types.ObjectId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.UploadStatus.{Failed, InProgress, UploadedSuccessfully}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadStatus.{Failed, InProgress, UploadedSuccessfully}
 
 import java.net.URL
 import java.util.UUID

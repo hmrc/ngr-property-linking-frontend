@@ -22,47 +22,47 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, Registrat
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{UploadedBusinessRateBillViewV2, UploadedBusinessRatesBillView}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadedBusinessRateBillView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{PropertyLinkingRepo, UpscanRepo}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.{NotFoundException, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.UploadStatus.UploadedSuccessfully
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.{UploadId, UploadStatus}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadStatus.{Failed, InProgress, UploadedSuccessfully}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{UploadId, UploadStatus}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.services.UploadProgressTracker
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.impl.Promise
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusinessRatesBillView,
-                                                    uploadProgressTracker: UploadProgressTracker,
-                                                    uploadedBusinessRateBillViewV2: UploadedBusinessRateBillViewV2,
-                                                    upscanRepo: UpscanRepo,
+class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: UploadProgressTracker,
+                                                    uploadedBusinessRateBillView: UploadedBusinessRateBillView,
                                                     authenticate: AuthRetrievals,
                                                     isRegisteredCheck: RegistrationAction,
                                                     propertyLinkingRepo: PropertyLinkingRepo,
                                                     mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  private def createSummaryList(uploadStatus: UploadStatus)(implicit messages: Messages): SummaryList = {
+  def createSummaryList(credId: CredId,uploadStatus: UploadStatus)(implicit messages: Messages): SummaryList = {
     uploadStatus match
-      case UploadStatus.UploadedSuccessfully(name, mimeType, downloadUrl, size) => SummaryList(
-        Seq(
-          NGRSummaryListRow(
-            name,
-            None,
-            Seq(messages("uploadedBusinessRatesBill.uploaded")),
-            Some(Link(Call("GET", routes.UploadBusinessRatesBillController.show(None).url), "remove-link", "Remove")),
-            Some(Link(Call("GET", downloadUrl.toString), "file-download-link", "")),
-            Some("govuk-tag govuk-tag--green")
-          )
-        ).map(summarise)
-      )
+      case UploadStatus.UploadedSuccessfully(name, mimeType, downloadUrl, size) => {
+        propertyLinkingRepo.insertEvidenceDocument(credId, name)
+        SummaryList(
+          Seq(
+            NGRSummaryListRow(
+              name,
+              None,
+              Seq(messages("uploadedBusinessRatesBill.uploaded")),
+              Some(Link(Call("GET", routes.UploadBusinessRatesBillController.show(None).url), "remove-link", "Remove")),
+              Some(Link(Call("GET", downloadUrl.toString), "file-download-link", "")),
+              Some("govuk-tag govuk-tag--green")
+            )
+          ).map(summarise)
+        )
+      }
       case UploadStatus.InProgress => SummaryList(
         Seq(
           NGRSummaryListRow(
@@ -85,42 +85,22 @@ class UploadedBusinessRatesBillController @Inject()(uploadedView: UploadedBusine
           None
         )
       ).map(summarise)
+        
       )
   }
-  
-  private def getUploadDetails(uploadStatus: UploadStatus) : String = uploadStatus match
-    case UploadedSuccessfully(name, mimeType, downloadUrl, size) => name
-    case _ => throw new NotFoundException("Failed to upload file name")
-
 
   def show(uploadId: UploadId): Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
     val credId = CredId(request.credId.getOrElse(throw new NotFoundException("Not found cred id")))
     for
       maybeProperty <- propertyLinkingRepo.findByCredId(credId)
       uploadResult <- uploadProgressTracker.getUploadResult(uploadId)
-      _ <- propertyLinkingRepo.insertEvidenceDocument(credId, getUploadDetails(uploadResult.getOrElse(UploadStatus.Failed)))
     yield uploadResult match
-      case Some(result) => Ok(uploadedBusinessRateBillViewV2(
+      case Some(result) => Ok(uploadedBusinessRateBillView(
         createDefaultNavBar,
-        createSummaryList(result),
+        createSummaryList(credId,result),
         maybeProperty.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
         uploadId,
         result))
       case None => BadRequest(s"Upload with id $uploadId not found")
-  }
-
-  def submit: Action[AnyContent] = {
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
-      val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("Not found credId on account")))
-        propertyLinkingRepo.findByCredId(credId = credId).flatMap {
-          case Some(answers) =>
-            if (answers.connectionToProperty.isDefined) {
-              Future.successful(Redirect(routes.CheckYourAnswersController.show.url))
-            } else {
-              Future.successful(Redirect(routes.ConnectionToPropertyController.show.url))
-            }
-          case None => throw new NotFoundException("No responses found")
-        }
-      }
   }
 }

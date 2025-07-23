@@ -20,15 +20,18 @@ import org.bson.types.ObjectId
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Updates.set
 import org.mongodb.scala.SingleObservableFuture
+import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
 import play.api.libs.functional.syntax.*
 import play.api.libs.json.*
 import uk.gov.hmrc.mongo.MongoComponent
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.{Reference, UploadDetails, UploadId, UploadStatus}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadDetails, UploadId, UploadStatus}
 import uk.gov.hmrc.mongo.play.json.formats.MongoFormats
 import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
+
 import java.net.{URI, URL}
 import javax.inject.{Inject, Singleton}
+import scala.concurrent
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -81,7 +84,7 @@ class UserSessionRepository @Inject()(
                                      )(using
                                        ExecutionContext
                                      ) extends PlayMongoRepository[UploadDetails](
-  collectionName = "simpleTestRepository",
+  collectionName = "upscanProgressTracker",
   mongoComponent = mongoComponent,
   domainFormat   = UserSessionRepository.mongoFormat,
   indexes        = Seq(
@@ -99,8 +102,13 @@ class UserSessionRepository @Inject()(
       .toFuture()
       .map(_ => ())
 
-  def findByUploadId(uploadId: UploadId): Future[Option[UploadDetails]] =
+  def findByUploadId(uploadId: UploadId): Future[Option[UploadDetails]] = {
     collection.find(equal("uploadId", Codecs.toBson(uploadId))).headOption()
+  }
+
+  def deleteAll(): Future[Unit] =
+    collection.deleteMany(BsonDocument()).toFuture().map(_ => ())
+  
 
   def updateStatus(reference: Reference, newStatus: UploadStatus): Future[UploadStatus] =
     collection

@@ -18,10 +18,10 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.services
 
 import org.bson.types.ObjectId
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.*
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{UpscanRepo, UserSessionRepository}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UserSessionRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 

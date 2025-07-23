@@ -22,16 +22,14 @@ import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
-import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanV2Connector
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.UpscanRecord
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadBusinessRatesBillView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{PropertyLinkingRepo, UpscanRepo}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.{Reference, UploadId}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadId}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.services.UploadProgressTracker
 
 import javax.inject.{Inject, Singleton}
@@ -39,10 +37,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRatesBillView,
-                                                  upscanConnector: UpscanConnector,
-                                                  upScanConnectorV2: UpscanV2Connector,
+                                                  upScanConnector: UpscanConnector,
                                                   uploadProgressTracker: UploadProgressTracker,
-                                                  upscanRepo: UpscanRepo,
                                                   uploadForm: UploadForm,
                                                   authenticate: AuthRetrievals,
                                                   isRegisteredCheck: RegistrationAction,
@@ -75,8 +71,9 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
           val uploadId = UploadId.generate()
           val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId).url}"
           val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill"
+          
           for
-            upscanInitiateResponse <- upScanConnectorV2.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
+            upscanInitiateResponse <- upScanConnector.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
             maybeProperty <- propertyLinkingRepo.findByCredId(credId)
             _ <- uploadProgressTracker.requestUpload(uploadId, Reference(upscanInitiateResponse.fileReference.reference))
           yield Ok(uploadView(uploadForm(),
@@ -88,6 +85,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
             routes.FindAPropertyController.show.url,
             appConfig.ngrDashboardUrl)
           )
+        case None => Future.failed(throw new NotFoundException("Missing credId in authenticated request"))
       }
     }
 }

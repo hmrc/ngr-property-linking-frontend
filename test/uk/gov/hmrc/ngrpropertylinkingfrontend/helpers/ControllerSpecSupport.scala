@@ -34,13 +34,13 @@ trait ControllerSpecSupport extends TestSupport {
   val mockAuthJourney: AuthRetrievals = mock[AuthRetrievals]
   val mockFindAPropertyConnector: FindAPropertyConnector = mock[FindAPropertyConnector]
   val mockUpscanConnector: UpscanConnector = mock[UpscanConnector]
+  val mockUploadProgressTracker: UploadProgressTracker = mock[UploadProgressTracker]
   val mockNgrConnector: NGRConnector = mock[NGRConnector]
   val sortingVMVPropertiesService: SortingVMVPropertiesService = inject[SortingVMVPropertiesService]
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   mockRequest()
   val mockFindAPropertyRepo: FindAPropertyRepo = mock[FindAPropertyRepo]
   val mockPropertyLinkingRepo: PropertyLinkingRepo = mock[PropertyLinkingRepo]
-  val mockUpscanRepo: UpscanRepo = mock[UpscanRepo]
   
   def mockRequest(hasCredId: Boolean = false, hasNino: Boolean = true): Unit =
     when(mockAuthJourney andThen mockIsRegisteredCheck) thenReturn new ActionBuilder[AuthenticatedUserRequest, AnyContent] {

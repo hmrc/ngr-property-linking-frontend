@@ -18,7 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.services
 
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.internal.{CallbackBody, FailedCallbackBody, ReadyCallbackBody}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.UploadStatus
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadStatus
 
 import javax.inject.Inject
 import scala.concurrent.Future

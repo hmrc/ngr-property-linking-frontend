@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2.{UpscanInitiateResponse, UploadForm}
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{UpscanInitiateResponse, UploadForm}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
@@ -49,13 +49,12 @@
         @for(field <- upscanResponse.formFields) {
         <input type="hidden" name="@field._1" value="@field._2"/>
         }
-
                     @fileUpload(
                         form = form,
                         errorMessage = errorMessage,
                         name = "file",
                         id = "file",
-                        label = "",
+                        label = "file",
                         isPageHeading = false,
                         attributes = attributes
                     )

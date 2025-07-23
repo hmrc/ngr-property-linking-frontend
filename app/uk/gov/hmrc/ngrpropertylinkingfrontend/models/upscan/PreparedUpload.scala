@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscanV2
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan
 
 import play.api.libs.json.{Format, Json}
 
-case class UpscanInitiateRequest(
-                                  callbackUrl    : String,
-                                  successRedirect: Option[String] = None,
-                                  errorRedirect  : Option[String] = None,
-                                  minimumFileSize: Option[Int]    = Some(250),
-                                  maximumFileSize: Option[Int]    = Some(25000000)
-                                )
+case class PreparedUpload(
+                           reference   : Reference,
+                           uploadRequest: UploadForm
+                         )
 
-object UpscanInitiateRequest {
+object PreparedUpload {
   
-  implicit val format: Format[UpscanInitiateRequest] = Json.format[UpscanInitiateRequest]
+  implicit val format: Format[PreparedUpload] = Json.format[PreparedUpload]
   
 }

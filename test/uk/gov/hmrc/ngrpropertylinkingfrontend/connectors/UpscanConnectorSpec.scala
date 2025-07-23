@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockHttpV2
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UpscanReference, UploadForm}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{PreparedUpload, Reference, UploadForm, UpscanFileReference, UpscanInitiateResponse}
 
 import scala.concurrent.Future
 
@@ -25,14 +25,31 @@ class UpscanConnectorSpec extends MockHttpV2 {
   private val upscanConnector: UpscanConnector = new UpscanConnector(mockHttpClientV2, mockConfig)
   private val reference: String = "testReference"
   private val formFields: Map[String, String] = Map("key" -> "value")
+  private val upScanFileReference = UpscanFileReference("ref")
+  private val postTarget = "postTarget"
 
-  "initiate()" when {
-    "Successfully return a PreparedUpload" in {
-      val response: UpscanInitiateResponse = UpscanInitiateResponse(UpscanReference(reference), UploadForm("href", formFields))
-      setupMockHttpV2PostWithHeaderCarrier(s"${mockConfig.upscanHost}/upscan/v2/initiate", Seq("Content-Type" -> "application/json"))(response)
-      val result: Future[UpscanInitiateResponse] = upscanConnector.initiate()
-      result.futureValue.reference mustBe UpscanReference(reference)
-      result.futureValue.uploadRequest mustBe UploadForm("href", formFields)
+  "Calling initiate()" should {
+    "Successfully return a successful upload" in {
+      val preparedUpload = PreparedUpload(
+        reference = Reference("ref"),
+        uploadRequest = UploadForm(
+          href = postTarget,
+          fields = formFields
+        )
+      )
+
+      setupMockHttpV2PostWithHeaderCarrier(
+        s"${mockConfig.upscanHost}/upscan/v2/initiate",
+        Seq("Content-Type" -> "application/json")
+      )(preparedUpload)
+
+      val result: Future[UpscanInitiateResponse] = upscanConnector.initiate(Some("Success"), Some("Failure"))
+
+      whenReady(result) { res =>
+        res.fileReference mustBe upScanFileReference
+        res.postTarget mustBe postTarget
+        res.formFields mustBe formFields
+      }
     }
   }
 }

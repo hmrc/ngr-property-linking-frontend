@@ -38,7 +38,6 @@ class UpscanCallbackDispatcher @Inject() (sessionStorage: UploadProgressTracker)
     val uploadStatus =
       callback match
         case s: ReadyCallbackBody  =>
-          println(Console.MAGENTA + s.uploadDetails.fileMimeType + Console.RESET)
           if (allowedMimeTypes.contains(s.uploadDetails.fileMimeType)) {
             UploadStatus.UploadedSuccessfully(
               name = s.uploadDetails.fileName,

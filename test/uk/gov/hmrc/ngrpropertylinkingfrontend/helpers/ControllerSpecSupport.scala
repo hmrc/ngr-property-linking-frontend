@@ -23,8 +23,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.{FindAPropertyConnector, NGRConnector, UpscanConnector}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo, UpscanRepo}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SortingVMVPropertiesService
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FindAPropertyRepo, PropertyLinkingRepo}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.{SortingVMVPropertiesService, UploadProgressTracker}
 
 import scala.concurrent.{ExecutionContext, Future}
 

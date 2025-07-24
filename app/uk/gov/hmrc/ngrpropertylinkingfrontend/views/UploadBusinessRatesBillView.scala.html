@@ -22,43 +22,45 @@
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.LinkComponent
 
 @this(layout: Layout,
-        fileUpload: components.FileUpload,
-        saveAndContinueButton: saveAndContinueButton
+fileUpload: components.FileUpload,
+saveAndContinueButton: saveAndContinueButton
 )
 
 @(form: Form[String], upscanResponse: UpscanInitiateResponse, attributes: Map[String, String], errorMessage: Option[String], address: String, navigationBarContent: NavigationBarContent, searchAgainUrl: String, dashboardUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 @fileUploadFormClass = {
-    @if(form.hasErrors){
-        "govuk-form-group govuk-form-group--error"
-    }else{
-        "govuk-form-group"
-    }
+@if(form.hasErrors){
+"govuk-form-group govuk-form-group--error"
+}else{
+"govuk-form-group"
+}
 }
 @heading = @{messages("uploadBusinessRatesBill.title")}
 @layout(pageTitle = Some(heading), fullWidth = false, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
-<span class="govuk-caption-m">@address</span>
-<h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
-<p class="govuk-caption-m hmrc-caption-m">
-    @messages("uploadBusinessRatesBill.p1")
-</p>
+<div class="govuk-grid-row">
+    <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden"></span>@address</h2>
+    <h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
+    <p class="govuk-caption-m hmrc-caption-m">
+        @messages("uploadBusinessRatesBill.p1")
+    </p>
 
-<form action="@upscanResponse.postTarget" method="POST" enctype="multipart/form-data" id="file-upload-form">
+    <form action="@upscanResponse.postTarget" method="POST" enctype="multipart/form-data" id="file-upload-form">
 
-    <div id="file-upload-form-group" class=@fileUploadFormClass>
+        <div id="file-upload-form-group" class=@fileUploadFormClass>
 
-        @for(field <- upscanResponse.formFields) {
-        <input type="hidden" name="@field._1" value="@field._2"/>
-        }
-                    @fileUpload(
-                        form = form,
-                        errorMessage = errorMessage,
-                        name = "file",
-                        id = "file",
-                        label = "file",
-                        isPageHeading = false,
-                        attributes = attributes
-                    )
-                </div>
-                @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
-            </form>
+            @for(field <- upscanResponse.formFields) {
+            <input type="hidden" name="@field._1" value="@field._2"/>
+            }
+            @fileUpload(
+            form = form,
+            errorMessage = errorMessage,
+            name = "file",
+            id = "file",
+            label = "file",
+            isPageHeading = false,
+            attributes = attributes
+            )
+        </div>
+        @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
+    </form>
+</div>
 }

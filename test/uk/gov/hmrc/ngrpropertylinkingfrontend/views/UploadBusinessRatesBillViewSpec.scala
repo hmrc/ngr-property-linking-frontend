@@ -104,39 +104,39 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
       }
     }
 
-        "display the correct static content" must {
-          implicit val document: Document =
-            Jsoup.parse(view(
-              form,
-              upscanResponse,
-              attributes = Map("accept" -> ".pdf,.png,.docx",
-              "data-max-file-size" -> "100000000",
-              "data-min-file-size" -> "1000"),
-              None,
-              "address",
-              content,
-              "searchAgain",
-              "dashboard").body)
+    "display the correct static content" must {
+      implicit val document: Document =
+        Jsoup.parse(view(
+          form,
+          upscanResponse,
+          attributes = Map("accept" -> ".pdf,.png,.docx",
+            "data-max-file-size" -> "100000000",
+            "data-min-file-size" -> "1000"),
+          None,
+          "address",
+          content,
+          "searchAgain",
+          "dashboard").body)
 
-          "have the correct page title" in {
-            elementText(Selectors.navTitle) mustBe title
-          }
-
-          "have the correct main heading" in {
-            elementText(Selectors.heading) mustBe heading
-          }
-
-          "have the correct caption text" in {
-            elementText(Selectors.caption) must include("address")
-          }
-
-          "have the correct paragraph below heading" in {
-            elementText(Selectors.paragraph) must include(p2)
-          }
-
-          "have a continue button with correct text" in {
-            elementText(Selectors.continueButton) mustBe continueButton
-          }
-        }
+      "have the correct page title" in {
+        elementText(Selectors.navTitle) mustBe title
       }
+
+      "have the correct main heading" in {
+        elementText(Selectors.heading) mustBe heading
+      }
+
+      "have the correct caption text" in {
+        elementText(Selectors.caption) must include("address")
+      }
+
+      "have the correct paragraph below heading" in {
+        elementText(Selectors.paragraph) must include(p2)
+      }
+
+      "have a continue button with correct text" in {
+        elementText(Selectors.continueButton) mustBe continueButton
+      }
+    }
   }
+}

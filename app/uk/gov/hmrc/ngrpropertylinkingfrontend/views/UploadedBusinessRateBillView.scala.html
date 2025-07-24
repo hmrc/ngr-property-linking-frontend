@@ -31,18 +31,22 @@
     <meta http-equiv="refresh" content="1"/>
 }
 
+@uploadStatus = {
+
+}
+
+
+
 @heading = @{messages("uploadBusinessRatesBill.title")}
 @layout(
     pageTitle    = Some(heading),
     fullWidth = true,
     showBackLink = true,
     navigationBarContent = Some(navigationBarContent),
-    templateOverrides = TemplateOverrides(
-                            additionalHeadBlock = status match {
-                                                    case UploadStatus.InProgress => Some(refreshHeader)
-                                                    case _                       => None
-                                                }
-                                            )
+    additionalHeadBlock = status match {
+                case UploadStatus.InProgress => Some(refreshHeader)
+                case _                       => None
+            }
 ) {
 <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden"></span>@addressFull</h2>
 <h1 class="govuk-heading-l">@heading</h1>
@@ -50,16 +54,16 @@
 @govukSummaryList(summaryList)
 
 @status match {
-case s : UploadStatus.UploadedSuccessfully => {
+case s: UploadStatus.UploadedSuccessfully => {
 <p class="govuk-body">
     <a href="@uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ConnectionToPropertyController.show">
-        <button class="govuk-button govuk-button--secondary">Next</button>
+        @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false, disabled = false)
     </a>
 </p>
 }
 case _ => {
 <p class="govuk-body">
-    <button class="govuk-button govuk-button--secondary" disabled="disabled">Next</button>
+    @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false, disabled = true)
 </p>
         }
     }

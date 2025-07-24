@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class UploadProgressTrackerSpec extends TestSupport with TestData with DefaultPlayMongoRepositorySupport[UploadDetails]{
 
-  override val repository: UserSessionRepository = UserSessionRepository(mongoComponent)
+  override val repository: UserSessionRepository = UserSessionRepository(mongoComponent, mockConfig)
   val progressTracker = UploadProgressTracker(repository)
 
   override def beforeEach(): Unit = {

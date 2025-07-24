@@ -45,10 +45,12 @@ showBackLink: Boolean = false,
 fullWidth: Boolean = false,
 navigationBarContent: Option[NavigationBarContent] = None,
 templateOverrides: TemplateOverrides = TemplateOverrides(),
-)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages,  appConfig: AppConfig)
+additionalHeadBlock: Option[Html] = None
+)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @headScripts = {
     @stylesheets()
+    @additionalHeadBlock
 }
 
 @navbar = {
@@ -72,13 +74,13 @@ templateOverrides: TemplateOverrides = TemplateOverrides(),
     HmrcStandardPageParams(
         pageTitle = pageTitle.map(title => messages("service.base.title", title)),
         templateOverrides = TemplateOverrides(
-        mainContentLayout = if (fullWidth) {
-            Some((_: Html) => fullWidthLayout(content, navbar))
-        } else {
-            Some((_: Html) => twoThirdsLayout(content, navbar))
-        },
-        additionalHeadBlock = Some(headScripts),
-        additionalScriptsBlock = Some(hmrcScripts())
+            mainContentLayout = if (fullWidth) {
+                Some((_: Html) => fullWidthLayout(content, navbar))
+            } else {
+                Some((_: Html) => twoThirdsLayout(content, navbar))
+            },
+            additionalHeadBlock = Some(headScripts),
+            additionalScriptsBlock = Some(hmrcScripts())
         ),
         backLink = None,
         banners = Banners(

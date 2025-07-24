@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.repo
 
+import com.mongodb.client.model.Indexes.descending
 import org.bson.types.ObjectId
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Updates.set
@@ -28,8 +29,10 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadDetails, UploadId, UploadStatus}
 import uk.gov.hmrc.mongo.play.json.formats.MongoFormats
 import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.config.{AppConfig, FrontendAppConfig}
 
 import java.net.{URI, URL}
+import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent
 import scala.concurrent.{ExecutionContext, Future}
@@ -80,7 +83,8 @@ object UserSessionRepository:
 
 @Singleton
 class UserSessionRepository @Inject()(
-                                       mongoComponent: MongoComponent
+                                       mongoComponent: MongoComponent,
+                                       config: AppConfig
                                      )(using
                                        ExecutionContext
                                      ) extends PlayMongoRepository[UploadDetails](
@@ -95,7 +99,7 @@ class UserSessionRepository @Inject()(
 ):
   import UserSessionRepository.given
 
-  override lazy val requiresTtlIndex: Boolean = false // example repo, never deployed to prod
+  override lazy val requiresTtlIndex: Boolean = false
 
   def insert(details: UploadDetails): Future[Unit] =
     collection.insertOne(details)

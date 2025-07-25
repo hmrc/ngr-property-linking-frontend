@@ -19,6 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
+import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.TemplateOverrides
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{Layout, Stylesheets}
 
@@ -43,8 +44,8 @@ class LayoutSpec extends ViewBaseSpec {
 
     "produce the same output for apply() and render()" in {
       val htmlApply = injectedView.apply(pageTitle = Some("Title of page"))(Html("Test")).body
-      val htmlRender = injectedView.render(pageTitle = Some("Title of page"), showBackLink = false, contentBlock = Html("Test"), request = request, messages = messages, appConfig = mockConfig, fullWidth = false, navigationBarContent = None).body
-      val htmlF = injectedView.f(Some("Title of page"), false, false, None)(Html("Test"))(request, messages, mockConfig).body
+      val htmlRender = injectedView.render(pageTitle = Some("Title of page"), showBackLink = false, contentBlock = Html("Test"), request = request, messages = messages, appConfig = mockConfig, fullWidth = false, navigationBarContent = None, templateOverrides = TemplateOverrides(),additionalHeadBlock = None).body
+      val htmlF = injectedView.f(Some("Title of page"), false, false, None,TemplateOverrides(),None)(Html("Test"))(request, messages, mockConfig).body
       htmlApply mustBe htmlRender
       htmlF must not be empty
     }

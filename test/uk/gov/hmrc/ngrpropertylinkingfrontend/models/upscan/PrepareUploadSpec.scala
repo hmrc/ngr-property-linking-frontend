@@ -1,5 +1,5 @@
-@*
- * Copyright 2024 HM Revenue & Customs
+/*
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,21 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.govukfrontend.views.Aliases.{Button, Text}
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukButton
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan
 
-@this(govukButton: GovukButton)
+import play.api.libs.json.Json
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
-@(msg: String, showSaveProgressButton: Boolean = true, isStartButton: Boolean = false, disabled: Boolean = false)(implicit messages: Messages)
+class PrepareUploadSpec extends TestSupport{
+  
+  "PreparedUpload" should {
+    
+    "serialize to json" in {
+      Json.toJson(preparedUploadModel) mustBe preparedUploadJson
+    }
+    
+    "deserialize from json" in {
+      preparedUploadJson.as[PreparedUpload] mustBe preparedUploadModel
+    }
+    
+  }
+  
 
-@govukButton(
- Button(
-  content = Text(messages(msg)),
-  attributes = Map("id" -> "continue"),
-  preventDoubleClick = Some(true),
-  isStartButton = isStartButton,
-  disabled = disabled
- )
-)
+}

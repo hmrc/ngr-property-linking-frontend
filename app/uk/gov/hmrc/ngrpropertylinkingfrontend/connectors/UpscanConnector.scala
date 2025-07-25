@@ -17,38 +17,42 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
 import play.api.libs.json.Json
-import play.api.libs.ws.writeableOf_JsValue
-import play.mvc.Http.HeaderNames
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{UpscanInitiateResponse, UpscanInitiateRequest}
-import javax.inject.{Inject, Singleton}
+import play.mvc.Http.HeaderNames
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{PreparedUpload, UpscanFileReference, UpscanInitiateRequest, UpscanInitiateResponse}
+import play.api.libs.ws.writeableOf_JsValue
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
 class UpscanConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig)(implicit ec: ExecutionContext) {
 
-  def initiate(implicit headerCarrier: HeaderCarrier): Future[UpscanInitiateResponse] = {
-    val upscanInitiateUri = s"${appConfig.upscanHost}/upscan/v2/initiate"
+  private val headers = Map(
+    HeaderNames.CONTENT_TYPE -> "application/json"
+  )
+
+  def initiate(
+                redirectOnSuccess: Option[String],
+                redirectOnError: Option[String]
+              )(implicit hc: HeaderCarrier): Future[UpscanInitiateResponse] =
     val request = UpscanInitiateRequest(
       callbackUrl = appConfig.callbackEndpointTarget,
-      successRedirect = Some(s"${appConfig.ngrPropertyLinkingFrontendUrl}/uploaded-business-rates-bill"),
-      errorRedirect = Some(s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill"),
-      maximumFileSize = Some(25000000),//25MB
-      minimumFileSize = Some(100))
-    
-    httpClientV2
-      .post(url"$upscanInitiateUri")
-      .withBody(Json.toJson(request))
-      .setHeader(HeaderNames.CONTENT_TYPE -> "application/json")
-      .execute[UpscanInitiateResponse]
-  }
+      successRedirect = redirectOnSuccess,
+      errorRedirect = redirectOnError
+    )
 
-  def download(downloadUrl: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClientV2
-      .get(url"$downloadUrl")
-      .execute[HttpResponse]
+    val upscanInitiateUri = s"${appConfig.upscanHost}/upscan/v2/initiate"
+
+    for
+      response <- httpClientV2.post(url"${upscanInitiateUri}")
+        .withBody(Json.toJson(request))
+        .setHeader(headers.toSeq: _*)
+        .execute[PreparedUpload]
+      fileReference = UpscanFileReference(response.reference.value)
+      postTarget = response.uploadRequest.href
+      formFields = response.uploadRequest.fields
+    yield UpscanInitiateResponse(fileReference, postTarget, formFields)
+  
 }
-
-

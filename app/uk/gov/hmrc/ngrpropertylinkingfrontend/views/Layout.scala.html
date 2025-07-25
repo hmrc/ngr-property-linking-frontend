@@ -26,6 +26,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.HmrcStandardPageParams
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.navigationBarComponent
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcScripts
 
 @this(
   appConfig: AppConfig,
@@ -35,17 +36,21 @@
   twoThirdsLayout: TwoThirdsLayout,
   hmrcStandardPage: HmrcStandardPage,
   stylesheets: Stylesheets,
-  navigationBarComponent: navigationBarComponent
+  navigationBarComponent: navigationBarComponent,
+  hmrcScripts: HmrcScripts,
 )(implicit cfConfig: ContactFrontendConfig)
 
 @(pageTitle: Option[String] = None,
 showBackLink: Boolean = false,
 fullWidth: Boolean = false,
-navigationBarContent: Option[NavigationBarContent] = None
-)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages,  appConfig: AppConfig)
+navigationBarContent: Option[NavigationBarContent] = None,
+templateOverrides: TemplateOverrides = TemplateOverrides(),
+additionalHeadBlock: Option[Html] = None
+)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @headScripts = {
     @stylesheets()
+    @additionalHeadBlock
 }
 
 @navbar = {
@@ -69,12 +74,13 @@ navigationBarContent: Option[NavigationBarContent] = None
     HmrcStandardPageParams(
         pageTitle = pageTitle.map(title => messages("service.base.title", title)),
         templateOverrides = TemplateOverrides(
-        mainContentLayout = if (fullWidth) {
-            Some((_: Html) => fullWidthLayout(content, navbar))
-        } else {
-            Some((_: Html) => twoThirdsLayout(content, navbar))
-        },
-        additionalHeadBlock = Some(headScripts)
+            mainContentLayout = if (fullWidth) {
+                Some((_: Html) => fullWidthLayout(content, navbar))
+            } else {
+                Some((_: Html) => twoThirdsLayout(content, navbar))
+            },
+            additionalHeadBlock = Some(headScripts),
+            additionalScriptsBlock = Some(hmrcScripts())
         ),
         backLink = None,
         banners = Banners(

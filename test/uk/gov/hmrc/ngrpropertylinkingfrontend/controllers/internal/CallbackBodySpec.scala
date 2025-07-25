@@ -1,0 +1,65 @@
+/*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.internal
+
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.{JsSuccess, Json}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.Reference
+
+import java.time.Instant
+import java.net.URL
+
+
+class CallbackBodySpec extends AnyWordSpec with Matchers{
+
+  "CallbackBody JSON reader" should {
+    "be able to deserialize successful body" in {
+      val body =
+        """
+          |{
+          |    "reference" : "11370e18-6e24-453e-b45a-76d3e32ea33d",
+          |    "fileStatus" : "READY",
+          |    "downloadUrl" : "https://bucketName.s3.eu-west-2.amazonaws.com?1235676",
+          |    "uploadDetails": {
+          |        "uploadTimestamp": "2018-04-24T09:30:00Z",
+          |        "checksum": "396f101dd52e8b2ace0dcf5ed09b1d1f030e608938510ce46e7a5c7a4e775100",
+          |        "fileName": "test.pdf",
+          |        "fileMimeType": "application/pdf",
+          |        "size": 45678
+          |    }
+          |}
+          |
+        """.stripMargin
+
+      Json.parse(body).validate[CallbackBody] mustBe JsSuccess(
+          ReadyCallbackBody(
+            reference = Reference("11370e18-6e24-453e-b45a-76d3e32ea33d"),
+            downloadUrl = URL("https://bucketName.s3.eu-west-2.amazonaws.com?1235676"),
+            uploadDetails = UploadDetails(
+              uploadTimestamp = Instant.parse("2018-04-24T09:30:00Z"),
+              checksum = "396f101dd52e8b2ace0dcf5ed09b1d1f030e608938510ce46e7a5c7a4e775100",
+              fileMimeType = "application/pdf",
+              fileName = "test.pdf",
+              size = 45678L
+            )
+          )
+        )
+    }
+  }
+  
+}

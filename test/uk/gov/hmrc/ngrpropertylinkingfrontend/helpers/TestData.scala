@@ -22,6 +22,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.{VMVProperties, VMVProperty, Valuation}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{PreparedUpload, Reference, UploadForm, UpscanInitiateRequest}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, Rooms, ScatCode}
 
 import java.time.{Instant, LocalDate}
@@ -632,5 +633,16 @@ trait TestData {
   )
 
   val noResultsFoundProperty: VMVProperties = VMVProperties(0, List.empty)
-
+  
+  val preparedUploadModel: PreparedUpload = PreparedUpload(Reference("ref"),UploadForm("href",Map("key" -> "value")))
+  
+  val preparedUploadJson: JsValue = Json.parse(
+    """
+      |{"reference":"ref","uploadRequest":{"href":"href","fields":{"key":"value"}}}
+      |""".stripMargin)
+  
+  val upScanInitiateRequestModel : UpscanInitiateRequest = UpscanInitiateRequest("callBackUrl",Some("Success"),Some("error"),Some(5),Some(200))
+  val upscanInitiateRequestJson : JsValue = Json.parse("""
+      |{"minimumFileSize":5,"errorRedirect":"error","callbackUrl":"callBackUrl","maximumFileSize":200,"successRedirect":"Success"}
+      |""".stripMargin)
 }

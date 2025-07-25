@@ -92,7 +92,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
   "Calling the createSummary list function" should {
     "return the correct Summary list" when {
       "the Upload Status is set to inProgress" in {
-        val result = controller.createSummaryList(credId, InProgress)
+        val result = controller.storeAndShowUploadProgress(credId, InProgress)
         val expected =
           SummaryList(List(
             SummaryListRow(
@@ -104,7 +104,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
       }
 
       "the Upload Status is set to Failed" in {
-        val result = controller.createSummaryList(credId, Failed)
+        val result = controller.storeAndShowUploadProgress(credId, Failed)
         val expected =
           SummaryList(List(
             SummaryListRow(
@@ -116,7 +116,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
       }
       
       "the Upload Status is to Successful" in {
-        val result = controller.createSummaryList(credId, UploadedSuccessfully("filename.png", ".png", url"http://example.com/dummyLink", Some(120L)))
+        val result = controller.storeAndShowUploadProgress(credId, UploadedSuccessfully("filename.png", ".png", url"http://example.com/dummyLink", Some(120L)))
         val expected = SummaryList(List(
           SummaryListRow(Key(HtmlContent("""<a href="http://example.com/dummyLink" class="govuk-link govuk-summary-list__key_width">filename.png</a>"""), ""), Value(HtmlContent("""<span id="filename.png-id" class="govuk-tag govuk-tag--green">Uploaded</span>"""), ""), "", Some(Actions("", List(ActionItem("/ngr-property-linking-frontend/upload-business-rates-bill", Text("Remove"), None, "", Map("id" -> "remove-link"))))))), None, "", Map())
 

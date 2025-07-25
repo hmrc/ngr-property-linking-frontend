@@ -52,26 +52,16 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
     "data-min-file-size" -> "1000"
   )
 
-  def show(errorCode: Option[String]): Action[AnyContent] =
+  def show(errorCode: Option[String]): Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       request.credId match {
         case Some(rawCredId) =>
-          val errorToDisplay: Option[String] = errorCode match {
-            case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
-            case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
-            case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.fileTooSmall"))
-            case Some("InvalidFileType") => Some(Messages("uploadBusinessRatesBill.error.invalidFileType"))
-            case Some("QUARANTINE") => Some(Messages("uploadBusinessRatesBill.error.virusDetected"))
-            case Some("REJECTED") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
-            case Some(reason) if reason.startsWith("UNKNOWN") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
-            case Some(reason) => throw new RuntimeException(s"Error in errorToDisplay: unrecognisable error from upscan '$reason'")
-            case None => None
-          }
+          val errorToDisplay: Option[String] = renderError(errorCode)
           val credId = CredId(rawCredId)
           val uploadId = UploadId.generate()
           val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId).url}"
           val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill"
-          
+
           for
             upscanInitiateResponse <- upScanConnector.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
             maybeProperty <- propertyLinkingRepo.findByCredId(credId)
@@ -88,4 +78,18 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
         case None => Future.failed(throw new NotFoundException("Missing credId in authenticated request"))
       }
     }
+  }
+    private def renderError(errorCode: Option[String])(implicit messages: Messages) : Option[String] = {
+      errorCode match {
+        case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
+        case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
+        case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.fileTooSmall"))
+        case Some("InvalidFileType") => Some(Messages("uploadBusinessRatesBill.error.invalidFileType"))
+        case Some("QUARANTINE") => Some(Messages("uploadBusinessRatesBill.error.virusDetected"))
+        case Some("REJECTED") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
+        case Some(reason) if reason.startsWith("UNKNOWN") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))
+        case Some(reason) => throw new RuntimeException(s"Error in errorToDisplay: unrecognisable error from upscan '$reason'")
+        case None => None
+      }
+  }
 }

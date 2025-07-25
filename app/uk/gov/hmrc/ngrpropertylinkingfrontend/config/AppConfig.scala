@@ -55,7 +55,7 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val timeToLive: String = servicesConfig.getString("time-to-live.time")
   override val callbackEndpointTarget: String = getString("upscan.callback-endpoint")
   override val customCurrentDate: Option[String] = config.getOptional("custom-current-date")
-  override val uploadRedirectTargetBase: String = getString("upload-redirect-target-base")
+  override val uploadRedirectTargetBase: String = getString("upscan.upload-redirect-target-base")
 
 
   def getString(key: String): String =

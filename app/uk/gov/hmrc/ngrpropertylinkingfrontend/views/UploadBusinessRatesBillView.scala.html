@@ -36,9 +36,8 @@ saveAndContinueButton: saveAndContinueButton
 }
 @heading = @{messages("uploadBusinessRatesBill.title")}
 @layout(pageTitle = Some(heading), fullWidth = false, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
-<div class="govuk-grid-row">
-    <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden"></span>@address</h2>
-    <h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
+<span class="govuk-caption-m">@address</span>
+<h1 class="govuk-heading-l">@{Text(heading).asHtml}</h1>
     <p class="govuk-caption-m hmrc-caption-m">
         @messages("uploadBusinessRatesBill.p1")
     </p>
@@ -62,5 +61,4 @@ saveAndContinueButton: saveAndContinueButton
         </div>
         @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
     </form>
-</div>
 }

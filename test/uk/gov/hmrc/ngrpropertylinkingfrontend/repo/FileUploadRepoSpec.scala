@@ -21,7 +21,7 @@ import uk.gov.hmrc.http.StringContextOps
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{TestData, TestSupport}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadDetails, UploadId, UploadStatus}
 
-class UserSessionRepositorySpec extends TestSupport with TestData {
+class FileUploadRepoSpec extends TestSupport with TestData {
 
   "Serialization and deserialization of UploadDetails" should {
 
@@ -29,8 +29,8 @@ class UserSessionRepositorySpec extends TestSupport with TestData {
 
       val input = UploadDetails(ObjectId.get(), UploadId.generate(), Reference("ABC"), UploadStatus.InProgress)
 
-      val serialized = UserSessionRepository.mongoFormat.writes(input)
-      val output = UserSessionRepository.mongoFormat.reads(serialized)
+      val serialized = FileUploadRepo.mongoFormat.writes(input)
+      val output = FileUploadRepo.mongoFormat.reads(serialized)
 
       output.get mustBe input
 
@@ -40,8 +40,8 @@ class UserSessionRepositorySpec extends TestSupport with TestData {
 
       val input = UploadDetails(ObjectId.get(), UploadId.generate(), Reference("ABC"), UploadStatus.Failed)
 
-      val serialized = UserSessionRepository.mongoFormat.writes(input)
-      val output = UserSessionRepository.mongoFormat.reads(serialized)
+      val serialized = FileUploadRepo.mongoFormat.writes(input)
+      val output = FileUploadRepo.mongoFormat.reads(serialized)
 
       output.get mustBe input
 
@@ -55,8 +55,8 @@ class UserSessionRepositorySpec extends TestSupport with TestData {
         UploadStatus.UploadedSuccessfully("foo.txt", "text/plain", url"http:localhost:8080", size = None)
       )
 
-      val serialized = UserSessionRepository.mongoFormat.writes(input)
-      val output = UserSessionRepository.mongoFormat.reads(serialized)
+      val serialized = FileUploadRepo.mongoFormat.writes(input)
+      val output = FileUploadRepo.mongoFormat.reads(serialized)
       
       output.get mustBe input
     }
@@ -69,8 +69,8 @@ class UserSessionRepositorySpec extends TestSupport with TestData {
         UploadStatus.UploadedSuccessfully("foo.txt", "text/plain", url"http:localhost:8080", size = Some(123456))
       )
 
-      val serialized = UserSessionRepository.mongoFormat.writes(input)
-      val output = UserSessionRepository.mongoFormat.reads(serialized)
+      val serialized = FileUploadRepo.mongoFormat.writes(input)
+      val output = FileUploadRepo.mongoFormat.reads(serialized)
 
       output.get mustBe input
     }

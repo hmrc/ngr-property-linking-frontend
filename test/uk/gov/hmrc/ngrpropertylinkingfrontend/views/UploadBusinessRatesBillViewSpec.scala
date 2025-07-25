@@ -48,8 +48,8 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
   object Selectors {
     val navTitle = "head > title"
     val heading = "h1.govuk-heading-l"
-    val caption = "h2.govuk-caption-l"
-    val paragraph = "#main-content > div > div.govuk-grid-column-two-thirds > div > p"
+    val caption = "#main-content > div > div > span"
+    val paragraph = "#main-content > div > div.govuk-grid-column-two-thirds > p"
     val fileInput = "input#file-upload-1"
     val continueButton = "button.govuk-button"
   }

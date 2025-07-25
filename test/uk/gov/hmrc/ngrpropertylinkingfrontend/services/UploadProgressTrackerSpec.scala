@@ -21,7 +21,7 @@ import uk.gov.hmrc.http.StringContextOps
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{TestData, TestSupport}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadDetails, UploadId, UploadStatus}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UserSessionRepository
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FileUploadRepo
 import org.mongodb.scala.bson.collection.immutable.Document
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class UploadProgressTrackerSpec extends TestSupport with TestData with DefaultPlayMongoRepositorySupport[UploadDetails]{
 
-  override val repository: UserSessionRepository = UserSessionRepository(mongoComponent, mockConfig)
+  override val repository: FileUploadRepo = FileUploadRepo(mongoComponent, mockConfig)
   val progressTracker = UploadProgressTracker(repository)
 
   override def beforeEach(): Unit = {

@@ -46,7 +46,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
                                                     mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  def createSummaryList(credId: CredId,uploadStatus: UploadStatus)(implicit messages: Messages): SummaryList = {
+  def storeAndShowUploadProgress(credId: CredId, uploadStatus: UploadStatus)(implicit messages: Messages): SummaryList = {
     uploadStatus match
       case UploadStatus.UploadedSuccessfully(name, mimeType, downloadUrl, size) => {
         propertyLinkingRepo.insertEvidenceDocument(credId, name)
@@ -97,7 +97,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
     yield uploadResult match
       case Some(result) => Ok(uploadedBusinessRateBillView(
         createDefaultNavBar,
-        createSummaryList(credId,result),
+        storeAndShowUploadProgress(credId,result),
         maybeProperty.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
         uploadId,
         result))

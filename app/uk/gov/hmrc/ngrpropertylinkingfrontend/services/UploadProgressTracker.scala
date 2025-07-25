@@ -21,13 +21,13 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.*
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.UserSessionRepository
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FileUploadRepo
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UploadProgressTracker @Inject()(
-                                       repository: UserSessionRepository,
+                                       repository: FileUploadRepo,
                                      )(using
                                        ExecutionContext
                                      ):

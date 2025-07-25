@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 val status = "status"
 
-object UserSessionRepository:
+object FileUploadRepo:
   val status = "status"
 
   private given Format[UploadStatus] =
@@ -82,7 +82,7 @@ object UserSessionRepository:
       )(UploadDetails.apply, Tuple.fromProductTyped _)
 
 @Singleton
-class UserSessionRepository @Inject()(
+class FileUploadRepo @Inject()(
                                        mongoComponent: MongoComponent,
                                        config: AppConfig
                                      )(using
@@ -90,14 +90,14 @@ class UserSessionRepository @Inject()(
                                      ) extends PlayMongoRepository[UploadDetails](
   collectionName = "upscanProgressTracker",
   mongoComponent = mongoComponent,
-  domainFormat   = UserSessionRepository.mongoFormat,
+  domainFormat   = FileUploadRepo.mongoFormat,
   indexes        = Seq(
     IndexModel(Indexes.ascending("uploadId"), IndexOptions().unique(true)),
     IndexModel(Indexes.ascending("reference"), IndexOptions().unique(true))
   ),
   replaceIndexes = true
 ):
-  import UserSessionRepository.given
+  import FileUploadRepo.given
 
   override lazy val requiresTtlIndex: Boolean = false
 

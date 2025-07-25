@@ -58,7 +58,7 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
   object Selectors {
     val navTitle = "head > title"
     val heading = "h1.govuk-heading-l"
-    val caption = "h2.govuk-caption-l"
+    val caption = "#main-content > div > div > span"
     val fileName = "#main-content > div > div > dl > div > dt > a"
     val removeLink = "#remove-link"
     val uploadText = "#main-content > div > div > dl > div > dt"

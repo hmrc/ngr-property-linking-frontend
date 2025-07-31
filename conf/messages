@@ -563,7 +563,7 @@ checkYourAnswers.propertyReference.title = Property reference
 checkYourAnswers.currentRatepayer.title = When did you become the current ratepayer?
 checkYourAnswers.businessRatesBill = Do you have a business rates bill for this property?
 checkYourAnswers.EvidenceDocument = Evidence document
-checkYourAnswers.PropertyConnection = What is your connection to the property
+checkYourAnswers.PropertyConnection = What is your connection to the property?
 checkYourAnswers.currentRatepayer.before = Before 1 April 2026
 checkYourAnswers.currentRatepayer.after = On or after 1 April 2026
 

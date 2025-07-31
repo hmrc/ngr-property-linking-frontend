@@ -21,6 +21,7 @@ import play.api.data.Forms.single
 import play.api.data.format.Formatter
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.RadioEntry
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.Constants
 
 sealed trait ConnectionToPropertyForm extends RadioEntry
 
@@ -36,7 +37,7 @@ object ConnectionToPropertyForm {
   def stringToPropertyForm(value: String): ConnectionToPropertyForm = value match {
     case "Owner" => Owner
     case "Occupier" => Occupier
-    case "OwnerAndOccupier" => OwnerAndOccupier
+    case Constants.ownerAndOccupier => OwnerAndOccupier
     case _ => throw new IllegalArgumentException(s"Invalid ConnectionToPropertyForm input $value")
   }
   

@@ -43,7 +43,7 @@ class ConnectionToPropertyFormSpec extends AnyWordSpec with Matchers {
     "return valid ConnectionToPropertyForm to the input string" in {
       ConnectionToPropertyForm.stringToPropertyForm("Owner") shouldBe ConnectionToPropertyForm.Owner
       ConnectionToPropertyForm.stringToPropertyForm("Occupier") shouldBe ConnectionToPropertyForm.Occupier
-      ConnectionToPropertyForm.stringToPropertyForm("OwnerAndOccupier") shouldBe ConnectionToPropertyForm.OwnerAndOccupier
+      ConnectionToPropertyForm.stringToPropertyForm("Owner and occupier") shouldBe ConnectionToPropertyForm.OwnerAndOccupier
     }
 
     "throw IllegalArgumentException for invalid ConnectionToPropertyForm input" in {

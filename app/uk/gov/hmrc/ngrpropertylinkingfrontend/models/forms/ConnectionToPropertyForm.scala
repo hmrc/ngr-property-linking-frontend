@@ -36,7 +36,7 @@ object ConnectionToPropertyForm {
   def stringToPropertyForm(value: String): ConnectionToPropertyForm = value match {
     case "Owner" => Owner
     case "Occupier" => Occupier
-    case "OwnerAndOccupier" => OwnerAndOccupier
+    case "Owner and occupier" => OwnerAndOccupier
     case _ => throw new IllegalArgumentException(s"Invalid ConnectionToPropertyForm input $value")
   }
   

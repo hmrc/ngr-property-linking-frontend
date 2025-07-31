@@ -49,7 +49,7 @@ class CheckYourAnswersViewSpec extends ViewBaseSpec{
     val summaryRow3 = "When did you become the current ratepayer?"
     val summaryRow4 = "Do you have a business rates bill for this property?"
     val summaryRow5 = "Evidence document"
-    val summaryRow6 = "What is your connection to the property"
+    val summaryRow6 = "What is your connection to the property?"
     val continue = "Continue"
   }
 

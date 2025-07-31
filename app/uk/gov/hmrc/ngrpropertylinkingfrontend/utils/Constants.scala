@@ -20,7 +20,7 @@ object Constants {
 
   val owner = "Owner"
   val occupier = "Occupier"
-  val ownerAndOccupier = "Owner and Occupier"
+  val ownerAndOccupier = "Owner and occupier"
 
 
 }

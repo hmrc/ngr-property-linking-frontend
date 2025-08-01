@@ -101,9 +101,9 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
   "UploadedBusinessRatesBillView" when {
     "render consistenting using apply and render" should {
 
-      val rendered = view.apply(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)))(request, messages, mockConfig)
-      val renderedHtml = view.render(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), request, messages, mockConfig).body
-      lazy val htmlF = view.f(content, SummaryList(uploadSuccessful), "address", UploadId("1234"), UploadedSuccessfully("test.png", ".png", url"https://example.com/dummyLink", Some(120L)))
+      val rendered = view.apply(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None)(request, messages, mockConfig)
+      val renderedHtml = view.render(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None, request, messages, mockConfig).body
+      lazy val htmlF = view.f(content, SummaryList(uploadSuccessful), "address", UploadId("1234"), UploadedSuccessfully("test.png", ".png", url"https://example.com/dummyLink", Some(120L)), None)
 
       "apply must be the same as render" in {
         rendered.body mustBe renderedHtml
@@ -127,7 +127,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           summaryList = SummaryList(uploadSuccessful),
           addressFull = "address",
           uploadId = UploadId("12345"),
-          status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L))
+          status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)),
+          evidence = None
         ).body)
 
 
@@ -162,7 +163,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           summaryList = SummaryList(uploadInProgress),
           addressFull = "address",
           uploadId = UploadId("12345"),
-          status = InProgress
+          status = InProgress,
+          evidence = None
         ).body)
 
 
@@ -192,7 +194,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           summaryList = SummaryList(uploadFailed),
           addressFull = "address",
           uploadId = UploadId("12345"),
-          status = Failed
+          status = Failed,
+          evidence = None
         ).body)
 
 
@@ -215,4 +218,4 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
     }
 
   }
-  }
+}

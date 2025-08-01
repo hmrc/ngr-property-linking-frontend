@@ -24,10 +24,10 @@ import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CheckYourAnswersView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -44,7 +44,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
   extends FrontendController(mcc) with I18nSupport {
 
   private def createSummaryRows(userAnswers: PropertyLinkingUserAnswers)(implicit messages: Messages): Seq[SummaryListRow] = {
-    Seq(
+    val rows: Seq[NGRSummaryListRow] = Seq(
       NGRSummaryListRow(
         messages("checkYourAnswers.property.title"),
         None,
@@ -61,7 +61,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
         messages("checkYourAnswers.currentRatepayer.title"),
         None,
         Seq(userAnswers.currentRatepayer.map(currentRatepayer =>
-          if(currentRatepayer.isBeforeApril) "checkYourAnswers.currentRatepayer.before" else "checkYourAnswers.currentRatepayer.after")
+            if (currentRatepayer.isBeforeApril) "checkYourAnswers.currentRatepayer.before" else "checkYourAnswers.currentRatepayer.after")
           .getOrElse(throw new NotFoundException("Could not find current ratepayer"))),
         changeLink = Some(Link(href = routes.CurrentRatepayerController.show("CYA"), linkId = "current-ratepayer", messageKey = "service.change", visuallyHiddenMessageKey = Some("current-ratepayer")))
       ), //TODO CHANGE CURRENT RATEPAYER
@@ -70,7 +70,10 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
         None,
         Seq(userAnswers.businessRatesBill.getOrElse(throw new NotFoundException("Could not find business rates bill"))),
         changeLink = Some(Link(href = routes.BusinessRatesBillController.show("CYA"), linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
-      ), //TODO CHANGE CURRENT RATEPAYER
+      )
+    ) //TODO CHANGE CURRENT RATEPAYER
+
+    val rows2: Seq[NGRSummaryListRow] = Seq(
       NGRSummaryListRow(
         messages("checkYourAnswers.EvidenceDocument"),
         None,
@@ -82,15 +85,26 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
         None,
         Seq(userAnswers.connectionToProperty.getOrElse("")),
         changeLink = Some(Link(href = routes.ConnectionToPropertyController.show, linkId = "property-connection", messageKey = "service.change", visuallyHiddenMessageKey = Some("property-connection")))
-      ) 
-    ).map(summarise)
+      )
+    )
+
+    userAnswers.uploadEvidence
+      .map(uploadEvidence => NGRSummaryListRow(
+        messages("checkYourAnswers.uploadEvidence"),
+        None,
+        Seq(messages(s"uploadEvidence.$uploadEvidence.title")),
+        changeLink = Some(Link(href = routes.UploadEvidenceController.show, linkId = "upload-evidence", messageKey = "service.change", visuallyHiddenMessageKey = Some("upload-evidence")))
+      ))
+      .map(uploadEvidenceRow => (rows :+ uploadEvidenceRow) ++ rows2)
+      .getOrElse(rows ++ rows2)
+      .map(summarise)
   }
 
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
-        case Some(userAnswers) =>  Future.successful(Ok(
-          checkYourAnswersView(navigationBarContent = createDefaultNavBar,  summaryList = SummaryList(createSummaryRows(userAnswers = userAnswers)))))
+      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+        case Some(userAnswers) => Future.successful(Ok(
+          checkYourAnswersView(navigationBarContent = createDefaultNavBar, summaryList = SummaryList(createSummaryRows(userAnswers = userAnswers)))))
         case None => throw new NotFoundException("failed to find property from mongo")
       }
     }

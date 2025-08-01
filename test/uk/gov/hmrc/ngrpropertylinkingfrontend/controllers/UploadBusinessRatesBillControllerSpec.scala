@@ -72,7 +72,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
           ))
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
         when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
-        val result = controller.show(None)(authenticatedFakeRequest)
+        val result = controller.show(None, None)(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)
         content must include(pageTitle)
@@ -90,7 +90,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
           ))
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
         recoverToExceptionIf[NotFoundException] {
-          controller.show(None)(authenticatedFakeRequest)
+          controller.show(None, None)(authenticatedFakeRequest)
         }.map { ex =>
           ex.getMessage mustBe "Not found property on account"
         }
@@ -108,7 +108,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
          when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
          when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
          val exception = intercept[NotFoundException] {
-           await(controller.show(None)(authenticatedFakeRequest))
+           await(controller.show(None, None)(authenticatedFakeRequest))
          }
          exception.getMessage contains "Missing credId in authenticated request" mustBe true
        }
@@ -125,7 +125,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
                 ))
               when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
               when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
-              val result = controller.show(Some(errorCode))(authenticatedFakeRequest)
+              val result = controller.show(Some(errorCode), None)(authenticatedFakeRequest)
               status(result) mustBe OK
               val content = contentAsString(result)
               content must include(Messages(expectedMessage))

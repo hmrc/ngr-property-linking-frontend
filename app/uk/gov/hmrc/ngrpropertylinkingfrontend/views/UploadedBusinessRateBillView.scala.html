@@ -23,17 +23,23 @@
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 
 
-@this(layout: Layout, govukSummaryList: GovukSummaryList, saveAndContinueButton: saveAndContinueButton, formHelper: FormWithCSRF)
+@this(layout: Layout, govukSummaryList: GovukSummaryList, saveAndContinueButton: saveAndContinueButton)
 
-@(navigationBarContent: NavigationBarContent, summaryList: SummaryList, addressFull: String, uploadId: UploadId, status: UploadStatus)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(navigationBarContent: NavigationBarContent, summaryList: SummaryList, addressFull: String, uploadId: UploadId, status: UploadStatus, evidence: Option[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @refreshHeader = {
     <meta http-equiv="refresh" content="1"/>
 }
 
-@heading = @{messages("uploadBusinessRatesBill.title")}
+@heading = {
+    @if(evidence.isEmpty){
+        @messages("uploadBusinessRatesBill.title")
+    }else{
+        Upload your @messages(s"uploadEvidence.${evidence.get}.title")
+    }
+}
 @layout(
-    pageTitle    = Some(heading),
+    pageTitle    = Some(heading.toString),
     fullWidth = true,
     showBackLink = true,
     navigationBarContent = Some(navigationBarContent),

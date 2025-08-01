@@ -52,14 +52,14 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
     "data-min-file-size" -> "1000"
   )
 
-  def show(errorCode: Option[String]): Action[AnyContent] = {
+  def show(errorCode: Option[String], evidence: Option[String]): Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       request.credId match {
         case Some(rawCredId) =>
           val errorToDisplay: Option[String] = renderError(errorCode)
           val credId = CredId(rawCredId)
           val uploadId = UploadId.generate()
-          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId).url}"
+          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId, evidence).url}"
           val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill"
 
           for
@@ -73,7 +73,8 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
             maybeProperty.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
             createDefaultNavBar,
             routes.FindAPropertyController.show.url,
-            appConfig.ngrDashboardUrl)
+            appConfig.ngrDashboardUrl,
+            evidence)
           )
         case None => Future.failed(throw new NotFoundException("Missing credId in authenticated request"))
       }

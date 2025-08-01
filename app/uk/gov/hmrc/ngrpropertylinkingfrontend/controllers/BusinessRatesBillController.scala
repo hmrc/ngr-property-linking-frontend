@@ -82,9 +82,12 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
               businessRatesBill = businessRatesBillForm.radioValue
             )
             if (businessRatesBillForm.radioValue == "Yes") { // temporary disable No option
-              if (mode == "CYA") Future.successful(Redirect(routes.CheckYourAnswersController.show.url)) else Future.successful(Redirect(routes.UploadBusinessRatesBillController.show(None)))
+              if (mode == "CYA")
+                Future.successful(Redirect(routes.CheckYourAnswersController.show.url))
+              else
+                Future.successful(Redirect(routes.UploadBusinessRatesBillController.show(None, None)))
             } else {
-              Future.successful(Redirect(routes.BusinessRatesBillController.show(mode)))
+              Future.successful(Redirect(routes.UploadEvidenceController.show))
             }
         )
     }

@@ -43,13 +43,13 @@ class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
                                          mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with CurrencyHelper {
 
-  private val leaseButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.lease", Lease)
-  private val landRegistryButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.landRegistry", LandRegistry)
-  private val licenceButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.licence", Licence)
-  private val serviceStatementButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.serviceStatement", ServiceStatement)
-  private val stampDutyButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.stampDuty", StampDuty)
-  private val utilityBillButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.utilityBill", UtilityBill)
-  private val waterRateButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.waterRate", WaterRate)
+  private val leaseButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.Lease", Lease)
+  private val landRegistryButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.LandRegistry", LandRegistry)
+  private val licenceButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.Licence", Licence)
+  private val serviceStatementButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.ServiceStatement", ServiceStatement)
+  private val stampDutyButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.StampDuty", StampDuty)
+  private val utilityBillButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.UtilityBill", UtilityBill)
+  private val waterRateButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.WaterRate", WaterRate)
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("upload-evidence-radio"), Seq(leaseButton, landRegistryButton,
     licenceButton, serviceStatementButton, stampDutyButton, utilityBillButton, waterRateButton))
 

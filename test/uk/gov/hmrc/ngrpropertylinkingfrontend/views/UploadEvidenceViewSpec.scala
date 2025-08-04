@@ -33,7 +33,8 @@ class UploadEvidenceViewSpec extends ViewBaseSpec {
   val title = "What evidence can you provide? - GOV.UK"
   val addressCaption = address
   val heading = "What evidence can you provide?"
-  val p1 = "If you do not have any of these evidence documents you will not be able to add the property. The date of the evidence must overlap with you paying business rates for the property."
+  val p1 = "The date of the evidence must overlap with you paying business rates for the property."
+  val p2 = "If you can't provide any of this evidence, you won't be able to add your property."
   val radio1 = "Lease"
   val radio2 = "Land Registry title"
   val radio3 = "Licence to occupy"
@@ -53,13 +54,13 @@ class UploadEvidenceViewSpec extends ViewBaseSpec {
     notifications = Some(1)
   )
 
-  private val leaseButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.lease", Lease)
-  private val landRegistryButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.landRegistry", LandRegistry)
-  private val licenceButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.licence", Licence)
-  private val serviceStatementButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.serviceStatement", ServiceStatement)
-  private val stampDutyButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.stampDuty", StampDuty)
-  private val utilityBillButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.utilityBill", UtilityBill)
-  private val waterRateButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.waterRate", WaterRate)
+  private val leaseButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.Lease", Lease)
+  private val landRegistryButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.LandRegistry", LandRegistry)
+  private val licenceButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.Licence", Licence)
+  private val serviceStatementButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.ServiceStatement", ServiceStatement)
+  private val stampDutyButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.StampDuty", StampDuty)
+  private val utilityBillButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.UtilityBill", UtilityBill)
+  private val waterRateButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.WaterRate", WaterRate)
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName("upload-evidence-radio"), Seq(leaseButton, landRegistryButton,
     licenceButton, serviceStatementButton, stampDutyButton, utilityBillButton, waterRateButton))
   val form = UploadEvidenceForm.form.fillAndValidate(UploadEvidenceForm("LandRegistry"))
@@ -70,6 +71,7 @@ class UploadEvidenceViewSpec extends ViewBaseSpec {
     val heading = "#main-content > div > div.govuk-grid-column-two-thirds > form > h1"
     val addressCaption = "#main-content > div > div.govuk-grid-column-two-thirds > form > span"
     val p1 = "#main-content > div > div.govuk-grid-column-two-thirds > form > p"
+    val p2 = "#main-content > div > div.govuk-grid-column-two-thirds > form > p.govuk-body"
     val radio1 = "#main-content > div > div.govuk-grid-column-two-thirds > form > div > div > div:nth-child(1) > label"
     val radio2 = "#main-content > div > div.govuk-grid-column-two-thirds > form > div > div > div:nth-child(2) > label"
     val radio3 = "#main-content > div > div.govuk-grid-column-two-thirds > form > div > div > div:nth-child(3) > label"
@@ -112,6 +114,10 @@ class UploadEvidenceViewSpec extends ViewBaseSpec {
 
     "show correct p1" in {
       elementText(Selectors.p1) mustBe p1
+    }
+
+    "show correct p2" in {
+      elementText(Selectors.p2) mustBe p2
     }
 
     "show correct radio 1 label" in {

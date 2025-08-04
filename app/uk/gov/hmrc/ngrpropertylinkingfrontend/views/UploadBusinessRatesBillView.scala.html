@@ -46,12 +46,12 @@ evidence: Option[String])(implicit request: Request[_], messages: Messages, appC
     @if(evidence.isEmpty){
         @messages("uploadBusinessRatesBill.title")
     }else{
-        Upload your @messages(s"uploadEvidence.${evidence.get}.title")
+        Upload your @messages(s"uploadEvidence.${evidence.get}")
     }
 }
-@layout(pageTitle = Some(heading.toString), fullWidth = false, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
+@layout(pageTitle = Some(if(evidence.isEmpty){messages("uploadBusinessRatesBill.title")}else{"Upload your " + messages(s"uploadEvidence.${evidence.get}")}), fullWidth = false, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
 <span class="govuk-caption-m">@address</span>
-<h1 class="govuk-heading-l">@{Text(heading.toString).asHtml}</h1>
+<h1 class="govuk-heading-l">@heading</h1>
     <p class="govuk-caption-m hmrc-caption-m">
         @messages("uploadBusinessRatesBill.p1")
     </p>

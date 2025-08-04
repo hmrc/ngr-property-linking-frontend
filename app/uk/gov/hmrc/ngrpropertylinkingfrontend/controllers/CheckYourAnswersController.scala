@@ -91,8 +91,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
     def uploadEvidenceRow(uploadEvidence: String): NGRSummaryListRow = NGRSummaryListRow(
       messages("checkYourAnswers.uploadEvidence"),
       None,
-      Seq(messages(s"uploadEvidence.$uploadEvidence.title")),
-      changeLink = Some(Link(href = routes.UploadEvidenceController.show, linkId = "upload-evidence", messageKey = "service.change", visuallyHiddenMessageKey = Some("upload-evidence")))
+      Seq(messages(s"uploadEvidence.$uploadEvidence")),
+      changeLink = Some(Link(href = routes.BusinessRatesBillController.show(""), linkId = "upload-evidence", messageKey = "service.change", visuallyHiddenMessageKey = Some("upload-evidence")))
     )
 
     val summaryListRows: Seq[NGRSummaryListRow] =

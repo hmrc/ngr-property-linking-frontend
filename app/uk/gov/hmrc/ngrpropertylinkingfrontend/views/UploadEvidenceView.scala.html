@@ -42,6 +42,7 @@
         <h1 class="govuk-heading-l">@messages("uploadEvidence.title")</h1>
         <P class="govuk-caption-m hmrc-caption-m"> @messages("uploadEvidence.p1")</P>
         @govukRadios(ngrRadio)
+        <P class="govuk-body"> @messages("uploadEvidence.p2")</P>
         @saveAndContinueButton(msg = messages("service.continue"), isStartButton = false)
   }
 }

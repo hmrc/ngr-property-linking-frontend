@@ -18,10 +18,10 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.helpers
 
 
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.{VMVProperties, VMVProperty, Valuation}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.{VMVProperties, VMVProperty, Valuation}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{PreparedUpload, Reference, UploadForm, UpscanInitiateRequest}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, Rooms, ScatCode}
 

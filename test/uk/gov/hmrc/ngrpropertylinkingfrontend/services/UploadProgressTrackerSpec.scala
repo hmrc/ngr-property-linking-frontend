@@ -17,12 +17,12 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.services
 
 import org.mongodb.scala.bson.BsonDocument
+import org.mongodb.scala.bson.collection.immutable.Document
 import uk.gov.hmrc.http.StringContextOps
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{TestData, TestSupport}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadDetails, UploadId, UploadStatus}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FileUploadRepo
-import org.mongodb.scala.bson.collection.immutable.Document
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

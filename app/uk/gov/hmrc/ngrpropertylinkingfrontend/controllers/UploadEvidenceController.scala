@@ -39,8 +39,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
                                          authenticate: AuthRetrievals,
                                          isRegisteredCheck: RegistrationAction,
-                                         mcc: MessagesControllerComponents,
-                                         propertyLinkingRepo: PropertyLinkingRepo)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                         propertyLinkingRepo: PropertyLinkingRepo,
+                                         mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with CurrencyHelper {
 
   private val leaseButton: NGRRadioButtons = NGRRadioButtons("uploadEvidence.lease", Lease)
@@ -62,7 +62,7 @@ class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
             case Some(uploadEvidence) => form.fill(UploadEvidenceForm(uploadEvidence))
           }
           Future.successful(Ok(uploadEvidenceView(createDefaultNavBar(), form, buildRadios(preparedForm, ngrRadio), property.vmvProperty.addressFull)))
-        case None => Future.failed(throw new NotFoundException("Unable to find matching postcode"))
+        case None => Future.failed(throw new NotFoundException("failed to find property from mongo"))
       }
     }
   }
@@ -77,7 +77,7 @@ class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
                 Future.successful(BadRequest(
                   uploadEvidenceView(createDefaultNavBar(), formWithErrors, buildRadios(formWithErrors, ngrRadio), property.vmvProperty.addressFull)
                 ))
-              case None => Future.successful(Redirect(routes.NoResultsFoundController.show))
+              case None => Future.failed(throw new NotFoundException("failed to find property from mongo"))
             }
           },
           uploadEvidenceForm => {

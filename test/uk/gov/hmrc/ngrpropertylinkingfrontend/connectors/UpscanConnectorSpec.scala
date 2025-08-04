@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockHttpV2
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{PreparedUpload, Reference, UploadForm, UpscanFileReference, UpscanInitiateResponse}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.*
 
 import scala.concurrent.Future
 

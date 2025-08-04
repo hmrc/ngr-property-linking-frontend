@@ -31,7 +31,6 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, CurrentRatepayer, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.BusinessRatesBillView
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class BusinessRatesBillControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
@@ -92,7 +91,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show("").url)
+        redirectLocation(result) shouldBe Some(routes.UploadEvidenceController.show.url)
       }
 
       "Successfully submit when use has come from cya page, selected No and redirect to correct page" in {
@@ -104,7 +103,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
           result.header.headers.get("Location") shouldBe Some(routes.CheckYourAnswersController.show.url)
         })
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show("CYA").url)
+        redirectLocation(result) shouldBe Some(routes.UploadEvidenceController.show.url)
       }
 
       "Submit with radio buttons unselected and display error message" in {

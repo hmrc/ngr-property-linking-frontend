@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.Call
 import play.api.test.Helpers.stubMessagesApi
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
 import uk.gov.hmrc.govukfrontend.views.html.components.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow as RowData
 
 class NGRSummaryListRowSpec extends AnyWordSpec with Matchers {

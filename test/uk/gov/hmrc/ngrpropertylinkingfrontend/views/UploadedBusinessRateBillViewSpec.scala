@@ -16,20 +16,19 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
-import org.jsoup.nodes.Document
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.mvc.Call
 import uk.gov.hmrc.govukfrontend.views
 import uk.gov.hmrc.govukfrontend.views.Aliases
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.StringContextOps
-import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadStatus.{Failed, InProgress, UploadedSuccessfully}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadedBusinessRateBillView
 
 class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
@@ -116,10 +115,13 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
       "render is not empty" in {
         renderedHtml must not be empty
       }
-
     }
 
     "Display the correct static content if the upload is successful" should {
+
+      val rendered = view.apply(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None)(request, messages, mockConfig)
+      val renderedHtml = view.render(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None, request, messages, mockConfig).body
+      lazy val htmlF = view.f(content, SummaryList(uploadSuccessful), "address", UploadId("1234"), UploadedSuccessfully("test.png", ".png", url"https://example.com/dummyLink", Some(120L)), None)
 
       implicit val document: Document =
         Jsoup.parse(view(
@@ -133,6 +135,7 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
 
 
       "have the correct page title" in {
+        htmlF.toString()
         elementText(Selectors.navTitle) mustBe title
       }
 

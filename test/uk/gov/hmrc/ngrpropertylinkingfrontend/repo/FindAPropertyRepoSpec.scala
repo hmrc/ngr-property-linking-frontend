@@ -16,13 +16,12 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.repo
 
-import play.api.test.Helpers.await
+import org.mongodb.scala.SingleObservableFuture
+import org.scalatest.matchers.should.Matchers.shouldBe
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{TestData, TestSupport}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.LookUpVMVProperties
-import play.api.test.Helpers.defaultAwaitTimeout
-import org.mongodb.scala.SingleObservableFuture
-import org.scalatest.matchers.should.Matchers.shouldBe
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 
 class FindAPropertyRepoSpec extends TestSupport with TestData

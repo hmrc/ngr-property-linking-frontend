@@ -88,16 +88,19 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
       )
     )
 
-    userAnswers.uploadEvidence
-      .map(uploadEvidence => NGRSummaryListRow(
-        messages("checkYourAnswers.uploadEvidence"),
-        None,
-        Seq(messages(s"uploadEvidence.$uploadEvidence.title")),
-        changeLink = Some(Link(href = routes.UploadEvidenceController.show, linkId = "upload-evidence", messageKey = "service.change", visuallyHiddenMessageKey = Some("upload-evidence")))
-      ))
-      .map(uploadEvidenceRow => (rows :+ uploadEvidenceRow) ++ rows2)
-      .getOrElse(rows ++ rows2)
-      .map(summarise)
+    def uploadEvidenceRow(uploadEvidence: String): NGRSummaryListRow = NGRSummaryListRow(
+      messages("checkYourAnswers.uploadEvidence"),
+      None,
+      Seq(messages(s"uploadEvidence.$uploadEvidence.title")),
+      changeLink = Some(Link(href = routes.UploadEvidenceController.show, linkId = "upload-evidence", messageKey = "service.change", visuallyHiddenMessageKey = Some("upload-evidence")))
+    )
+
+    val summaryListRows: Seq[NGRSummaryListRow] =
+      userAnswers.uploadEvidence match
+        case Some(uploadEvidence) => (rows :+ uploadEvidenceRow(uploadEvidence)) ++ rows2
+        case None => rows ++ rows2
+
+    summaryListRows.map(summarise)
   }
 
   def show: Action[AnyContent] =

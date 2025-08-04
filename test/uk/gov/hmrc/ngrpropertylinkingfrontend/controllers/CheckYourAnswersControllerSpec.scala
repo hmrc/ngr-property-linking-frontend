@@ -36,6 +36,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
   lazy val view: CheckYourAnswersView = inject[CheckYourAnswersView]
   lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer(true, None)), businessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"), evidenceDocument = Some("Evidence.jpg"))
   lazy val propertyLinkingUserAnswers2: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer(false, Some("2026-7-17"))), businessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"), evidenceDocument = Some("Evidence.jpg"))
+  lazy val propertyLinkingUserAnswers3: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer(false, Some("2026-7-17"))), businessRatesBill = Some("No"), connectionToProperty = Some("Owner"), uploadEvidence = Some("StampDuty"), evidenceDocument = Some("Evidence.jpg"))
 
   def controller() = new CheckYourAnswersController(
     view,
@@ -78,6 +79,21 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
       content must include("Do you have a business rates bill for this property?")
       content must include("Yes")
       content must include("Owner")
+    }
+
+    "Correctly display summary information when there is upload evidence value" in {
+      when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers3)))
+      val result = controller().show()(authenticatedFakeRequest)
+      val content = contentAsString(result)
+      content must include("Property to add to account")
+      content must include("(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY")
+      content must include("Property reference")
+      content must include("2191322564521")
+      content must include("On or after 1 April 2026")
+      content must include("Do you have a business rates bill for this property?")
+      content must include("No")
+      content must include("Owner")
+      content must include("Stamp Duty Land Tax form")
     }
 
     "Calling the submit function return a 303 and the correct redirect location" in {

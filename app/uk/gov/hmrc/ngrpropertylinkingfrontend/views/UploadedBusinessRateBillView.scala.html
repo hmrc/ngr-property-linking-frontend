@@ -31,15 +31,9 @@
     <meta http-equiv="refresh" content="1"/>
 }
 
-@heading = {
-    @if(evidence.isEmpty){
-        @messages("uploadBusinessRatesBill.title")
-    }else{
-        Upload your @messages(s"uploadEvidence.${evidence.get}.title")
-    }
-}
+@heading = @{messages("uploadBusinessRatesBill.title")}
 @layout(
-    pageTitle    = Some(heading.toString),
+    pageTitle    = Some(heading),
     fullWidth = true,
     showBackLink = true,
     navigationBarContent = Some(navigationBarContent),

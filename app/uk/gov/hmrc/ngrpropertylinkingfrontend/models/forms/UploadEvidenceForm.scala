@@ -17,19 +17,13 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
 import play.api.data.Form
-import play.api.data.Forms.{mapping, optional}
-import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+import play.api.data.Forms.mapping
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.mappings.Mappings
-import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.DateUtils
-
-import java.time.LocalDate
-import scala.util.Try
 
 final case class UploadEvidenceForm(radioValue: String)
 
-object UploadEvidenceForm extends CommonFormValidators with DateMappings with Mappings {
+object UploadEvidenceForm extends CommonFormValidators with Mappings {
   implicit val format: OFormat[UploadEvidenceForm] = Json.format[UploadEvidenceForm]
 
   private val radioUnselectedError = "uploadEvidence.radio.unselected.error"
@@ -37,7 +31,7 @@ object UploadEvidenceForm extends CommonFormValidators with DateMappings with Ma
   
   def unapply(currentRatepayerForm: UploadEvidenceForm): Option[String] = Some(currentRatepayerForm.radioValue)
 
-  def form(implicit appConfig: AppConfig): Form[UploadEvidenceForm] = {
+  def form: Form[UploadEvidenceForm] = {
     Form(
       mapping(
         uploadEvidenceRadio -> text(radioUnselectedError)

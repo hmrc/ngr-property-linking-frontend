@@ -69,7 +69,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
         messages("checkYourAnswers.businessRatesBill"),
         None,
         Seq(userAnswers.businessRatesBill.getOrElse(throw new NotFoundException("Could not find business rates bill"))),
-        changeLink = Some(Link(href = routes.BusinessRatesBillController.show("CYA"), linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
+        changeLink = Some(Link(href = routes.BusinessRatesBillController.show, linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
       )
     ) //TODO CHANGE CURRENT RATEPAYER
 
@@ -78,7 +78,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
         messages("checkYourAnswers.EvidenceDocument"),
         None,
         Seq(userAnswers.evidenceDocument.getOrElse(throw new NotFoundException("evidence document not found"))),
-        changeLink = Some(Link(href = routes.BusinessRatesBillController.show(""), linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
+        changeLink = Some(Link(href = routes.BusinessRatesBillController.show, linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
       ),
       NGRSummaryListRow(
         messages("checkYourAnswers.PropertyConnection"),
@@ -92,7 +92,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
       messages("checkYourAnswers.uploadEvidence"),
       None,
       Seq(messages(s"uploadEvidence.$uploadEvidence")),
-      changeLink = Some(Link(href = routes.BusinessRatesBillController.show(""), linkId = "upload-evidence", messageKey = "service.change", visuallyHiddenMessageKey = Some("upload-evidence")))
+      changeLink = Some(Link(href = routes.BusinessRatesBillController.show, linkId = "upload-evidence", messageKey = "service.change", visuallyHiddenMessageKey = Some("upload-evidence")))
     )
 
     val summaryListRows: Seq[NGRSummaryListRow] =

@@ -19,8 +19,8 @@ GET        /property-selected                   uk.gov.hmrc.ngrpropertylinkingfr
 POST       /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.submit(index: Int, sortBy: String)
 GET        /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.show
 POST       /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.submit
-POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.submit(mode: String)
-GET        /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.show(mode: String)
+POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.submit
+GET        /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.show
 POST       /upload-evidence                     uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadEvidenceController.submit
 GET        /upload-evidence                     uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadEvidenceController.show
 POST       /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.submit

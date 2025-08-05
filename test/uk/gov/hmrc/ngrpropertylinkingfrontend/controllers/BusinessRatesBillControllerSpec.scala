@@ -22,10 +22,10 @@ import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.mvc.RequestHeader
-import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import play.api.test.Helpers.{await, contentAsString, redirectLocation, status}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import uk.gov.hmrc.auth.core.Nino
-import uk.gov.hmrc.http.HeaderNames
+import uk.gov.hmrc.http.{HeaderNames, NotFoundException}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{AuthenticatedUserRequest, CurrentRatepayer, PropertyLinkingUserAnswers}
@@ -50,7 +50,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
     "method show" must {
       "Return OK and the correct view" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty))))
-        val result = controller().show("")(authenticatedFakeRequest)
+        val result = controller().show(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)
         content must include(pageTitle)
@@ -58,7 +58,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
 
       "Return OK with prepopulated data and the correct view" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, businessRatesBill = Some("Yes")))))
-        val result = controller().show("")(authenticatedFakeRequest)
+        val result = controller().show(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)
         val document = Jsoup.parse(content)
@@ -66,54 +66,55 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         document.select("input[value=Yes]").hasAttr("checked") shouldBe true
         document.select("input[value=No]").hasAttr("checked") shouldBe false
       }
+
+      "Throw exception when no property linking is found" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
+        val exception = intercept[NotFoundException] {
+          await(controller().show(authenticatedFakeRequest))
+        }
+        exception.getMessage contains "failed to find property from mongo" mustBe true
+      }
     }
 
     "method submit" must {
       "Successfully submit when selected Yes and redirect to correct page" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty,currentRatepayer =  Some(CurrentRatepayer(true, None))))))
-        val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer =  Some(CurrentRatepayer(true, None))))))
+        val result = controller().submit(AuthenticatedUserRequest(FakeRequest(routes.BusinessRatesBillController.submit)
           .withFormUrlEncodedBody(("business-rates-bill-radio", "Yes"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
-        result.map(result => {
-          result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
-        })
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None, None).url)
       }
 
       "Successfully submit when selected No and redirect to correct page" in {
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer(false, Some("")))))))
-        val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
+        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer(false, Some(""))), uploadEvidence = Some("ServiceStatement")))))
+        when(mockPropertyLinkingRepo.insertUploadEvidence(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer(false, Some(""))), uploadEvidence = None))))
+        val result = controller().submit(AuthenticatedUserRequest(FakeRequest(routes.BusinessRatesBillController.submit)
           .withFormUrlEncodedBody(("business-rates-bill-radio", "No"))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
-        result.map(result => {
-          result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
-        })
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.UploadEvidenceController.show.url)
-      }
-
-      "Successfully submit when use has come from cya page, selected No and redirect to correct page" in {
-        when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer(false, Some("")))))))
-        val result = controller().submit("CYA")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
-          .withFormUrlEncodedBody(("business-rates-bill-radio", "No"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
-        result.map(result => {
-          result.header.headers.get("Location") shouldBe Some(routes.CheckYourAnswersController.show.url)
-        })
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.UploadEvidenceController.show.url)
       }
 
       "Submit with radio buttons unselected and display error message" in {
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
-        val result = controller().submit("")(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(""))
-          .withFormUrlEncodedBody(("confirm-address-radio", ""))
+        val result = controller().submit(AuthenticatedUserRequest(FakeRequest(routes.BusinessRatesBillController.submit)
+          .withFormUrlEncodedBody(("business-rates-bill-radio", ""))
           .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include(pageTitle)
+      }
+
+      "Throw exception when no property linking is found" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
+        val exception = intercept[NotFoundException] {
+          await(controller().submit(AuthenticatedUserRequest(FakeRequest(routes.BusinessRatesBillController.submit)
+            .withFormUrlEncodedBody(("business-rates-bill-radio", ""))
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some("")))))
+        }
+        exception.getMessage contains "failed to find property from mongo" mustBe true
       }
     }
   }

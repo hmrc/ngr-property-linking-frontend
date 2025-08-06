@@ -23,14 +23,14 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, Registrat
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadId}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.UploadProgressTracker
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadBusinessRatesBillView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadId}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.services.UploadProgressTracker
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -52,15 +52,16 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
     "data-min-file-size" -> "1000"
   )
 
-  def show(errorCode: Option[String]): Action[AnyContent] = {
+  def show(errorCode: Option[String], evidence: Option[String]): Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       request.credId match {
         case Some(rawCredId) =>
           val errorToDisplay: Option[String] = renderError(errorCode)
           val credId = CredId(rawCredId)
           val uploadId = UploadId.generate()
-          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId).url}"
-          val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill"
+          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId, evidence).url}"
+          val evidenceParameter = evidence.map(evidenceValue => s"?evidence=$evidenceValue").getOrElse("")
+          val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill$evidenceParameter"
 
           for
             upscanInitiateResponse <- upScanConnector.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
@@ -73,7 +74,8 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
             maybeProperty.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
             createDefaultNavBar,
             routes.FindAPropertyController.show.url,
-            appConfig.ngrDashboardUrl)
+            appConfig.ngrDashboardUrl,
+            evidence)
           )
         case None => Future.failed(throw new NotFoundException("Missing credId in authenticated request"))
       }

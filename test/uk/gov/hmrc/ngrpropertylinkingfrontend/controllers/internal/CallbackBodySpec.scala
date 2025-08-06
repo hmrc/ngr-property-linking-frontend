@@ -21,8 +21,8 @@ import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.Reference
 
-import java.time.Instant
 import java.net.URL
+import java.time.Instant
 
 
 class CallbackBodySpec extends AnyWordSpec with Matchers{

@@ -94,7 +94,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show("").url)
+        redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show.url)
       }
 
       "Successfully submit when selected Before and redirect to correct page when mode is CYA" in {
@@ -135,7 +135,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show("").url)
+        redirectLocation(result) shouldBe Some(routes.BusinessRatesBillController.show.url)
       }
 
       "Submit with radio buttons unselected and display error message" in {

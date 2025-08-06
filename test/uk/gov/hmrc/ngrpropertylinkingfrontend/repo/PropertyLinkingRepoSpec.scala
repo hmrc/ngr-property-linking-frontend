@@ -21,8 +21,8 @@ import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{TestData, TestSupport}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{CurrentRatepayer, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{CurrentRatepayer, PropertyLinkingUserAnswers}
 
 class PropertyLinkingRepoSpec extends TestSupport with TestData
 
@@ -79,6 +79,32 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
         await(repository.insertConnectionToProperty(credId = credId, connectionToProperty = "Owner"))
         val actual: PropertyLinkingUserAnswers = await(repository.findByCredId(credId)).get
         val expected = PropertyLinkingUserAnswers(credId, testVmvProperty, None, None, Some("Owner"))
+        actual shouldBe expected
+      }
+    }
+
+    "insertUploadEvidence by cred id" when {
+      "correct PropertyLinkingUserAnswer has been returned" in {
+        val isSuccessful = await(repository.upsertProperty(PropertyLinkingUserAnswers(
+          credId,
+          testVmvProperty
+        )))
+        isSuccessful shouldBe true
+        await(repository.insertUploadEvidence(credId = credId, uploadEvidence = "WaterRate"))
+        val actual: PropertyLinkingUserAnswers = await(repository.findByCredId(credId)).get
+        val expected = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty, uploadEvidence = Some("WaterRate"))
+        actual shouldBe expected
+      }
+
+      "correct PropertyLinkingUserAnswer has been returned when insert null for upload evidence" in {
+        val isSuccessful = await(repository.upsertProperty(PropertyLinkingUserAnswers(
+          credId,
+          testVmvProperty
+        )))
+        isSuccessful shouldBe true
+        await(repository.insertUploadEvidence(credId = credId, uploadEvidence = null))
+        val actual: PropertyLinkingUserAnswers = await(repository.findByCredId(credId)).get
+        val expected = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty, uploadEvidence = None)
         actual shouldBe expected
       }
     }

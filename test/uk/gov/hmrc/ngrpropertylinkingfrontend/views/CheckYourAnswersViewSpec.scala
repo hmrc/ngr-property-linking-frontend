@@ -104,9 +104,6 @@ class CheckYourAnswersViewSpec extends ViewBaseSpec{
     ) //TODO CHANGE CURRENT RATEPAYER
   ).map(summarise)
 
-
-  private val councilUrl = "https://www.gov.uk/contact-your-local-council-about-business-rates"
-
   "AddPropertyToYourAccountView" must {
     val addPropertyToYourAccountView = view(content, SummaryList(summary))
     lazy implicit val document: Document = Jsoup.parse(addPropertyToYourAccountView.body)

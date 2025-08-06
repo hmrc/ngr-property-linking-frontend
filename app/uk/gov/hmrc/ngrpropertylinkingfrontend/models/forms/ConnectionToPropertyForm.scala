@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
-import play.api.data.{Form, FormError, Forms}
 import play.api.data.Forms.single
 import play.api.data.format.Formatter
-import uk.gov.hmrc.http.NotFoundException
+import play.api.data.{Form, FormError, Forms}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.RadioEntry
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.Constants
 

@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms
 
-import play.api.data.Form
-import play.api.data.FieldMapping
+import play.api.data.{FieldMapping, Form, FormError}
 import play.api.data.Forms.of
 import play.api.data.format.Formatter
-import play.api.data.FormError
+
 import javax.inject.Inject
 
 class UploadForm @Inject() {

@@ -26,3 +26,11 @@ sealed trait BeforeAfter extends RadioEntry
 case object Before extends BeforeAfter
 case object After extends BeforeAfter
 
+sealed trait UploadEvidenceItem extends RadioEntry
+case object Lease extends UploadEvidenceItem
+case object LandRegistry extends UploadEvidenceItem
+case object Licence extends UploadEvidenceItem
+case object ServiceStatement extends UploadEvidenceItem
+case object StampDuty extends UploadEvidenceItem
+case object UtilityBill extends UploadEvidenceItem
+case object WaterRate extends UploadEvidenceItem

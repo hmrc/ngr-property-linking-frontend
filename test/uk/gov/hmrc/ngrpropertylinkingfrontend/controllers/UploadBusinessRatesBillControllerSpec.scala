@@ -32,7 +32,6 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
-import org.mockito.ArgumentMatchers.{eq => eqTo, any}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -43,9 +42,9 @@ import play.api.test.Helpers.{await, contentAsString, defaultAwaitTimeout, statu
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
-import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadBusinessRatesBillView
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UpscanFileReference, UpscanInitiateResponse}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadBusinessRatesBillView
 
 import scala.concurrent.Future
 
@@ -72,7 +71,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
           ))
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
         when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
-        val result = controller.show(None)(authenticatedFakeRequest)
+        val result = controller.show(None, None)(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)
         content must include(pageTitle)
@@ -90,7 +89,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
           ))
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
         recoverToExceptionIf[NotFoundException] {
-          controller.show(None)(authenticatedFakeRequest)
+          controller.show(None, None)(authenticatedFakeRequest)
         }.map { ex =>
           ex.getMessage mustBe "Not found property on account"
         }
@@ -108,7 +107,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
          when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
          when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
          val exception = intercept[NotFoundException] {
-           await(controller.show(None)(authenticatedFakeRequest))
+           await(controller.show(None, None)(authenticatedFakeRequest))
          }
          exception.getMessage contains "Missing credId in authenticated request" mustBe true
        }
@@ -125,7 +124,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
                 ))
               when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
               when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
-              val result = controller.show(Some(errorCode))(authenticatedFakeRequest)
+              val result = controller.show(Some(errorCode), None)(authenticatedFakeRequest)
               status(result) mustBe OK
               val content = contentAsString(result)
               content must include(Messages(expectedMessage))

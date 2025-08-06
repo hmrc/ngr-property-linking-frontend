@@ -41,39 +41,39 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
                                             mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  private val yesButton: NGRRadioButtons = NGRRadioButtons("Yes",Yes)
-  private val noButton: NGRRadioButtons = NGRRadioButtons("No",No)
+  private val yesButton: NGRRadioButtons = NGRRadioButtons("Yes", Yes)
+  private val noButton: NGRRadioButtons = NGRRadioButtons("No", No)
   private val ngrRadio: NGRRadio = NGRRadio(
     NGRRadioName("business-rates-bill-radio"),
     Seq(yesButton, noButton),
     hint = Some("uploadBusinessRatesBill.hint"))
 
-  def show(mode: String): Action[AnyContent] =
+  def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
+      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(property) =>
           val preparedForm = property.businessRatesBill match {
-            case None        => form
+            case None => form
             case Some(value) => form.fill(BusinessRatesBillForm(value))
           }
-          Future.successful(Ok(businessRatesBillView(createDefaultNavBar, preparedForm, buildRadios(preparedForm, ngrRadio), address = property.vmvProperty.addressFull, mode)))
+          Future.successful(Ok(businessRatesBillView(
+            createDefaultNavBar, preparedForm, buildRadios(preparedForm, ngrRadio), address = property.vmvProperty.addressFull)))
         case None => throw new NotFoundException("failed to find property from mongo")
       }
 
     }
 
-  def submit(mode: String): Action[AnyContent] =
+  def submit: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
-            case Some(property) =>  Future.successful(BadRequest(businessRatesBillView(
+          formWithErrors => propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+            case Some(property) => Future.successful(BadRequest(businessRatesBillView(
               createDefaultNavBar,
               formWithErrors,
               buildRadios(formWithErrors, ngrRadio),
-              address = property.vmvProperty.addressFull,
-              mode)))
+              address = property.vmvProperty.addressFull)))
             case None => throw new NotFoundException("failed to find property from mongo")
           },
           businessRatesBillForm =>
@@ -81,10 +81,11 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
               credId = CredId(request.credId.getOrElse("")),
               businessRatesBill = businessRatesBillForm.radioValue
             )
-            if (businessRatesBillForm.radioValue == "Yes") { // temporary disable No option
-              if (mode == "CYA") Future.successful(Redirect(routes.CheckYourAnswersController.show.url)) else Future.successful(Redirect(routes.UploadBusinessRatesBillController.show(None)))
+            if (businessRatesBillForm.radioValue == "Yes") {
+              propertyLinkingRepo.insertUploadEvidence(CredId(request.credId.getOrElse("")), null)
+              Future.successful(Redirect(routes.UploadBusinessRatesBillController.show(None, None)))
             } else {
-              Future.successful(Redirect(routes.BusinessRatesBillController.show(mode)))
+              Future.successful(Redirect(routes.UploadEvidenceController.show))
             }
         )
     }

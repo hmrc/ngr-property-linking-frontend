@@ -19,16 +19,18 @@ GET        /property-selected                   uk.gov.hmrc.ngrpropertylinkingfr
 POST       /property-selected                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.PropertySelectedController.submit(index: Int, sortBy: String)
 GET        /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.show
 POST       /connection-to-property              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ConnectionToPropertyController.submit
-POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.submit(mode: String)
-GET        /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.show(mode: String)
+POST       /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.submit
+GET        /business-rates-bill                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.BusinessRatesBillController.show
+POST       /upload-evidence                     uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadEvidenceController.submit
+GET        /upload-evidence                     uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadEvidenceController.show
 POST       /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.submit
 GET        /check-your-answers                  uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CheckYourAnswersController.show
 GET        /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.show
 POST       /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.submit
 GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.show(mode: String)
 POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit(mode: String)
-GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show(errorCode: Option[String])
-GET        /uploaded-business-rates-bill        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadedBusinessRatesBillController.show(uploadId: uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId)
+GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show(errorCode: Option[String], evidence: Option[String])
+GET        /uploaded-business-rates-bill        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadedBusinessRatesBillController.show(uploadId: uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId, evidence: Option[String])
 GET        /add-property-request-sent           uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyRequestSentController.show
 GET        /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.show
 POST       /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.accept

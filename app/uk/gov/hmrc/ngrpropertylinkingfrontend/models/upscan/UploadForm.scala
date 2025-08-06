@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Format, Json}
 
 case class UploadForm(
                        href  : String,

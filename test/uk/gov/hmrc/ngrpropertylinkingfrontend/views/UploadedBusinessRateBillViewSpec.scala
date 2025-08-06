@@ -16,20 +16,19 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.views
 
-import org.jsoup.nodes.Document
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.mvc.Call
 import uk.gov.hmrc.govukfrontend.views
 import uk.gov.hmrc.govukfrontend.views.Aliases
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.StringContextOps
-import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadStatus.{Failed, InProgress, UploadedSuccessfully}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadedBusinessRateBillView
 
 class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
@@ -37,6 +36,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
   lazy val view: UploadedBusinessRateBillView = inject[UploadedBusinessRateBillView]
   val title = "Upload your business rates bill - GOV.UK"
   val heading = "Upload your business rates bill"
+  val serviceStatementTitle = "Upload your Service charges statement - GOV.UK"
+  val serviceStatementHeading = "Upload your Service charges statement"
   val address = "address"
   val fileName = "test.png"
   val uploadedTag = "Uploaded"
@@ -101,9 +102,9 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
   "UploadedBusinessRatesBillView" when {
     "render consistenting using apply and render" should {
 
-      val rendered = view.apply(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)))(request, messages, mockConfig)
-      val renderedHtml = view.render(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), request, messages, mockConfig).body
-      lazy val htmlF = view.f(content, SummaryList(uploadSuccessful), "address", UploadId("1234"), UploadedSuccessfully("test.png", ".png", url"https://example.com/dummyLink", Some(120L)))
+      val rendered = view.apply(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None)(request, messages, mockConfig)
+      val renderedHtml = view.render(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None, request, messages, mockConfig).body
+      lazy val htmlF = view.f(content, SummaryList(uploadSuccessful), "address", UploadId("1234"), UploadedSuccessfully("test.png", ".png", url"https://example.com/dummyLink", Some(120L)), None)
 
       "apply must be the same as render" in {
         rendered.body mustBe renderedHtml
@@ -116,10 +117,13 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
       "render is not empty" in {
         renderedHtml must not be empty
       }
-
     }
 
     "Display the correct static content if the upload is successful" should {
+
+      val rendered = view.apply(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None)(request, messages, mockConfig)
+      val renderedHtml = view.render(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None, request, messages, mockConfig).body
+      lazy val htmlF = view.f(content, SummaryList(uploadSuccessful), "address", UploadId("1234"), UploadedSuccessfully("test.png", ".png", url"https://example.com/dummyLink", Some(120L)), None)
 
       implicit val document: Document =
         Jsoup.parse(view(
@@ -127,7 +131,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           summaryList = SummaryList(uploadSuccessful),
           addressFull = "address",
           uploadId = UploadId("12345"),
-          status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L))
+          status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)),
+          evidence = None
         ).body)
 
 
@@ -162,7 +167,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           summaryList = SummaryList(uploadInProgress),
           addressFull = "address",
           uploadId = UploadId("12345"),
-          status = InProgress
+          status = InProgress,
+          evidence = None
         ).body)
 
 
@@ -192,7 +198,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           summaryList = SummaryList(uploadFailed),
           addressFull = "address",
           uploadId = UploadId("12345"),
-          status = Failed
+          status = Failed,
+          evidence = None
         ).body)
 
 
@@ -214,5 +221,26 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
 
     }
 
+    "Display the correct static title" should {
+
+      implicit val document: Document =
+        Jsoup.parse(view(
+          navigationBarContent = content,
+          summaryList = SummaryList(uploadInProgress),
+          addressFull = "address",
+          uploadId = UploadId("12345"),
+          status = InProgress,
+          evidence = Some("ServiceStatement")
+        ).body)
+
+
+      "have the correct page service statement title" in {
+        elementText(Selectors.navTitle) mustBe serviceStatementTitle
+      }
+
+      "have the correct main service statement heading" in {
+        elementText(Selectors.heading) mustBe serviceStatementHeading
+      }
+    }
   }
-  }
+}

@@ -116,6 +116,10 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
   def insertRequestSentReference(credId: CredId, ref: String): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.set("requestSentReference", ref))
   }
+
+  def insertUploadEvidence(credId: CredId, uploadEvidence: String): Future[Option[PropertyLinkingUserAnswers]] = {
+    findAndUpdateByCredId(credId, Updates.set("uploadEvidence", uploadEvidence))
+  }
   
   def findByCredId(credId: CredId): Future[Option[PropertyLinkingUserAnswers]] = {
     collection.find(

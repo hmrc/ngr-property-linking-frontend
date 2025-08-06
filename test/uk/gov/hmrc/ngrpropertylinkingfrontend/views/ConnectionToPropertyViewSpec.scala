@@ -21,10 +21,10 @@ import org.jsoup.nodes.Document
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.Radios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{NGRRadio, NGRRadioButtons, NGRRadioName}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm.{Occupier, Owner, OwnerAndOccupier}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{NGRRadio, NGRRadioButtons, NGRRadioName}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ConnectionToPropertyView
 
 class ConnectionToPropertyViewSpec extends ViewBaseSpec {

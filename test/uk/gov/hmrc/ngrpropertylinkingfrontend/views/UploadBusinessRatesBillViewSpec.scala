@@ -30,6 +30,8 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
   lazy val view: UploadBusinessRatesBillView = inject[UploadBusinessRatesBillView]
   val title = "Upload your business rates bill - GOV.UK"
   val heading = "Upload your business rates bill"
+  val stampDutyTitle = "Upload your Stamp Duty Land Tax form - GOV.UK"
+  val stampDutyHeading = "Upload your Stamp Duty Land Tax form"
   val p1 = "1 Mulholland Drive, LA, 6BH 4PE"
   val p2 = "The file must be a Word document, PDF or image (PNG) and be less than 25MB."
   val continueButton = "Continue"
@@ -72,7 +74,8 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
         address = "address",
         navigationBarContent = content,
         searchAgainUrl = "searchAgain",
-        dashboardUrl = "dashboard")(request, messages, mockConfig)
+        dashboardUrl = "dashboard",
+        evidence = None)(request, messages, mockConfig)
 
       val renderedHtml = view.render(
         form = form,
@@ -84,11 +87,12 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
         address = "address",
         navigationBarContent = content,
         searchAgainUrl = "searchAgain",
-        dashboardUrl = "dashboard", request, messages, mockConfig).body
+        dashboardUrl = "dashboard",
+        evidence = None, request, messages, mockConfig).body
 
       lazy val htmlF = view.f(form, upscanResponse, Map("accept" -> ".pdf,.png,.docx",
         "data-max-file-size" -> "100000000",
-        "data-min-file-size" -> "1000"), None, "address", content, "searchAgain", "dashboard")
+        "data-min-file-size" -> "1000"), None, "address", content, "searchAgain", "dashboard", None)
 
 
       "apply must be the same as render" in {
@@ -116,7 +120,8 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
           "address",
           content,
           "searchAgain",
-          "dashboard").body)
+          "dashboard",
+          None).body)
 
       "have the correct page title" in {
         elementText(Selectors.navTitle) mustBe title
@@ -136,6 +141,30 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
 
       "have a continue button with correct text" in {
         elementText(Selectors.continueButton) mustBe continueButton
+      }
+    }
+
+    "display the correct static title" must {
+      implicit val document: Document =
+        Jsoup.parse(view(
+          form,
+          upscanResponse,
+          attributes = Map("accept" -> ".pdf,.png,.docx",
+            "data-max-file-size" -> "100000000",
+            "data-min-file-size" -> "1000"),
+          None,
+          "address",
+          content,
+          "searchAgain",
+          "dashboard",
+          Some("StampDuty")).body)
+
+      "have the correct page stamp duty title" in {
+        elementText(Selectors.navTitle) mustBe stampDutyTitle
+      }
+
+      "have the correct main stamp duty heading" in {
+        elementText(Selectors.heading) mustBe stampDutyHeading
       }
     }
   }

@@ -26,10 +26,10 @@ import scala.concurrent.Future
 class UpscanCallbackDispatcher @Inject() (sessionStorage: UploadProgressTracker):
 
   private val allowedMimeTypes: Set[String] = Set(
-    "application/msword", // .doc
-    "application/binary", // .docx
     "application/pdf", // .pdf
     "image/png",
+    "image/jpg",
+    "image/jpeg",
   )
   
   def handleCallback(callback: CallbackBody)

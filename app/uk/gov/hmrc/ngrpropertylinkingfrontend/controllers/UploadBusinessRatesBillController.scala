@@ -47,7 +47,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
   extends FrontendController(mcc) with I18nSupport {
 
   val attributes: Map[String, String] = Map(
-    "accept" -> ".pdf,.png,.docx",
+    "accept" -> ".pdf,.png,.jpg,.jpeg",
     "data-max-file-size" -> "100000000",
     "data-min-file-size" -> "1000"
   )
@@ -85,7 +85,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
       errorCode match {
         case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
         case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
-        case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.fileTooSmall"))
+        case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
         case Some("InvalidFileType") => Some(Messages("uploadBusinessRatesBill.error.invalidFileType"))
         case Some("QUARANTINE") => Some(Messages("uploadBusinessRatesBill.error.virusDetected"))
         case Some("REJECTED") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))

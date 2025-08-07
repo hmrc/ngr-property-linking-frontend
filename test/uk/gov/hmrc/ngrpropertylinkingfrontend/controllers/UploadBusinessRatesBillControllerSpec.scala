@@ -140,7 +140,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
             }
 
             "display 'file too small' error for EntityTooSmall" in {
-              testErrorCase("EntityTooSmall", "uploadBusinessRatesBill.error.fileTooSmall")
+              testErrorCase("EntityTooSmall", "uploadBusinessRatesBill.error.noFileSelected")
             }
 
             "display 'virus detected' error for QUARANTINE" in {

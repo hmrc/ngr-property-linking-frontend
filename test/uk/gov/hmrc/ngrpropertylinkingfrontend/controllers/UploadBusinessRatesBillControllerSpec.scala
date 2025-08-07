@@ -139,7 +139,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
               testErrorCase("EntityTooLarge", "uploadBusinessRatesBill.error.exceedsMaximumSize")
             }
 
-            "display 'file too small' error for EntityTooSmall" in {
+            "display 'no file selected' error for EntityTooSmall" in {
               testErrorCase("EntityTooSmall", "uploadBusinessRatesBill.error.noFileSelected")
             }
 

@@ -33,7 +33,7 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
   val stampDutyTitle = "Upload your Stamp Duty Land Tax form - GOV.UK"
   val stampDutyHeading = "Upload your Stamp Duty Land Tax form"
   val p1 = "1 Mulholland Drive, LA, 6BH 4PE"
-  val p2 = "The file must be a Word document, PDF or image (PNG) and be less than 25MB."
+  val p2 = "The file must be a PDF or image (PNG or JPG) and be less than 25MB."
   val continueButton = "Continue"
 
   val content: NavigationBarContent = NavBarPageContents.CreateNavBar(

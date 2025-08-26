@@ -44,6 +44,7 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
   val remove = "Remove"
   val uploading = "Uploading"
   val failed = "Failed"
+  val p1 = "The file must be a PDF or image (PNG or JPG) and be less than 25MB."
 
   val content: NavigationBarContent = NavBarPageContents.CreateNavBar(
     contents = NavBarContents(
@@ -64,6 +65,7 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
     val removeLink = "#remove-link"
     val uploadText = "#main-content > div > div > dl > div > dt"
     val failedText = "#main-content > div > div > dl > div > dt"
+    val paragraph = "#main-content > div > div.govuk-grid-column-full > p"
   }
   
   val uploadSuccessful: Seq[Aliases.SummaryListRow] = Seq(
@@ -155,6 +157,10 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
       "have a remove link" in {
         elementText(Selectors.removeLink) mustBe remove
       }
+
+      "have the correct paragraph below heading" in {
+        elementText(Selectors.paragraph) must include(p1)
+      }
     }
     
     //TODO these tests will need to be updated when we know the design of the inprogress and failed states
@@ -186,6 +192,10 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
       
       "have the correct uploading test" in {
         elementText(Selectors.uploadText) mustBe uploading
+      }
+
+      "have the correct paragraph below heading" in {
+        elementText(Selectors.paragraph) must include(p1)
       }
       
     }
@@ -219,6 +229,10 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
         elementText(Selectors.failedText) mustBe failed
       }
 
+      "have the correct paragraph below heading" in {
+        elementText(Selectors.paragraph) must include(p1)
+      }
+
     }
 
     "Display the correct static title" should {
@@ -241,6 +255,11 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
       "have the correct main service statement heading" in {
         elementText(Selectors.heading) mustBe serviceStatementHeading
       }
+
+      "have the correct paragraph below heading" in {
+        elementText(Selectors.paragraph) must include(p1)
+      }
+
     }
   }
 }

@@ -52,7 +52,7 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(property) =>
-          val preparedForm = property.businessRatesBill match {
+          val preparedForm = property.userHasBusinessRatesBill match {
             case None => form
             case Some(value) => form.fill(BusinessRatesBillForm(value))
           }

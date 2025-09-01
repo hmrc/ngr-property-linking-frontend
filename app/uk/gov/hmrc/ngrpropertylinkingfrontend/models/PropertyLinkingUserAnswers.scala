@@ -23,15 +23,15 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperty
 case class PropertyLinkingUserAnswers (credId: CredId,
                                        vmvProperty: VMVProperty,
                                        currentRatepayer: Option[CurrentRatepayer] = None,
-                                       businessRatesBill: Option[String] = None,
+                                       //TODO make boolean?
+                                       userHasBusinessRatesBill: Option[String] = None,
                                        connectionToProperty: Option[String] = None,
                                        requestSentReference: Option[String] = None,
-                                       evidenceDocument: Option[String] = None,
-                                       uploadEvidence: Option[String] = None
-                                      )
+                                       evidenceDocumentName: Option[String] = None,
+                                       evidenceDocumentUrl: Option[String] = None,
+                                       evidenceDocumentUploadId: Option[String] = None,
+                                       uploadEvidence: Option[String] = None)
 
 object PropertyLinkingUserAnswers {
-  
   implicit val format:Format[PropertyLinkingUserAnswers] = Json.format[PropertyLinkingUserAnswers]
-  
 }

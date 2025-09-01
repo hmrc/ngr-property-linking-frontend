@@ -57,7 +57,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
       }
 
       "Return OK with prepopulated data and the correct view" in {
-        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, businessRatesBill = Some("Yes")))))
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, userHasBusinessRatesBill = Some("Yes")))))
         val result = controller().show(authenticatedFakeRequest)
         status(result) mustBe OK
         val content = contentAsString(result)

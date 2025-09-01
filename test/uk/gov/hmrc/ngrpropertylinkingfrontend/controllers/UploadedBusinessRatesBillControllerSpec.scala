@@ -46,14 +46,15 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
   )
 
   val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty)
+  val uploadId: UploadId = UploadId("12345")
 
   "UploadedBusinessRatesBillController" must {
     "Return OK and the correct view" in {
       mockRequest(hasCredId = true)
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully("filename.png", ".png", url"http://example.com/dummyLink", Some(120L)))))
-      when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-      val result = controller.show(UploadId("12345"), None)(authenticatedFakeRequest)
+      when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any(), any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
+      val result = controller.show(uploadId, None)(authenticatedFakeRequest)
       status(result) mustBe OK
       val content = contentAsString(result)
       content must include("")
@@ -80,7 +81,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
     "Exception when no credId in request" in {
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully("filename.png", ".png", url"http://example.com/dummyLink", Some(120L)))))
-      when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
+      when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any(), any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       recoverToExceptionIf[NotFoundException] {
         controller.show(UploadId("12345"), None)(authenticatedFakeRequest)
       }.map { ex =>
@@ -92,7 +93,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
   "Calling the createSummary list function" should {
     "return the correct Summary list" when {
       "the Upload Status is set to inProgress" in {
-        val result = controller.storeAndShowUploadProgress(credId, InProgress, None)
+        val result = controller.storeAndShowUploadProgress(credId, InProgress, None, uploadId)
         val expected =
           SummaryList(List(
             SummaryListRow(
@@ -104,7 +105,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
       }
 
       "the Upload Status is set to Failed" in {
-        val result = controller.storeAndShowUploadProgress(credId, Failed, None)
+        val result = controller.storeAndShowUploadProgress(credId, Failed, None, uploadId)
         val expected =
           SummaryList(List(
             SummaryListRow(
@@ -116,7 +117,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
       }
       
       "the Upload Status is to Successful" in {
-        val result = controller.storeAndShowUploadProgress(credId, UploadedSuccessfully("filename.png", ".png", url"http://example.com/dummyLink", Some(120L)), None)
+        val result = controller.storeAndShowUploadProgress(credId, UploadedSuccessfully("filename.png", ".png", url"http://example.com/dummyLink", Some(120L)), None, uploadId)
         val expected = SummaryList(List(
           SummaryListRow(Key(HtmlContent("""<a href="http://example.com/dummyLink" class="govuk-link govuk-summary-list__key_width">filename.png</a>"""), ""), Value(HtmlContent("""<span id="filename.png-id" class="govuk-tag govuk-tag--green">Uploaded</span>"""), ""), "", Some(Actions("", List(ActionItem("/ngr-property-linking-frontend/upload-business-rates-bill", Text("Remove"), None, "", Map("id" -> "remove-link"))))))), None, "", Map())
 

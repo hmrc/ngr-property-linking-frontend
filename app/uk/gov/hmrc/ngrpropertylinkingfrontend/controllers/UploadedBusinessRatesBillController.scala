@@ -46,19 +46,19 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
                                                     mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  def storeAndShowUploadProgress(credId: CredId, uploadStatus: UploadStatus, evidence: Option[String])(implicit messages: Messages): SummaryList = {
+  def storeAndShowUploadProgress(credId: CredId, uploadStatus: UploadStatus, evidence: Option[String], uploadId: UploadId)(implicit messages: Messages): SummaryList = {
     uploadStatus match
       case UploadStatus.UploadedSuccessfully(name, mimeType, downloadUrl, size) => {
-        propertyLinkingRepo.insertEvidenceDocument(credId, name)
+        propertyLinkingRepo.insertEvidenceDocument(credId, name, downloadUrl.toString, uploadId.value)
         SummaryList(
           Seq(
             NGRSummaryListRow(
-              name,
-              None,
-              Seq(messages("uploadedBusinessRatesBill.uploaded")),
-              Some(Link(Call("GET", routes.UploadBusinessRatesBillController.show(None, evidence).url), "remove-link", "Remove")),
-              Some(Link(Call("GET", downloadUrl.toString), "file-download-link", "")),
-              Some("govuk-tag govuk-tag--green")
+              titleMessageKey = name,
+              captionKey = None,
+              value = Seq(messages("uploadedBusinessRatesBill.uploaded")),
+              changeLink = Some(Link(Call("GET", routes.UploadBusinessRatesBillController.show(None, evidence).url), "remove-link", "Remove")),
+              titleLink = Some(Link(Call("GET", downloadUrl.toString), "file-download-link", "")),
+              valueClasses = Some("govuk-tag govuk-tag--green")
             )
           ).map(summarise)
         )
@@ -97,7 +97,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
     yield uploadResult match
       case Some(result) => Ok(uploadedBusinessRateBillView(
         createDefaultNavBar,
-        storeAndShowUploadProgress(credId, result, evidence),
+        storeAndShowUploadProgress(credId, result, evidence, uploadId),
         maybeProperty.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
         uploadId,
         result,

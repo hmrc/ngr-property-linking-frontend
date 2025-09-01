@@ -128,5 +128,23 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
         actual mustBe None
       }
     }
+
+    "deleteEvidenceDocument() by credId " when {
+      "should successfully delete the relevant fields only" in {
+        val propertyLinkingUserAnswersWithUploadFields: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(
+          credId = credId,
+          vmvProperty = testVmvProperty,
+          evidenceDocumentName = Some("testDocument"),
+          evidenceDocumentUrl = Some("testDocument.com"),
+          evidenceDocumentUploadId = Some("12345"))
+        await(repository.upsertProperty(propertyLinkingUserAnswersWithUploadFields))
+
+        val isSuccessful = await(repository.deleteEvidenceDocument(credId))
+        isSuccessful mustBe true
+        val response = await(repository.findByCredId(credId))
+        val expected = Some(PropertyLinkingUserAnswers(credId, testVmvProperty))
+        response shouldBe expected
+      }
+    }
   }
 } 

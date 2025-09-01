@@ -31,6 +31,9 @@ GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfr
 POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit(mode: String)
 GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show(errorCode: Option[String], evidence: Option[String])
 GET        /uploaded-business-rates-bill        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadedBusinessRatesBillController.show(uploadId: uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId, evidence: Option[String])
+GET        /remove-uploaded-file                uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RemoveBusinessRatesBillController.show
+GET        /confirm-remove-file                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RemoveBusinessRatesBillController.remove
+
 GET        /add-property-request-sent           uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyRequestSentController.show
 GET        /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.show
 POST       /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.accept

@@ -46,7 +46,7 @@ class UpscanCallbackDispatcher @Inject() (sessionStorage: UploadProgressTracker)
               size = Some(s.uploadDetails.size)
             )
           } else {
-            throw new BadRequestException("Incorrect file type uploaded")
+            throw new BadRequestException(s"Incorrect file type uploaded, proffered file type was: ${s.uploadDetails.fileMimeType}")
           }
         case _: FailedCallbackBody =>
           UploadStatus.Failed

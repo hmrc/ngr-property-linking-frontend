@@ -33,7 +33,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadedBusinessRateBil
 
 class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
   
-  lazy val view: UploadedBusinessRateBillView = inject[UploadedBusinessRateBillView]
+  val view: UploadedBusinessRateBillView = inject[UploadedBusinessRateBillView]
   val title = "Upload your business rates bill - GOV.UK"
   val heading = "Upload your business rates bill"
   val serviceStatementTitle = "Upload your Service charges statement - GOV.UK"
@@ -219,28 +219,6 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
         elementText(Selectors.failedText) mustBe failed
       }
 
-    }
-
-    "Display the correct static title" should {
-
-      implicit val document: Document =
-        Jsoup.parse(view(
-          navigationBarContent = content,
-          summaryList = SummaryList(uploadInProgress),
-          addressFull = "address",
-          uploadId = UploadId("12345"),
-          status = InProgress,
-          evidence = Some("ServiceStatement")
-        ).body)
-
-
-      "have the correct page service statement title" in {
-        elementText(Selectors.navTitle) mustBe serviceStatementTitle
-      }
-
-      "have the correct main service statement heading" in {
-        elementText(Selectors.heading) mustBe serviceStatementHeading
-      }
     }
   }
 }

@@ -29,7 +29,6 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId
 import scala.concurrent.Future
 
 class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with DefaultAwaitTimeout {
@@ -40,7 +39,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     credId = credId,
     vmvProperty = testVmvProperty,
     evidenceDocumentName = Some(fileName),
-    evidenceDocumentUrl = Some("testUrl.com"),
+    evidenceDocumentUrl = Some("http://localhost:1000/testUrl.com"),
     evidenceDocumentUploadId = Some(evidenceDocumentUploadId))
   val incompletePropertyLinkingUserAnswers: PropertyLinkingUserAnswers = propertyLinkingUserAnswers.copy(
     evidenceDocumentName = None,
@@ -100,7 +99,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
       when(mockPropertyLinkingRepo.deleteEvidenceDocument(any())).thenReturn(Future.successful(true))
 
       val result = controller().remove()(authenticatedFakeRequest)
-      redirectLocation(result) shouldBe Some(routes.UploadedBusinessRatesBillController.show(UploadId(evidenceDocumentUploadId), Some(fileName)).url)
+      redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None, None).url)
     }
 
     "remove() throws an exception when no CredId in request" in {

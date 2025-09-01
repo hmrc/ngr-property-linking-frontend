@@ -22,6 +22,7 @@ import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{TestData, TestSupport}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{CurrentRatepayer, PropertyLinkingUserAnswers}
 
 class PropertyLinkingRepoSpec extends TestSupport with TestData
@@ -33,6 +34,7 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
     await(repository.collection.drop().toFuture())
     await(repository.ensureIndexes())
   }
+  val uploadId: String = "12345"
 
   "repository" can {
     "save a new PropertyLinkingUserAnswer" when {
@@ -129,20 +131,43 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
       }
     }
 
-    "deleteEvidenceDocument() by credId " when {
+    "deleteEvidenceDocument() by credId" when {
       "should successfully delete the relevant fields only" in {
         val propertyLinkingUserAnswersWithUploadFields: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(
           credId = credId,
           vmvProperty = testVmvProperty,
           evidenceDocumentName = Some("testDocument"),
           evidenceDocumentUrl = Some("testDocument.com"),
-          evidenceDocumentUploadId = Some("12345"))
+          evidenceDocumentUploadId = Some(uploadId))
         await(repository.upsertProperty(propertyLinkingUserAnswersWithUploadFields))
 
         val isSuccessful = await(repository.deleteEvidenceDocument(credId))
         isSuccessful mustBe true
         val response = await(repository.findByCredId(credId))
-        val expected = Some(PropertyLinkingUserAnswers(credId, testVmvProperty))
+        val expected = Some(PropertyLinkingUserAnswers(
+          credId = credId,
+          vmvProperty = testVmvProperty,
+          evidenceDocumentName = None,
+          evidenceDocumentUrl = None,
+          evidenceDocumentUploadId = None))
+        response shouldBe expected
+      }
+    }
+
+    "insertUploadId() by credId" when {
+      "should update the correct field and return PLUA" in {
+        val propertyLinkingUserAnswersWithUploadFields: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(
+          credId = credId,
+          vmvProperty = testVmvProperty)
+        await(repository.upsertProperty(propertyLinkingUserAnswersWithUploadFields))
+
+        val isSuccessful = await(repository.insertUploadId(credId, UploadId(uploadId)))
+        isSuccessful mustBe defined
+        val response = await(repository.findByCredId(credId))
+        val expected = Some(PropertyLinkingUserAnswers(
+          credId = credId,
+          vmvProperty = testVmvProperty,
+          evidenceDocumentUploadId = Some(uploadId)))
         response shouldBe expected
       }
     }

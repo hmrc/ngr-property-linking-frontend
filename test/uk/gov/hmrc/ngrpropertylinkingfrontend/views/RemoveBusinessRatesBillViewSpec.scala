@@ -132,7 +132,7 @@ class RemoveBusinessRatesBillViewSpec extends ViewBaseSpec {
       }
 
       "cancel link has the correct href" in {
-        element(Selectors.cancelLink).attribute("href").toString must include("/ngr-property-linking-frontend/upload-business-rates-bill")
+        element(Selectors.cancelLink).attribute("href").toString must include("/ngr-property-linking-frontend/uploaded-business-rates-bill")
       }
     }
   }

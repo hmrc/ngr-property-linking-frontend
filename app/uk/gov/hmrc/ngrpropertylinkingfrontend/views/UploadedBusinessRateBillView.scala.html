@@ -32,12 +32,9 @@
 }
 
 @heading = {
-    @if(evidence.isEmpty){
         @messages("uploadBusinessRatesBill.title")
-    }else{
-        Upload your @messages(s"uploadEvidence.${evidence.get}")
-    }
 }
+
 @layout(
     pageTitle    = Some(if(evidence.isEmpty){messages("uploadBusinessRatesBill.title")}else{"Upload your " + messages(s"uploadEvidence.${evidence.get}")}),
     fullWidth = true,

@@ -71,7 +71,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
       case Some(UploadStatus.InProgress) =>
         Ok(uploadedBusinessRateBillView(
           createDefaultNavBar,
-          buildOtherSummaryList("Uploading"),
+          buildInProgressOrFailedSummaryList("Uploading"),
           address,
           uploadId,
           UploadStatus.InProgress,
@@ -79,7 +79,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
       case Some(UploadStatus.Failed) =>
         Ok(uploadedBusinessRateBillView(
           createDefaultNavBar,
-          buildOtherSummaryList("Failed"),
+          buildInProgressOrFailedSummaryList("Failed"),
           address,
           uploadId,
           UploadStatus.Failed,
@@ -95,14 +95,14 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
           captionKey = None,
           value = Seq(messages("uploadedBusinessRatesBill.uploaded")),
           changeLink = Some(Link(Call("GET", routes.RemoveBusinessRatesBillController.show.url), "remove-link", "Remove")),
-          titleLink = Some(Link(Call("GET", downloadUrl.toString), "file-download-link", "")),
+          titleLink = Some(Link(Call("GET", downloadUrl), "file-download-link", "")),
           valueClasses = Some("govuk-tag govuk-tag--green")
         )
       ).map(summarise)
     )
   }
 
-  def buildOtherSummaryList(uploadStatusString: String)(implicit messages: Messages): SummaryList = {
+  def buildInProgressOrFailedSummaryList(uploadStatusString: String)(implicit messages: Messages): SummaryList = {
     SummaryList(
       Seq(
         NGRSummaryListRow(

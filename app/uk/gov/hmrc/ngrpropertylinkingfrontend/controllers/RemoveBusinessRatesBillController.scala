@@ -46,14 +46,10 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
 
   def show: Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      //TODO fix the above so don't have to keep checking CredId is present
       val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in RemoveBusinessRatesBillController.show()")))
 
       propertyLinkingRepo.findByCredId(credId).map {
         case Some(PropertyLinkingUserAnswers(credId, vmvProperty, _, _, _, _, Some(evidenceDocumentName), Some(evidenceDocumentUrl), _, _)) =>
-          //TODO delete test fields
-//          val testDownloadUrl: URL = url"http://localhost:1504/ngr-property-linking-frontend/upload-business-rates-bill"
-//          val testFileName: String = "testFileName"
           val summaryList: SummaryList = buildSummaryList(evidenceDocumentName, URL(evidenceDocumentUrl))
           Ok(removeView(createDefaultNavBar, vmvProperty.addressFull, summaryList))
         case Some(_) => throw new NotFoundException("Fields not found in RemoveBusinessRatesBillController.show()")
@@ -70,7 +66,7 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
         case Some(PropertyLinkingUserAnswers(credId, _, _, _, _, _, evidenceDocumentName, _, Some(evidenceDocumentUploadId), _)) =>
           propertyLinkingRepo.deleteEvidenceDocument(credId).map { deleted =>
             if (deleted) {
-              Redirect(routes.UploadedBusinessRatesBillController.show(UploadId(evidenceDocumentUploadId), evidenceDocumentName))
+              Redirect(routes.UploadBusinessRatesBillController.show(None, None))
             } else {
               throw new RuntimeException("Failed to delete evidence document in RemoveBusinessRatesBillController.remove()")
             }

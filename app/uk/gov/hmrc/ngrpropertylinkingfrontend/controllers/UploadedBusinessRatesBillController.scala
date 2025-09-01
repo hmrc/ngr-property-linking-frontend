@@ -46,38 +46,67 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
                                                     mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  def storeAndShowUploadProgress(credId: CredId, uploadStatus: UploadStatus, evidence: Option[String], uploadId: UploadId)(implicit messages: Messages): SummaryList = {
-    uploadStatus match
-      case UploadStatus.UploadedSuccessfully(name, mimeType, downloadUrl, size) => {
-        propertyLinkingRepo.insertEvidenceDocument(credId, name, downloadUrl.toString, uploadId.value)
-        SummaryList(
-          Seq(
-            NGRSummaryListRow(
-              titleMessageKey = name,
-              captionKey = None,
-              value = Seq(messages("uploadedBusinessRatesBill.uploaded")),
-              changeLink = Some(Link(Call("GET", routes.UploadBusinessRatesBillController.show(None, evidence).url), "remove-link", "Remove")),
-              titleLink = Some(Link(Call("GET", downloadUrl.toString), "file-download-link", "")),
-              valueClasses = Some("govuk-tag govuk-tag--green")
-            )
-          ).map(summarise)
-        )
-      }
-      case UploadStatus.InProgress => SummaryList(
-        Seq(
-          NGRSummaryListRow(
-            "Uploading",
-            None,
-            Seq(""),
-            None,
-            None,
-            None
-          )
-        ).map(summarise)
-      )
-      case UploadStatus.Failed => SummaryList(Seq(
+  def show: Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
+    val credId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in UploadedBusinessRatesBillController.show()")))
+    for {
+      maybePropertyLinkingUserAnswers <- propertyLinkingRepo.findByCredId(credId)
+      propertyLinkingUserAnswers = maybePropertyLinkingUserAnswers.getOrElse(throw new NotFoundException("Property not found in UploadedBusinessRatesBillController.show()"))
+      uploadId = UploadId(propertyLinkingUserAnswers.evidenceDocumentUploadId.getOrElse(throw new NotFoundException("evidenceDocumentUploadId not found in UploadedBusinessRatesBillController.show()")))
+      address = propertyLinkingUserAnswers.vmvProperty.addressFull
+      evidenceDocumentName = propertyLinkingUserAnswers.evidenceDocumentName
+      uploadResult <- uploadProgressTracker.getUploadResult(uploadId)
+    }
+    yield {
+      uploadResult match
+      case Some(UploadStatus.UploadedSuccessfully(evidenceDocumentName, mimeType, downloadUrl, size)) =>
+        val downloadUrlString: String = downloadUrl.toString
+        propertyLinkingRepo.insertEvidenceDocument(credId, evidenceDocumentName, downloadUrlString, uploadId.value)
+        Ok(uploadedBusinessRateBillView(
+          createDefaultNavBar,
+          buildSuccessSummaryList(evidenceDocumentName, downloadUrlString),
+          address,
+          uploadId,
+          UploadStatus.UploadedSuccessfully(evidenceDocumentName, mimeType, downloadUrl, size),
+          Some(evidenceDocumentName)))
+      case Some(UploadStatus.InProgress) =>
+        Ok(uploadedBusinessRateBillView(
+          createDefaultNavBar,
+          buildOtherSummaryList("Uploading"),
+          address,
+          uploadId,
+          UploadStatus.InProgress,
+          evidenceDocumentName))
+      case Some(UploadStatus.Failed) =>
+        Ok(uploadedBusinessRateBillView(
+          createDefaultNavBar,
+          buildOtherSummaryList("Failed"),
+          address,
+          uploadId,
+          UploadStatus.Failed,
+          evidenceDocumentName))
+      case None => BadRequest(s"Upload with id ${uploadId.value} not found")}
+  }
+
+  def buildSuccessSummaryList(evidenceDocumentName: String, downloadUrl: String)(implicit messages: Messages): SummaryList = {
+    SummaryList(
+      Seq(
         NGRSummaryListRow(
-          "Failed",
+          titleMessageKey = evidenceDocumentName,
+          captionKey = None,
+          value = Seq(messages("uploadedBusinessRatesBill.uploaded")),
+          changeLink = Some(Link(Call("GET", routes.RemoveBusinessRatesBillController.show.url), "remove-link", "Remove")),
+          titleLink = Some(Link(Call("GET", downloadUrl.toString), "file-download-link", "")),
+          valueClasses = Some("govuk-tag govuk-tag--green")
+        )
+      ).map(summarise)
+    )
+  }
+
+  def buildOtherSummaryList(uploadStatusString: String)(implicit messages: Messages): SummaryList = {
+    SummaryList(
+      Seq(
+        NGRSummaryListRow(
+          uploadStatusString,
           None,
           Seq(""),
           None,
@@ -85,23 +114,6 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
           None
         )
       ).map(summarise)
-        
-      )
-  }
-
-  def show(uploadId: UploadId, evidence: Option[String]): Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
-    val credId = CredId(request.credId.getOrElse(throw new NotFoundException("Not found cred id")))
-    for
-      maybeProperty <- propertyLinkingRepo.findByCredId(credId)
-      uploadResult <- uploadProgressTracker.getUploadResult(uploadId)
-    yield uploadResult match
-      case Some(result) => Ok(uploadedBusinessRateBillView(
-        createDefaultNavBar,
-        storeAndShowUploadProgress(credId, result, evidence, uploadId),
-        maybeProperty.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
-        uploadId,
-        result,
-        evidence))
-      case None => BadRequest(s"Upload with id $uploadId not found")
+    )
   }
 }

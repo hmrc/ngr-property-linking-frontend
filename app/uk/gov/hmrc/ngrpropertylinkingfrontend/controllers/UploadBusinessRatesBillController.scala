@@ -59,19 +59,19 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
           val errorToDisplay: Option[String] = renderError(errorCode)
           val credId = CredId(rawCredId)
           val uploadId = UploadId.generate()
-          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId, evidence).url}"
+          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show.url}"
           val evidenceParameter = evidence.map(evidenceValue => s"?evidence=$evidenceValue").getOrElse("")
           val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill$evidenceParameter"
 
           for
             upscanInitiateResponse <- upScanConnector.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
-            maybeProperty <- propertyLinkingRepo.findByCredId(credId)
+            maybePropertyLinkingUserAnswers <- propertyLinkingRepo.insertUploadId(credId, uploadId)
             _ <- uploadProgressTracker.requestUpload(uploadId, Reference(upscanInitiateResponse.fileReference.reference))
           yield Ok(uploadView(uploadForm(),
             upscanInitiateResponse,
             attributes,
             errorToDisplay,
-            maybeProperty.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
+            maybePropertyLinkingUserAnswers.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
             createDefaultNavBar,
             routes.FindAPropertyController.show.url,
             appConfig.ngrDashboardUrl,

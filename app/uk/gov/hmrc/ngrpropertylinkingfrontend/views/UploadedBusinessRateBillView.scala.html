@@ -44,9 +44,9 @@
     showBackLink = true,
     navigationBarContent = Some(navigationBarContent),
     additionalHeadBlock = status match {
-                case UploadStatus.InProgress => Some(refreshHeader)
-                case _                       => None
-            }
+        case UploadStatus.InProgress => Some(refreshHeader)
+        case _                       => None
+    }
 ) {
 <span class="govuk-caption-m">@addressFull</span>
 <h1 class="govuk-heading-l">@heading</h1>

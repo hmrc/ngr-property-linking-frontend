@@ -61,7 +61,7 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
         when(mockFindAPropertyConnector.findAPropertyPostcodeSearch(any())(any())).thenReturn(Future.successful(Right(VMVProperties(0, List.empty))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA00 0AA"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino=true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino=true, Some(""))))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.NoResultsFoundController.show.url)
       }
@@ -70,7 +70,7 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
         when(mockFindAPropertyConnector.findAPropertyPostcodeSearch(any())(any())).thenReturn(Future.successful(Right(VMVProperties(0, List(testVmvProperty)))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA00 0AA"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, Some("1234"), None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, "1234", None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
         //TODO: redirect to result page
         redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(Some(1), Some("AddressASC")).url)
@@ -80,7 +80,7 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
         when(mockFindAPropertyConnector.findAPropertyPostcodeSearch(any())(any())).thenReturn(Future.successful(Right(VMVProperties(0, List.empty))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", "AA000AA"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.NoResultsFoundController.show.url)
       }
@@ -89,7 +89,7 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
         when(mockFindAPropertyConnector.findAPropertyPostcodeSearch(any())(any())).thenReturn(Future(Left(ErrorResponse(400, "Bad request"))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.FindAPropertyController.submit)
           .withFormUrlEncodedBody(("postcode-value", ""))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include(pageTitle)

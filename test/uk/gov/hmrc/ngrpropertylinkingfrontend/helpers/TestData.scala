@@ -31,6 +31,7 @@ trait TestData {
 
   val testPostcode: Postcode = Postcode(value = "BH1 7EY")
   val time: Instant = Instant.now()
+  val emptyCredId: String = ""
 
   val properties1: VMVProperties = VMVProperties(total = 1,
     properties = List(

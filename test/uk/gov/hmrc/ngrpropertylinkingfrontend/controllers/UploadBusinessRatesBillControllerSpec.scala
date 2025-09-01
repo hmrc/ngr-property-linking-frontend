@@ -94,23 +94,6 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
           ex.getMessage mustBe "Not found property on account"
         }
       }
-      "Exception when no credId in request" in {
-         mockRequest()
-         when(mockUpscanConnector.initiate(any(), any())(any[HeaderCarrier]))
-          .thenReturn(Future.successful(
-            UpscanInitiateResponse(
-              UpscanFileReference("ref"),
-              "postTarget",
-              Map("key" -> "value")
-            )
-          ))
-         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-         when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
-         val exception = intercept[NotFoundException] {
-           await(controller.show(None, None)(authenticatedFakeRequest))
-         }
-         exception.getMessage contains "Missing credId in authenticated request" mustBe true
-       }
 
             def testErrorCase(errorCode: String, expectedMessage: String): Unit = {
               mockRequest(hasCredId = true)

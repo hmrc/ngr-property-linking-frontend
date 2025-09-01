@@ -111,7 +111,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
           .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties1))))
         val result = controller().sort(AuthenticatedUserRequest(FakeRequest(routes.SingleSearchResultController.sort)
           .withFormUrlEncodedBody("sortBy" -> "AddressASC")
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe OK
         val content = contentAsString(result)
         content must include("Showing <strong>1</strong> to <strong>1</strong> of <strong>1</strong> items.")
@@ -129,7 +129,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
         val exception = intercept[BadRequestException] {
           await(controller().sort(AuthenticatedUserRequest(FakeRequest(routes.SingleSearchResultController.sort)
             .withFormUrlEncodedBody(("sortBy", "AddressASC"))
-            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = Some(credId.value), None, None, nino = Nino(true, Some("")))))
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = credId.value, None, None, nino = Nino(true, Some("")))))
         }
         exception.getMessage contains "Unable to sort, please try again" mustBe true
       }

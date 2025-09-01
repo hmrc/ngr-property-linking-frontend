@@ -41,20 +41,38 @@ class RegistrationActionImpl @Inject()(
     authenticate.invokeBlock(request, { implicit authRequest: AuthenticatedUserRequest[A] =>
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(authRequest, authRequest.session)
 
-      val credId = CredId(authRequest.credId.getOrElse(""))
+      //val credId = CredId(authRequest.credId.getOrElse(""))
 
-      ngrConnector.getRatepayer(credId).flatMap{ maybeRatepayer =>
-        val isRegistered = maybeRatepayer
-          .flatMap(_.ratepayerRegistration)
-          .flatMap(_.isRegistered)
-          .getOrElse(false)
+      if(authRequest.credId.isEmpty) {
+        redirectToLoginFrontend()
+      } else {
+        val credId = CredId(authRequest.credId)
+        ngrConnector.getRatepayer(credId).flatMap { maybeRatepayer =>
+          val isRegistered = maybeRatepayer
+            .flatMap(_.ratepayerRegistration)
+            .flatMap(_.isRegistered)
+            .getOrElse(false)
 
-        if (isRegistered) {
-          block(authRequest)
-        } else {
-          redirectToLoginFrontend()
+          if (isRegistered) {
+            block(authRequest)
+          } else {
+            redirectToLoginFrontend()
+          }
         }
       }
+
+//      ngrConnector.getRatepayer(credId).flatMap{ maybeRatepayer =>
+//        val isRegistered = maybeRatepayer
+//          .flatMap(_.ratepayerRegistration)
+//          .flatMap(_.isRegistered)
+//          .getOrElse(false)
+//
+//        if (isRegistered) {
+//          block(authRequest)
+//        } else {
+//          redirectToLoginFrontend()
+//        }
+//      }
     })
   }
 

@@ -77,7 +77,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer(true, None)), connectionToProperty = Some("Owner")))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ConnectionToPropertyController.submit)
           .withFormUrlEncodedBody((ConnectionToPropertyForm.formName, "Owner"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") mustBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
@@ -88,7 +88,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer = Some(CurrentRatepayer(false, Some(""))), connectionToProperty = Some("Occupier")))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ConnectionToPropertyController.submit)
           .withFormUrlEncodedBody((ConnectionToPropertyForm.formName, "Occupier"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") mustBe Some("/ngr-login-register-frontend/confirm-your-contact-details")
         })
@@ -99,7 +99,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ConnectionToPropertyController.submit)
           .withFormUrlEncodedBody((ConnectionToPropertyForm.formName, ""))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include(pageTitle)

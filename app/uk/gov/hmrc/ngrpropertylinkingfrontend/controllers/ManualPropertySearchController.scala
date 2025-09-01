@@ -67,10 +67,10 @@ class ManualPropertySearchController @Inject()(manualPropertySearchView: ManualP
               case Left(error) =>
                 Future.successful(Status(error.code)(Json.toJson(error)))
               case Right(properties) if properties.properties.isEmpty =>
-                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId),properties))
                 Future.successful(Redirect(routes.NoResultsFoundController.show.url))
               case Right(properties)  =>
-                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")), properties))
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId), properties))
                 Future.successful(Redirect(routes.SingleSearchResultController.show(Some(1), Some("AddressASC")).url))
             }
           })

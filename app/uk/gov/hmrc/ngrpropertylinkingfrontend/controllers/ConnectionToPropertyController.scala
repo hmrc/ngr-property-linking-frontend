@@ -50,7 +50,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
 
   def show: Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+      propertyLinkingRepo.findByCredId(CredId(request.credId)).flatMap {
         case Some(properties) =>
           val propertyAddress = properties.vmvProperty.addressFull
           val preparedForm = properties.connectionToProperty match {
@@ -72,7 +72,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       form.bindFromRequest().fold(
         formWithErrors => {
-          val credId = request.credId.getOrElse("")
+          val credId = request.credId
           propertyLinkingRepo.findByCredId(CredId(credId)).flatMap {
             case Some(properties) =>
               val propertyAddress = properties.vmvProperty.addressFull
@@ -89,19 +89,19 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
         {
           case ConnectionToPropertyForm.Owner =>
             propertyLinkingRepo.insertConnectionToProperty(
-              credId = CredId(request.credId.getOrElse("")),
+              credId = CredId(request.credId),
               connectionToProperty = Constants.owner
             )
             Future.successful(Redirect(routes.CheckYourAnswersController.show))
           case ConnectionToPropertyForm.Occupier =>
             propertyLinkingRepo.insertConnectionToProperty(
-              credId = CredId(request.credId.getOrElse("")),
+              credId = CredId(request.credId),
               connectionToProperty = Constants.occupier
             )
             Future.successful(Redirect(routes.CheckYourAnswersController.show))
           case ConnectionToPropertyForm.OwnerAndOccupier =>
             propertyLinkingRepo.insertConnectionToProperty(
-              credId = CredId(request.credId.getOrElse("")),
+              credId = CredId(request.credId),
               connectionToProperty = Constants.ownerAndOccupier
             )
             Future.successful(Redirect(routes.CheckYourAnswersController.show))

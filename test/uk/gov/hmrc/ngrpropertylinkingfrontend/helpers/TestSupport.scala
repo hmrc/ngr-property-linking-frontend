@@ -75,7 +75,7 @@ trait TestSupport extends PlaySpec
     lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
         FakeRequest("", "").withHeaders(HeaderNames.authorisation -> "Bearer 1")
     lazy val authenticatedFakeRequest: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
-        AuthenticatedUserRequest(fakeRequest, None, None, None, credId = Some("1234"), None, None, nino = Nino(true, Some("")))
+        AuthenticatedUserRequest(fakeRequest, None, None, None, credId = "1234", None, None, nino = Nino(true, Some("")))
         
         
 }

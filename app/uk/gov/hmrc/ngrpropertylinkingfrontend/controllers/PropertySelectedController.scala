@@ -65,7 +65,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
 
   def show(index: Int, sortBy: String): Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request: AuthenticatedUserRequest[AnyContent] =>
-      findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
+      findAPropertyRepo.findByCredId(CredId(request.credId)).flatMap{
         case Some(properties) =>
           val selectedProperty = sortingVMVPropertiesService.sort(properties.vmvProperties.properties, sortBy)(index)
           Future.successful(Ok(propertySelectedView(
@@ -83,7 +83,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
       form.bindFromRequest()
         .fold(
         formWithErrors => {
-          findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
+          findAPropertyRepo.findByCredId(CredId(request.credId)).flatMap{
             case Some(properties) =>
               val selectedProperty = sortingVMVPropertiesService.sort(properties.vmvProperties.properties, sortBy)(index)
               Future.successful(BadRequest(
@@ -101,7 +101,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
         },
           propertySelectedForm => {
             if(propertySelectedForm.radioValue.equals("Yes")) {
-              val credId = request.credId.getOrElse("")
+              val credId = request.credId
               for {
                 response <- findAPropertyRepo.findByCredId(CredId(credId))
                 property = response

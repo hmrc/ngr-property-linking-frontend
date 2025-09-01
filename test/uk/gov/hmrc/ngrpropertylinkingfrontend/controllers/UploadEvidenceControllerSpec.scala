@@ -87,7 +87,7 @@ class UploadEvidenceControllerSpec extends ControllerSpecSupport with DefaultAwa
         when(mockPropertyLinkingRepo.insertUploadEvidence(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty, uploadEvidence = Some("LandRegistry")))))
         val result = controller().submit(AuthenticatedUserRequest(FakeRequest(routes.UploadEvidenceController.submit)
           .withFormUrlEncodedBody(("upload-evidence-radio", "LandRegistry"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = Some(credId.value), None, None, nino = Nino(true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, credId = credId.value, None, None, nino = Nino(true, Some(""))))
         result.map(result => {
           result.header.headers.get("Location") shouldBe Some("/ngr-login-register-frontend/upload-business-rates-bill")
         })
@@ -99,7 +99,7 @@ class UploadEvidenceControllerSpec extends ControllerSpecSupport with DefaultAwa
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty))))
         val result = controller().submit(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
           .withFormUrlEncodedBody(("upload-evidence-radio", ""))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include(pageTitle)
@@ -111,7 +111,7 @@ class UploadEvidenceControllerSpec extends ControllerSpecSupport with DefaultAwa
         val exception = intercept[NotFoundException] {
           await(controller().submit(AuthenticatedUserRequest(FakeRequest(routes.CurrentRatepayerController.submit(mode = ""))
             .withFormUrlEncodedBody(("upload-evidence-radio", ""))
-            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some("")))))
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(true, Some("")))))
         }
         exception.getMessage contains "failed to find property from mongo" mustBe true
       }

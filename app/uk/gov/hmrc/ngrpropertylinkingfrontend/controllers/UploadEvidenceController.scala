@@ -55,7 +55,7 @@ class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
 
   def show: Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request: AuthenticatedUserRequest[AnyContent] =>
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+      propertyLinkingRepo.findByCredId(CredId(request.credId)).flatMap {
         case Some(property) =>
           val preparedForm: Form[UploadEvidenceForm] = property.uploadEvidence match {
             case None => form
@@ -72,7 +72,7 @@ class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
       form.bindFromRequest()
         .fold(
           formWithErrors => {
-            propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+            propertyLinkingRepo.findByCredId(CredId(request.credId)).flatMap {
               case Some(property) =>
                 Future.successful(BadRequest(
                   uploadEvidenceView(createDefaultNavBar(), formWithErrors, buildRadios(formWithErrors, ngrRadio), property.vmvProperty.addressFull)
@@ -82,7 +82,7 @@ class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
           },
           uploadEvidenceForm => {
             val evidence = uploadEvidenceForm.radioValue
-            propertyLinkingRepo.insertUploadEvidence(CredId(request.credId.getOrElse("")), evidence)
+            propertyLinkingRepo.insertUploadEvidence(CredId(request.credId), evidence)
             Future.successful(Redirect(routes.UploadBusinessRatesBillController.show(None, Some(evidence))))
           }
         )

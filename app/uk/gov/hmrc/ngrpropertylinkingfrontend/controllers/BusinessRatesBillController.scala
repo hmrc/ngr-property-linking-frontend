@@ -50,7 +50,7 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
 
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+      propertyLinkingRepo.findByCredId(CredId(request.credId)).flatMap {
         case Some(property) =>
           val preparedForm = property.businessRatesBill match {
             case None => form
@@ -68,7 +68,7 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+          formWithErrors => propertyLinkingRepo.findByCredId(CredId(request.credId)).flatMap {
             case Some(property) => Future.successful(BadRequest(businessRatesBillView(
               createDefaultNavBar,
               formWithErrors,
@@ -78,11 +78,11 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
           },
           businessRatesBillForm =>
             propertyLinkingRepo.insertBusinessRatesBill(
-              credId = CredId(request.credId.getOrElse("")),
+              credId = CredId(request.credId),
               businessRatesBill = businessRatesBillForm.radioValue
             )
             if (businessRatesBillForm.radioValue == "Yes") {
-              propertyLinkingRepo.insertUploadEvidence(CredId(request.credId.getOrElse("")), null)
+              propertyLinkingRepo.insertUploadEvidence(CredId(request.credId), null)
               Future.successful(Redirect(routes.UploadBusinessRatesBillController.show(None, None)))
             } else {
               Future.successful(Redirect(routes.UploadEvidenceController.show))

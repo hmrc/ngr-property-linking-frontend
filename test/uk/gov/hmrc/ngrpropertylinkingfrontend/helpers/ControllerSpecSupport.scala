@@ -45,7 +45,7 @@ trait ControllerSpecSupport extends TestSupport {
   def mockRequest(hasCredId: Boolean = false, hasNino: Boolean = true): Unit =
     when(mockAuthJourney andThen mockIsRegisteredCheck) thenReturn new ActionBuilder[AuthenticatedUserRequest, AnyContent] {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedUserRequest[A] => Future[Result]): Future[Result] =  {
-        val authRequest = AuthenticatedUserRequest(request, None, None, Some("user@email.com"), if (hasCredId) Some("1234") else None, None, None, nino = if (hasNino) Nino(hasNino = true, Some("AA000003D")) else Nino(hasNino = false, None))
+        val authRequest = AuthenticatedUserRequest(request, None, None, Some("user@email.com"), "1234", None, None, nino = if (hasNino) Nino(hasNino = true, Some("AA000003D")) else Nino(hasNino = false, None))
         block(authRequest)
       }
       override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser

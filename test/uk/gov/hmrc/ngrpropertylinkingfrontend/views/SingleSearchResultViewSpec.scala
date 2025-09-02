@@ -39,7 +39,7 @@ class SingleSearchResultViewSpec extends ViewBaseSpec {
   val openTime = "Opening times: Monday to Friday: 9:00am to 4:30pm"
   val searchLink = "Search again"
   val sortByLabel = "Sort by"
-  val sortButton = "Sort"
+  val sortButton = "Apply"
 
   val searchUrl: String = routes.FindAPropertyController.show.url
   val dashboardUrl: String = mockConfig.ngrDashboardUrl

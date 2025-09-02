@@ -85,7 +85,7 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
     }
 
   private def generateSortingSelectItems(selectedValue: String)(implicit messages: Messages): Seq[SelectItem] =
-    (1 until 9).map(index =>
+    (1 to 4).map(index =>
       val value: String = messages(s"singleSearchResultPage.sortBy.item$index.value")
       SelectItem(
         value = Some(value),

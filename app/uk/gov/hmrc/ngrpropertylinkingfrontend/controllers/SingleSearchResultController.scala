@@ -60,7 +60,7 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
   
   def show(page: Option[Int], sortBy: Option[String]): Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
+      findAPropertyRepo.findByCredId(CredId(request.credId)).flatMap{
         case Some(properties) =>
           showSingleSearchResultView(properties, page.getOrElse(1), sortBy.getOrElse("AddressASC"))
         case None => Future.successful(Redirect(routes.FindAPropertyController.show))
@@ -76,7 +76,7 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
             Future.failed(new BadRequestException("Unable to sort, please try again"))
           ,
           singleSearchResult => {
-            findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+            findAPropertyRepo.findByCredId(CredId(request.credId)).flatMap {
               case Some(properties) => showSingleSearchResultView(properties, 1, singleSearchResult.sortBy)
               case None => Future.failed(new BadRequestException("Unable to sort, please try again"))
             }

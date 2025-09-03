@@ -52,7 +52,7 @@ class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentVie
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       val email: String = request.email.getOrElse(throw new NotFoundException("email not found on account"))
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+      propertyLinkingRepo.findByCredId(CredId(request.credId)).flatMap {
         case Some(answers) =>
           val property = answers.vmvProperty
           val ref = answers.requestSentReference.getOrElse("")

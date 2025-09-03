@@ -58,10 +58,10 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
               case Left(error) =>
                 Future.successful(Status(error.code)(Json.toJson(error)))
               case Right(properties) if properties.properties.isEmpty =>
-                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId),properties))
                 Future.successful(Redirect(routes.NoResultsFoundController.show.url))
               case Right(properties) =>
-                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId),properties))
                 Future.successful(Redirect(routes.SingleSearchResultController.show(page = Some(1), sortBy = Some("AddressASC")).url))
             }
           })

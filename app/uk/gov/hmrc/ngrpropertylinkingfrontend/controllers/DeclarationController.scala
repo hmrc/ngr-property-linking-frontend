@@ -45,7 +45,7 @@ class DeclarationController @Inject()(view: DeclarationView,
   def accept: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       val ref = UniqueIdGenerator.generateId
-      propertyLinkingRepo.insertRequestSentReference(CredId(request.credId.getOrElse("")), ref).flatMap {
+      propertyLinkingRepo.insertRequestSentReference(CredId(request.credId), ref).flatMap {
         case Some(answers) => Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
         case None => throw new Exception("Could not save reference")
       }

@@ -63,7 +63,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
           .withFormUrlEncodedBody("addressLine1" -> "99",
             "town" -> "Worthing",
             "postcode" -> "W126WA")
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.NoResultsFoundController.show.url)
       }
@@ -75,7 +75,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
           .withFormUrlEncodedBody("addressLine1" -> "99",
             "town" -> "Worthing",
             "postcode" -> "W126WA")
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(Some(1), Some("AddressASC")).url)
       }
@@ -86,7 +86,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
           .withFormUrlEncodedBody("addressLine1" -> "99",
             "town" -> "Worthing",
             "postcode" -> "")
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include("Enter postcode")
@@ -98,7 +98,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
           .withFormUrlEncodedBody("addressLine1" -> "99",
             "town" -> "Worthing",
             "postcode" -> "W12A6WA")
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include("Enter a full UK postcode")
@@ -112,7 +112,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
             "postcode" -> "W126WA",
             "miniRateableValue" -> "£100,000 00abc",
             "maxRateableValue" -> "£25,0asas%00.65")
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include("Minimum rateable value must be a number, like £50,000")
@@ -127,7 +127,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
             "postcode" -> "W126WA",
             "miniRateableValue" -> "100,000",
             "maxRateableValue" -> "25,000")
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include("Minimum rateable value must be lower than maximum rateable value")

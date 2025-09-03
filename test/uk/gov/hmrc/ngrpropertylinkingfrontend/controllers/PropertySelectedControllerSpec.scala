@@ -96,7 +96,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
           FakeRequest(
             routes.PropertySelectedController.submit(index = 0, sortBy = "AddressASC"))
             .withFormUrlEncodedBody(("confirm-property-radio", value))
-            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some("")))
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(true, Some("")))
         when(mockFindAPropertyRepo.findByCredId(any[CredId]))
           .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties11))))
         when(mockPropertyLinkingRepo.upsertProperty(any())).thenReturn(Future.successful(true))
@@ -110,7 +110,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
           FakeRequest(
             routes.PropertySelectedController.submit(index = 0, sortBy = "AddressASC"))
             .withFormUrlEncodedBody(("confirm-property-radio", value))
-            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some("")))
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(true, Some("")))
         when(mockFindAPropertyRepo.findByCredId(any[CredId]))
           .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties11))))
         mockRequest()
@@ -123,7 +123,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
           FakeRequest(
             routes.PropertySelectedController.submit(index = 0, sortBy = "AddressASC"))
             .withFormUrlEncodedBody(("confirm-property-radio", value))
-            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some("")))
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(true, Some("")))
         when(mockFindAPropertyRepo.findByCredId(any[CredId]))
           .thenReturn(Future.successful(Some(LookUpVMVProperties(credId, properties11))))
         mockRequest()
@@ -137,7 +137,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
           FakeRequest(
             routes.PropertySelectedController.submit(index = 0, sortBy = "AddressASC"))
             .withFormUrlEncodedBody(("confirm-property-radio", value))
-            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some("")))
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, emptyCredId, None, None, nino = Nino(true, Some("")))
 
         when(mockFindAPropertyRepo.findByCredId(any[CredId]))
           .thenReturn(Future.successful(None))

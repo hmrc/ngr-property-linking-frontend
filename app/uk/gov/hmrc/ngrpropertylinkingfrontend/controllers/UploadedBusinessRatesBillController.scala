@@ -90,7 +90,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
   }
 
   def show(uploadId: UploadId, evidence: Option[String]): Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
-    val credId = CredId(request.credId.getOrElse(throw new NotFoundException("Not found cred id")))
+    val credId = CredId(request.credId)
     for
       maybeProperty <- propertyLinkingRepo.findByCredId(credId)
       uploadResult <- uploadProgressTracker.getUploadResult(uploadId)

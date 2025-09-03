@@ -105,7 +105,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
 
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+      propertyLinkingRepo.findByCredId(CredId(request.credId)).flatMap {
         case Some(userAnswers) => Future.successful(Ok(
           checkYourAnswersView(navigationBarContent = createDefaultNavBar, summaryList = SummaryList(createSummaryRows(userAnswers = userAnswers)))))
         case None => throw new NotFoundException("failed to find property from mongo")
@@ -114,7 +114,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
 
   def submit: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      val credId = CredId(request.credId.getOrElse(""))
+      val credId = CredId(request.credId)
       for {
         maybeAnswers <- propertyLinkingRepo.findByCredId(credId)
         userAnswers <- maybeAnswers match {

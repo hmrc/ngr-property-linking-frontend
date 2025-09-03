@@ -67,16 +67,7 @@
     </p>
 }
 
-@sortBySelect = {
-    @govukSelect(
-        Select(
-            id = "sortBy",
-            name = "sortBy",
-            label = Label(content = Text(messages("singleSearchResultPage.sortBy.label"))),
-            items = sortingSelectItems
-        ).withFormField(form("sortBy"))
-    )
-}
+@selected(v: SelectItem) = @{ if(v.selected) { "selected" } else { "" } }
 @heading = @{messages("singleSearchResultPage.title", postcode)}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {
 @formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.SingleSearchResultController.sort, Symbol("autoComplete") -> "off") {
@@ -87,8 +78,17 @@
             Showing <strong>@pageBottom</strong> to <strong>@pageTop</strong> of <strong>@totalProperties</strong> items.
             <a href= @searchAgainUrl class="govuk-link">@messages("singleSearchResultPage.details.link")</a>
         </p>
-        @sortBySelect
-        @saveAndContinueButton(msg = messages("singleSearchResultPage.button"), isStartButton = false)
+        <div class="govuk-form-group">
+            <label class="govuk-label govuk-!-font-weight-bold" for="sortBy">
+                @messages("singleSearchResultPage.sortBy.label")
+            </label>
+            <select class="govuk-select" id="sortBy" name="sortBy">
+                @for(v <- sortingSelectItems) {
+                    <option value="@v.value" @selected(v)>@v.text</option>
+                }
+            </select>
+            @saveAndContinueButton(msg = messages("singleSearchResultPage.button"), isStartButton = false)
+        </div>
         @govukTable(propertySearchResultTable)
         @govukPagination(paginationData.toPagination)
     </div>

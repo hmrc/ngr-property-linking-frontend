@@ -34,9 +34,9 @@ import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData with DefaultAwaitTimeout{
   lazy val view: CheckYourAnswersView = inject[CheckYourAnswersView]
-  lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer(true, None)), userHasBusinessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"), evidenceDocumentName = Some("Evidence.jpg"))
-  lazy val propertyLinkingUserAnswers2: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer(false, Some("2026-7-17"))), userHasBusinessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"), evidenceDocumentName = Some("Evidence.jpg"))
-  lazy val propertyLinkingUserAnswers3: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer(false, Some("2026-7-17"))), userHasBusinessRatesBill = Some("No"), connectionToProperty = Some("Owner"), uploadEvidence = Some("StampDuty"), evidenceDocumentName = Some("Evidence.jpg"))
+  lazy val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer(true, None)), businessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"), evidenceDocument = Some("Evidence.jpg"))
+  lazy val propertyLinkingUserAnswers2: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer(false, Some("2026-7-17"))), businessRatesBill = Some("Yes"), connectionToProperty = Some("Owner"), evidenceDocument = Some("Evidence.jpg"))
+  lazy val propertyLinkingUserAnswers3: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = properties1.properties.head, currentRatepayer =  Some(CurrentRatepayer(false, Some("2026-7-17"))), businessRatesBill = Some("No"), connectionToProperty = Some("Owner"), uploadEvidence = Some("StampDuty"), evidenceDocument = Some("Evidence.jpg"))
 
   def controller() = new CheckYourAnswersController(
     view,

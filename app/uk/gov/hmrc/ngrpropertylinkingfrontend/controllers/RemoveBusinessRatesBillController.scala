@@ -49,8 +49,8 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
       val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in RemoveBusinessRatesBillController.show()")))
 
       propertyLinkingRepo.findByCredId(credId).map {
-        case Some(PropertyLinkingUserAnswers(credId, vmvProperty, _, _, _, _, Some(evidenceDocumentName), Some(evidenceDocumentUrl), _, _)) =>
-          val summaryList: SummaryList = buildSummaryList(evidenceDocumentName, URL(evidenceDocumentUrl))
+        case Some(PropertyLinkingUserAnswers(credId, vmvProperty, _, _, _, _, Some(evidenceDocument), Some(evidenceDocumentUrl), _, _)) =>
+          val summaryList: SummaryList = buildSummaryList(evidenceDocument, URL(evidenceDocumentUrl))
           Ok(removeView(createDefaultNavBar, vmvProperty.addressFull, summaryList))
         case Some(_) => throw new NotFoundException("Fields not found in RemoveBusinessRatesBillController.show()")
         case None => throw new NotFoundException("Property not found in RemoveBusinessRatesBillController.show()")
@@ -63,7 +63,7 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
       val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in RemoveBusinessRatesBillController.remove()")))
 
       propertyLinkingRepo.findByCredId(credId).flatMap {
-        case Some(PropertyLinkingUserAnswers(credId, _, _, _, _, _, evidenceDocumentName, _, Some(evidenceDocumentUploadId), _)) =>
+        case Some(PropertyLinkingUserAnswers(credId, _, _, _, _, _, evidenceDocument, _, Some(evidenceDocumentUploadId), _)) =>
           propertyLinkingRepo.deleteEvidenceDocument(credId).map { deleted =>
             if (deleted) {
               Redirect(routes.UploadBusinessRatesBillController.show(None, None))

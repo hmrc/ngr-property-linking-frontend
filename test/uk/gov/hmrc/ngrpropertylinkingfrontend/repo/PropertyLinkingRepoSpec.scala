@@ -136,7 +136,7 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
         val propertyLinkingUserAnswersWithUploadFields: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(
           credId = credId,
           vmvProperty = testVmvProperty,
-          evidenceDocumentName = Some("testDocument"),
+          evidenceDocument = Some("testDocument"),
           evidenceDocumentUrl = Some("testDocument.com"),
           evidenceDocumentUploadId = Some(uploadId))
         await(repository.upsertProperty(propertyLinkingUserAnswersWithUploadFields))
@@ -147,7 +147,7 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
         val expected = Some(PropertyLinkingUserAnswers(
           credId = credId,
           vmvProperty = testVmvProperty,
-          evidenceDocumentName = None,
+          evidenceDocument = None,
           evidenceDocumentUrl = None,
           evidenceDocumentUploadId = None))
         response shouldBe expected

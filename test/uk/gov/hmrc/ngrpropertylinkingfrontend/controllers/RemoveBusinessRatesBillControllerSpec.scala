@@ -38,11 +38,11 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
   val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(
     credId = credId,
     vmvProperty = testVmvProperty,
-    evidenceDocumentName = Some(fileName),
+    evidenceDocument = Some(fileName),
     evidenceDocumentUrl = Some("http://localhost:1000/testUrl.com"),
     evidenceDocumentUploadId = Some(evidenceDocumentUploadId))
   val incompletePropertyLinkingUserAnswers: PropertyLinkingUserAnswers = propertyLinkingUserAnswers.copy(
-    evidenceDocumentName = None,
+    evidenceDocument = None,
     evidenceDocumentUrl = None,
     evidenceDocumentUploadId = None)
 

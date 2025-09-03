@@ -68,7 +68,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
       NGRSummaryListRow(
         messages("checkYourAnswers.businessRatesBill"),
         None,
-        Seq(userAnswers.userHasBusinessRatesBill.getOrElse(throw new NotFoundException("Could not find business rates bill"))),
+        Seq(userAnswers.businessRatesBill.getOrElse(throw new NotFoundException("Could not find business rates bill"))),
         changeLink = Some(Link(href = routes.BusinessRatesBillController.show, linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
       )
     ) //TODO CHANGE CURRENT RATEPAYER
@@ -77,7 +77,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
       NGRSummaryListRow(
         messages("checkYourAnswers.EvidenceDocument"),
         None,
-        Seq(userAnswers.evidenceDocumentName.getOrElse(throw new NotFoundException("evidence document not found"))),
+        Seq(userAnswers.evidenceDocument.getOrElse(throw new NotFoundException("evidence document not found"))),
         changeLink = Some(Link(href = routes.BusinessRatesBillController.show, linkId = "business-rates-bill", messageKey = "service.change", visuallyHiddenMessageKey = Some("business-rates-bill")))
       ),
       NGRSummaryListRow(

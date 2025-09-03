@@ -53,21 +53,21 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
       propertyLinkingUserAnswers = maybePropertyLinkingUserAnswers.getOrElse(throw new NotFoundException("Property not found in UploadedBusinessRatesBillController.show()"))
       uploadId = UploadId(propertyLinkingUserAnswers.evidenceDocumentUploadId.getOrElse(throw new NotFoundException("evidenceDocumentUploadId not found in UploadedBusinessRatesBillController.show()")))
       address = propertyLinkingUserAnswers.vmvProperty.addressFull
-      evidenceDocumentName = propertyLinkingUserAnswers.evidenceDocumentName
+      evidenceDocument = propertyLinkingUserAnswers.evidenceDocument
       uploadResult <- uploadProgressTracker.getUploadResult(uploadId)
     }
     yield {
       uploadResult match
-      case Some(UploadStatus.UploadedSuccessfully(evidenceDocumentName, mimeType, downloadUrl, size)) =>
+      case Some(UploadStatus.UploadedSuccessfully(evidenceDocument, mimeType, downloadUrl, size)) =>
         val downloadUrlString: String = downloadUrl.toString
-        propertyLinkingRepo.insertEvidenceDocument(credId, evidenceDocumentName, downloadUrlString, uploadId.value)
+        propertyLinkingRepo.insertEvidenceDocument(credId, evidenceDocument, downloadUrlString, uploadId.value)
         Ok(uploadedBusinessRateBillView(
           createDefaultNavBar,
-          buildSuccessSummaryList(evidenceDocumentName, downloadUrlString),
+          buildSuccessSummaryList(evidenceDocument, downloadUrlString),
           address,
           uploadId,
-          UploadStatus.UploadedSuccessfully(evidenceDocumentName, mimeType, downloadUrl, size),
-          Some(evidenceDocumentName)))
+          UploadStatus.UploadedSuccessfully(evidenceDocument, mimeType, downloadUrl, size),
+          Some(evidenceDocument)))
       case Some(UploadStatus.InProgress) =>
         Ok(uploadedBusinessRateBillView(
           createDefaultNavBar,
@@ -75,7 +75,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
           address,
           uploadId,
           UploadStatus.InProgress,
-          evidenceDocumentName))
+          evidenceDocument))
       case Some(UploadStatus.Failed) =>
         Ok(uploadedBusinessRateBillView(
           createDefaultNavBar,
@@ -83,15 +83,15 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
           address,
           uploadId,
           UploadStatus.Failed,
-          evidenceDocumentName))
+          evidenceDocument))
       case None => BadRequest(s"Upload with id ${uploadId.value} not found")}
   }
 
-  def buildSuccessSummaryList(evidenceDocumentName: String, downloadUrl: String)(implicit messages: Messages): SummaryList = {
+  def buildSuccessSummaryList(evidenceDocument: String, downloadUrl: String)(implicit messages: Messages): SummaryList = {
     SummaryList(
       Seq(
         NGRSummaryListRow(
-          titleMessageKey = evidenceDocumentName,
+          titleMessageKey = evidenceDocument,
           captionKey = None,
           value = Seq(messages("uploadedBusinessRatesBill.uploaded")),
           changeLink = Some(Link(Call("GET", routes.RemoveBusinessRatesBillController.show.url), "remove-link", "Remove")),

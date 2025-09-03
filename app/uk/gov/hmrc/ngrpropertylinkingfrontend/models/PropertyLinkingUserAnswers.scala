@@ -24,10 +24,10 @@ case class PropertyLinkingUserAnswers (credId: CredId,
                                        vmvProperty: VMVProperty,
                                        currentRatepayer: Option[CurrentRatepayer] = None,
                                        //TODO make boolean?
-                                       userHasBusinessRatesBill: Option[String] = None,
+                                       businessRatesBill: Option[String] = None,
                                        connectionToProperty: Option[String] = None,
                                        requestSentReference: Option[String] = None,
-                                       evidenceDocumentName: Option[String] = None,
+                                       evidenceDocument: Option[String] = None,
                                        evidenceDocumentUrl: Option[String] = None,
                                        evidenceDocumentUploadId: Option[String] = None,
                                        uploadEvidence: Option[String] = None)

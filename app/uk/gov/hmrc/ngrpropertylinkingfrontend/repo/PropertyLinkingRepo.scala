@@ -110,11 +110,11 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
   }
 
   def insertBusinessRatesBill(credId: CredId, businessRatesBill: String): Future[Option[PropertyLinkingUserAnswers]] = {
-    findAndUpdateByCredId(credId, Updates.set("userHasBusinessRatesBill", businessRatesBill))
+    findAndUpdateByCredId(credId, Updates.set("businessRatesBill", businessRatesBill))
   }
 
-  def insertEvidenceDocument(credId: CredId, evidenceDocumentName: String, evidenceDocumentUrl: String, evidenceDocumentUploadId: String): Future[Option[PropertyLinkingUserAnswers]] = {
-    findAndUpdateByCredId(credId, Updates.combine(Updates.set("evidenceDocumentName", evidenceDocumentName), Updates.set("evidenceDocumentUrl", evidenceDocumentUrl), Updates.set("evidenceDocumentUploadId", evidenceDocumentUploadId)))
+  def insertEvidenceDocument(credId: CredId, evidenceDocument: String, evidenceDocumentUrl: String, evidenceDocumentUploadId: String): Future[Option[PropertyLinkingUserAnswers]] = {
+    findAndUpdateByCredId(credId, Updates.combine(Updates.set("evidenceDocument", evidenceDocument), Updates.set("evidenceDocumentUrl", evidenceDocumentUrl), Updates.set("evidenceDocumentUploadId", evidenceDocumentUploadId)))
   }
 
   def insertRequestSentReference(credId: CredId, ref: String): Future[Option[PropertyLinkingUserAnswers]] = {
@@ -132,7 +132,7 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
   def deleteEvidenceDocument(credId: CredId): Future[Boolean] = {
     val updateObservable: SingleObservable[UpdateResult] = collection.updateOne(filterByCredId(credId),
       combine(
-        Updates.unset("evidenceDocumentName"),
+        Updates.unset("evidenceDocument"),
         Updates.unset("evidenceDocumentUrl"),
         Updates.unset("evidenceDocumentUploadId")))
 

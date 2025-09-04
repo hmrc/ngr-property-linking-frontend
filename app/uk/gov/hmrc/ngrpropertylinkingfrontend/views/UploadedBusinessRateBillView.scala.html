@@ -38,15 +38,16 @@
         Upload your @messages(s"uploadEvidence.${evidence.get}")
     }
 }
+
 @layout(
     pageTitle    = Some(if(evidence.isEmpty){messages("uploadBusinessRatesBill.title")}else{"Upload your " + messages(s"uploadEvidence.${evidence.get}")}),
     fullWidth = true,
     showBackLink = true,
     navigationBarContent = Some(navigationBarContent),
     additionalHeadBlock = status match {
-                case UploadStatus.InProgress => Some(refreshHeader)
-                case _                       => None
-            }
+        case UploadStatus.InProgress => Some(refreshHeader)
+        case _                       => None
+    }
 ) {
 <span class="govuk-caption-m">@addressFull</span>
 <h1 class="govuk-heading-l">@heading</h1>

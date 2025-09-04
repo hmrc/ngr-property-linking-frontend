@@ -23,18 +23,22 @@ import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.Updates.combine
 import org.mongodb.scala.model.*
+import org.mongodb.scala.result.UpdateResult
 import play.api.Logging
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.FrontendAppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import org.mongodb.scala.SingleObservableFuture
+import org.mongodb.scala.{SingleObservable, SingleObservableFuture}
+import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId
 
 import java.time.{Instant, LocalDate}
 import scala.util.{Failure, Success}
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import scala.concurrent.impl.Promise
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -100,7 +104,7 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
     }
     findAndUpdateByCredId(credId, updates: _*)
   }
-  
+
   def insertConnectionToProperty(credId: CredId, connectionToProperty: String): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.set("connectionToProperty", connectionToProperty))
   }
@@ -108,11 +112,11 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
   def insertBusinessRatesBill(credId: CredId, businessRatesBill: String): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.set("businessRatesBill", businessRatesBill))
   }
-  
-  def insertEvidenceDocument(credId: CredId, evidenceDocument: String): Future[Option[PropertyLinkingUserAnswers]] = {
-    findAndUpdateByCredId(credId, Updates.set("evidenceDocument", evidenceDocument))
+
+  def insertEvidenceDocument(credId: CredId, evidenceDocument: String, evidenceDocumentUrl: String, evidenceDocumentUploadId: String): Future[Option[PropertyLinkingUserAnswers]] = {
+    findAndUpdateByCredId(credId, Updates.combine(Updates.set("evidenceDocument", evidenceDocument), Updates.set("evidenceDocumentUrl", evidenceDocumentUrl), Updates.set("evidenceDocumentUploadId", evidenceDocumentUploadId)))
   }
-  
+
   def insertRequestSentReference(credId: CredId, ref: String): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.set("requestSentReference", ref))
   }
@@ -121,6 +125,20 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
     findAndUpdateByCredId(credId, Updates.set("uploadEvidence", uploadEvidence))
   }
   
+  def insertUploadId(credId: CredId, uploadId: UploadId): Future[Option[PropertyLinkingUserAnswers]] = {
+    findAndUpdateByCredId(credId, Updates.set("evidenceDocumentUploadId", uploadId.value))
+  }
+
+  def deleteEvidenceDocument(credId: CredId): Future[Boolean] = {
+    val updateObservable: SingleObservable[UpdateResult] = collection.updateOne(filterByCredId(credId),
+      combine(
+        Updates.unset("evidenceDocument"),
+        Updates.unset("evidenceDocumentUrl"),
+        Updates.unset("evidenceDocumentUploadId")))
+
+    updateObservable.toFuture().map(_.wasAcknowledged())
+  }
+
   def findByCredId(credId: CredId): Future[Option[PropertyLinkingUserAnswers]] = {
     collection.find(
       equal("credId.value", credId.value)

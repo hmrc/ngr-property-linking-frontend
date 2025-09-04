@@ -36,7 +36,7 @@ class UpscanConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig
   def initiate(
                 redirectOnSuccess: Option[String],
                 redirectOnError: Option[String]
-              )(implicit hc: HeaderCarrier): Future[UpscanInitiateResponse] =
+              )(implicit hc: HeaderCarrier): Future[UpscanInitiateResponse] = {
     val request = UpscanInitiateRequest(
       callbackUrl = appConfig.callbackEndpointTarget,
       successRedirect = redirectOnSuccess,
@@ -46,7 +46,7 @@ class UpscanConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig
     val upscanInitiateUri = s"${appConfig.upscanHost}/upscan/v2/initiate"
 
     for
-      response <- httpClientV2.post(url"${upscanInitiateUri}")
+      response <- httpClientV2.post(url"$upscanInitiateUri")
         .withBody(Json.toJson(request))
         .setHeader(headers.toSeq: _*)
         .execute[PreparedUpload]
@@ -54,5 +54,5 @@ class UpscanConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig
       postTarget = response.uploadRequest.href
       formFields = response.uploadRequest.fields
     yield UpscanInitiateResponse(fileReference, postTarget, formFields)
-  
+  }
 }

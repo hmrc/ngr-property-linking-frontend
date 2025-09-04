@@ -59,13 +59,13 @@ class RemoveBusinessRatesBillViewSpec extends ViewBaseSpec {
 
   private object Selectors {
     val title = "head > title"
-    val address = "#main-content > div > div > div.govuk-grid-row > div > span"
-    val mainText = "#main-content > div > div > div.govuk-grid-row > div > h1"
-    val minorText = "#main-content > div > div > div.govuk-grid-row > div > p"
-    val fileName = "#main-content > div > div > div.govuk-grid-row > div > dl > div > dt > a"
-    val uploaded = "#main-content > div > div > div.govuk-grid-row > div > dl > div > dd"
-    val removeButton = "#main-content > div > div > div.govuk-grid-row > div > div > a"
-    val cancelLink = "#main-content > div > div > div.govuk-grid-row > div > div > p > a"
+    val address = "#main-content > div > div.govuk-grid-column-two-thirds > form > span"
+    val mainText = "#main-content > div > div.govuk-grid-column-two-thirds > form > h1"
+    val minorText = "#main-content > div > div.govuk-grid-column-two-thirds > form > p"
+    val fileName = "#main-content > div > div.govuk-grid-column-two-thirds > form > dl > div > dt > a"
+    val uploaded = "#main-content > div > div.govuk-grid-column-two-thirds > form > dl > div > dd"
+    val removeButton = "#continue"
+    val cancelLink = "#main-content > div > div.govuk-grid-column-two-thirds > form > div > p > a"
   }
 
   "RemoveBusinessRatesBillView" must {
@@ -121,10 +121,6 @@ class RemoveBusinessRatesBillViewSpec extends ViewBaseSpec {
 
       "have a remove button with correct text" in {
         elementText(Selectors.removeButton) mustBe "Remove file"
-      }
-
-      "remove button has the correct href" in {
-        element(Selectors.removeButton).attribute("href").toString must include("/ngr-property-linking-frontend/confirm-remove-file")
       }
 
       "have a cancel link with correct text" in {

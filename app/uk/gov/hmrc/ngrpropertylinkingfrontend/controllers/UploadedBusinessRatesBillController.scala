@@ -53,7 +53,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
       propertyLinkingUserAnswers = maybePropertyLinkingUserAnswers.getOrElse(throw new NotFoundException("Property not found in UploadedBusinessRatesBillController.show()"))
       uploadId = UploadId(propertyLinkingUserAnswers.evidenceDocumentUploadId.getOrElse(throw new NotFoundException("evidenceDocumentUploadId not found in UploadedBusinessRatesBillController.show()")))
       address = propertyLinkingUserAnswers.vmvProperty.addressFull
-      evidenceDocument = propertyLinkingUserAnswers.evidenceDocument
+      uploadEvidence = propertyLinkingUserAnswers.uploadEvidence
       uploadResult <- uploadProgressTracker.getUploadResult(uploadId)
     }
     yield {
@@ -67,7 +67,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
           address,
           uploadId,
           UploadStatus.UploadedSuccessfully(evidenceDocument, mimeType, downloadUrl, size),
-          Some(evidenceDocument)))
+          uploadEvidence))
       case Some(UploadStatus.InProgress) =>
         Ok(uploadedBusinessRateBillView(
           createDefaultNavBar,
@@ -75,7 +75,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
           address,
           uploadId,
           UploadStatus.InProgress,
-          evidenceDocument))
+          uploadEvidence))
       case Some(UploadStatus.Failed) =>
         Ok(uploadedBusinessRateBillView(
           createDefaultNavBar,
@@ -83,7 +83,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
           address,
           uploadId,
           UploadStatus.Failed,
-          evidenceDocument))
+          uploadEvidence))
       case None => BadRequest(s"Upload with id ${uploadId.value} not found")}
   }
 

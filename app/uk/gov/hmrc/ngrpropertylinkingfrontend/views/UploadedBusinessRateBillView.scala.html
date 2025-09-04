@@ -32,7 +32,11 @@
 }
 
 @heading = {
+    @if(evidence.isEmpty){
         @messages("uploadBusinessRatesBill.title")
+    }else{
+        Upload your @messages(s"uploadEvidence.${evidence.get}")
+    }
 }
 
 @layout(

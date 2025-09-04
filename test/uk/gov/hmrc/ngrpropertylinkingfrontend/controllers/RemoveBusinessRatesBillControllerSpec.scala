@@ -145,7 +145,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     "makeSummaryList() builds the correct SummaryList" in {
       val downloadUrl: String = "http://localhost:1000/testDownloadUrl.com"
       val expectedSummaryList: SummaryList = SummaryList(
-        Seq(
+        rows = Seq(
           NGRSummaryListRow(
             titleMessageKey = fileName,
             captionKey = None,
@@ -154,7 +154,9 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
             titleLink = Some(Link(Call("GET", downloadUrl), "file-download-link", "")),
             valueClasses = Some("govuk-tag govuk-tag--green")
           )
-        ).map(summarise))
+        ).map(summarise),
+        classes = "govuk-summary-list--long-key"
+      )
       val actualSummaryList: SummaryList = controller().buildSummaryList(fileName, URL(downloadUrl))
 
       actualSummaryList mustBe expectedSummaryList

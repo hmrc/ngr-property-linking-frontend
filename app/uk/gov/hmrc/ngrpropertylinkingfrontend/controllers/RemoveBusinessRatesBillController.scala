@@ -34,7 +34,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import java.net.URL
+import java.net.{URI, URL}
 
 @Singleton
 class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRatesBillView,
@@ -50,7 +50,7 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
 
       propertyLinkingRepo.findByCredId(credId).map {
         case Some(PropertyLinkingUserAnswers(credId, vmvProperty, _, _, _, _, Some(evidenceDocument), Some(evidenceDocumentUrl), _, _)) =>
-          val summaryList: SummaryList = buildSummaryList(evidenceDocument, URL(evidenceDocumentUrl))
+          val summaryList: SummaryList = buildSummaryList(evidenceDocument, URI(evidenceDocumentUrl).toURL)
           Ok(removeView(createDefaultNavBar, vmvProperty.addressFull, summaryList))
         case Some(_) => throw new NotFoundException("Fields not found in RemoveBusinessRatesBillController.show()")
         case None => throw new NotFoundException("Property not found in RemoveBusinessRatesBillController.show()")
@@ -63,10 +63,10 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
       val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in RemoveBusinessRatesBillController.remove()")))
 
       propertyLinkingRepo.findByCredId(credId).flatMap {
-        case Some(PropertyLinkingUserAnswers(credId, _, _, _, _, _, evidenceDocument, _, Some(evidenceDocumentUploadId), _)) =>
-          propertyLinkingRepo.deleteEvidenceDocument(credId).map { deleted =>
+        case Some(propertyLinkingUserAnswers) if propertyLinkingUserAnswers.evidenceDocument.isDefined && propertyLinkingUserAnswers.evidenceDocumentUploadId.isDefined =>
+          propertyLinkingRepo.deleteEvidenceDocument(propertyLinkingUserAnswers.credId).map { deleted =>
             if (deleted) {
-              Redirect(routes.UploadBusinessRatesBillController.show(None, None))
+              Redirect(routes.UploadBusinessRatesBillController.show(None, propertyLinkingUserAnswers.uploadEvidence))
             } else {
               throw new RuntimeException("Failed to delete evidence document in RemoveBusinessRatesBillController.remove()")
             }
@@ -79,7 +79,7 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
 
   def buildSummaryList(fileName: String, downloadUrl: URL)(implicit messages: Messages): SummaryList = {
     SummaryList(
-      Seq(
+      rows = Seq(
         NGRSummaryListRow(
           titleMessageKey = fileName,
           captionKey = None,
@@ -88,7 +88,8 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
           titleLink = Some(Link(Call("GET", downloadUrl.toString), "file-download-link", "")),
           valueClasses = Some("govuk-tag govuk-tag--green")
         )
-      ).map(summarise)
+      ).map(summarise),
+      classes = "govuk-summary-list--long-key"
     )
   }
 }

@@ -23,6 +23,7 @@
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 
 @this(layout: Layout,
+      formHelper: FormWithCSRF,
       govukSummaryList: GovukSummaryList,
       saveAndContinueButton: saveAndContinueButton,
       linkComponent: LinkComponent)
@@ -33,12 +34,11 @@
 
 @layout(
     pageTitle    = Some(heading),
-    fullWidth = true,
+    fullWidth = false,
     showBackLink = true,
     navigationBarContent = Some(navigationBarContent)
 ) {
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+@formHelper(action = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.RemoveBusinessRatesBillController.remove, Symbol("autoComplete") -> "off") {
         <span class="govuk-caption-m">@addressFull</span>
         <h1 class="govuk-heading-l">@messages("removeBusinessRatesBill.h1")</h1>
 
@@ -48,12 +48,9 @@
 
         @govukSummaryList(summaryList)
 
-    <div class="govuk-button-group">
-            <a href="@uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.RemoveBusinessRatesBillController.remove">
+        <div class="govuk-button-group">
             @saveAndContinueButton(msg = messages("removeBusinessRatesBill.continue"), isStartButton = false, disabled = false)
-            </a>
             @linkComponent(label = messages("removeBusinessRatesBill.cancel"), hrefUrl = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.UploadedBusinessRatesBillController.show.url)
-    </div>
         </div>
-    </div>
     }
+}

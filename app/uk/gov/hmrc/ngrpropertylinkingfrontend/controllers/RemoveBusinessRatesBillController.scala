@@ -52,7 +52,7 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
       propertyLinkingRepo.findByCredId(credId).map {
         case Some(propertyLinkingUserAnswers) if isEvidenceExist(propertyLinkingUserAnswers) =>
           val summaryList: SummaryList = buildSummaryList(propertyLinkingUserAnswers.evidenceDocument.get, URI(propertyLinkingUserAnswers.evidenceDocumentUrl.get).toURL)
-          Ok(removeView(createDefaultNavBar, propertyLinkingUserAnswers.vmvProperty.addressFull, summaryList))
+          Ok(removeView(createDefaultNavBar, propertyLinkingUserAnswers.vmvProperty.addressFull, summaryList, propertyLinkingUserAnswers.evidenceDocumentUploadId.map(UploadId(_)).get))
         case Some(_) => throw new NotFoundException("Fields not found in RemoveBusinessRatesBillController.show()")
         case None => throw new NotFoundException("Property not found in RemoveBusinessRatesBillController.show()")
       }

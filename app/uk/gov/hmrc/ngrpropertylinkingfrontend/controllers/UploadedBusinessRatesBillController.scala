@@ -46,12 +46,11 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
                                                     mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
-  def show: Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
+  def show(uploadId: UploadId): Action[AnyContent] = (authenticate andThen isRegisteredCheck).async { implicit request =>
     val credId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in UploadedBusinessRatesBillController.show()")))
     for {
       maybePropertyLinkingUserAnswers <- propertyLinkingRepo.findByCredId(credId)
       propertyLinkingUserAnswers = maybePropertyLinkingUserAnswers.getOrElse(throw new NotFoundException("Property not found in UploadedBusinessRatesBillController.show()"))
-      uploadId = UploadId(propertyLinkingUserAnswers.evidenceDocumentUploadId.getOrElse(throw new NotFoundException("evidenceDocumentUploadId not found in UploadedBusinessRatesBillController.show()")))
       address = propertyLinkingUserAnswers.vmvProperty.addressFull
       evidenceType = propertyLinkingUserAnswers.uploadEvidence
       uploadResult <- uploadProgressTracker.getUploadResult(uploadId)

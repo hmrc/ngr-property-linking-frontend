@@ -110,7 +110,12 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
   }
 
   def insertBusinessRatesBill(credId: CredId, businessRatesBill: String): Future[Option[PropertyLinkingUserAnswers]] = {
-    findAndUpdateByCredId(credId, Updates.set("businessRatesBill", businessRatesBill))
+    findAndUpdateByCredId(credId,
+      Seq(
+        Updates.set("businessRatesBill", businessRatesBill),
+        Updates.unset("uploadEvidence")
+      ): _*
+    )
   }
 
   def insertEvidenceDocument(credId: CredId, evidenceDocument: String, evidenceDocumentUrl: String, evidenceDocumentUploadId: String): Future[Option[PropertyLinkingUserAnswers]] = {

@@ -58,13 +58,13 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
         case Some(rawCredId) =>
           val errorToDisplay: Option[String] = renderError(errorCode)
           val uploadId = UploadId.generate()
-          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show.url}"
+          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId).url}"
           val evidenceParameter = evidenceType.map(evidenceValue => s"?evidenceType=$evidenceValue").getOrElse("")
           val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill$evidenceParameter"
 
           for
             upscanInitiateResponse <- upScanConnector.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
-            maybePropertyLinkingUserAnswers <- propertyLinkingRepo.insertUploadId(CredId(rawCredId), uploadId)
+            maybePropertyLinkingUserAnswers <- propertyLinkingRepo.findByCredId(CredId(rawCredId))
             _ <- uploadProgressTracker.requestUpload(uploadId, Reference(upscanInitiateResponse.fileReference.reference))
           yield Ok(uploadView(uploadForm(),
             upscanInitiateResponse,

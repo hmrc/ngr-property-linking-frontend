@@ -28,7 +28,7 @@
       saveAndContinueButton: saveAndContinueButton,
       linkComponent: LinkComponent)
 
-@(navigationBarContent: NavigationBarContent, addressFull: String, summaryList: SummaryList)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(navigationBarContent: NavigationBarContent, addressFull: String, summaryList: SummaryList, uploadId: UploadId)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("removeBusinessRatesBill.title")}
 
@@ -50,7 +50,7 @@
 
         <div class="govuk-button-group">
             @saveAndContinueButton(msg = messages("removeBusinessRatesBill.continue"), isStartButton = false, disabled = false)
-            @linkComponent(label = messages("removeBusinessRatesBill.cancel"), hrefUrl = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.UploadedBusinessRatesBillController.show.url)
+            @linkComponent(label = messages("removeBusinessRatesBill.cancel"), hrefUrl = uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.UploadedBusinessRatesBillController.show(uploadId).url)
         </div>
     }
 }

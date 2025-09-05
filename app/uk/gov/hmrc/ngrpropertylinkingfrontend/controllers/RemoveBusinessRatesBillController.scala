@@ -27,7 +27,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FileUploadRepo, PropertyLinkingRepo}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.RemoveBusinessRatesBillView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
@@ -41,6 +41,7 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
                                                   authenticate: AuthRetrievals,
                                                   isRegisteredCheck: RegistrationAction,
                                                   propertyLinkingRepo: PropertyLinkingRepo,
+                                                  fileUploadRepo: FileUploadRepo,
                                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
@@ -49,9 +50,9 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
       val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in RemoveBusinessRatesBillController.show()")))
 
       propertyLinkingRepo.findByCredId(credId).map {
-        case Some(PropertyLinkingUserAnswers(credId, vmvProperty, _, _, _, _, Some(evidenceDocument), Some(evidenceDocumentUrl), _, _)) =>
-          val summaryList: SummaryList = buildSummaryList(evidenceDocument, URI(evidenceDocumentUrl).toURL)
-          Ok(removeView(createDefaultNavBar, vmvProperty.addressFull, summaryList))
+        case Some(propertyLinkingUserAnswers) if isEvidenceExist(propertyLinkingUserAnswers) =>
+          val summaryList: SummaryList = buildSummaryList(propertyLinkingUserAnswers.evidenceDocument.get, URI(propertyLinkingUserAnswers.evidenceDocumentUrl.get).toURL)
+          Ok(removeView(createDefaultNavBar, propertyLinkingUserAnswers.vmvProperty.addressFull, summaryList))
         case Some(_) => throw new NotFoundException("Fields not found in RemoveBusinessRatesBillController.show()")
         case None => throw new NotFoundException("Property not found in RemoveBusinessRatesBillController.show()")
       }
@@ -63,9 +64,12 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
       val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in RemoveBusinessRatesBillController.remove()")))
 
       propertyLinkingRepo.findByCredId(credId).flatMap {
-        case Some(propertyLinkingUserAnswers) if propertyLinkingUserAnswers.evidenceDocument.isDefined && propertyLinkingUserAnswers.evidenceDocumentUploadId.isDefined =>
-          propertyLinkingRepo.deleteEvidenceDocument(propertyLinkingUserAnswers.credId).map { deleted =>
-            if (deleted) {
+        case Some(propertyLinkingUserAnswers) if isEvidenceExist(propertyLinkingUserAnswers) =>
+          for {
+            deletedEvidence <- propertyLinkingRepo.deleteEvidenceDocument(propertyLinkingUserAnswers.credId)
+            deletedUpload <- fileUploadRepo.deleteByUploadId(UploadId(propertyLinkingUserAnswers.evidenceDocumentUploadId.getOrElse(throw new NotFoundException("evidenceDocumentUploadId not found in propertyLinking repo"))))
+          } yield {
+            if (deletedEvidence && deletedUpload) {
               Redirect(routes.UploadBusinessRatesBillController.show(None, propertyLinkingUserAnswers.uploadEvidence))
             } else {
               throw new RuntimeException("Failed to delete evidence document in RemoveBusinessRatesBillController.remove()")
@@ -92,4 +96,9 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
       classes = "govuk-summary-list--long-key"
     )
   }
+  
+  def isEvidenceExist(propertyLinkingUserAnswers: PropertyLinkingUserAnswers): Boolean =
+    propertyLinkingUserAnswers.evidenceDocument.isDefined &&
+      propertyLinkingUserAnswers.evidenceDocumentUrl.isDefined &&
+      propertyLinkingUserAnswers.evidenceDocumentUploadId.isDefined
 }

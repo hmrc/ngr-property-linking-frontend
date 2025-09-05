@@ -25,22 +25,22 @@
 
 @this(layout: Layout, govukSummaryList: GovukSummaryList, saveAndContinueButton: saveAndContinueButton)
 
-@(navigationBarContent: NavigationBarContent, summaryList: SummaryList, addressFull: String, uploadId: UploadId, status: UploadStatus, evidence: Option[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(navigationBarContent: NavigationBarContent, summaryList: SummaryList, addressFull: String, uploadId: UploadId, status: UploadStatus, evidenceType: Option[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @refreshHeader = {
     <meta http-equiv="refresh" content="1"/>
 }
 
 @heading = {
-    @if(evidence.isEmpty){
+    @if(evidenceType.isEmpty){
         @messages("uploadBusinessRatesBill.title")
     }else{
-        Upload your @messages(s"uploadEvidence.${evidence.get}")
+        Upload your @messages(s"uploadEvidence.${evidenceType.get}.title")
     }
 }
 
 @layout(
-    pageTitle    = Some(if(evidence.isEmpty){messages("uploadBusinessRatesBill.title")}else{"Upload your " + messages(s"uploadEvidence.${evidence.get}")}),
+    pageTitle    = Some(if(evidenceType.isEmpty){messages("uploadBusinessRatesBill.title")}else{"Upload your " + messages(s"uploadEvidence.${evidenceType.get}.title")}),
     fullWidth = true,
     showBackLink = true,
     navigationBarContent = Some(navigationBarContent),

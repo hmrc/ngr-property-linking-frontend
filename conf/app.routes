@@ -29,7 +29,7 @@ GET        /manual-search                       uk.gov.hmrc.ngrpropertylinkingfr
 POST       /manual-search                       uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ManualPropertySearchController.submit
 GET        /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.show(mode: String)
 POST       /current-ratepayer                   uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.CurrentRatepayerController.submit(mode: String)
-GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show(errorCode: Option[String], evidence: Option[String])
+GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadBusinessRatesBillController.show(errorCode: Option[String], evidenceType: Option[String])
 GET        /uploaded-business-rates-bill        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadedBusinessRatesBillController.show
 GET        /remove-uploaded-file                uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RemoveBusinessRatesBillController.show
 GET        /confirm-remove-file                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RemoveBusinessRatesBillController.remove

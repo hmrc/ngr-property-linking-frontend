@@ -130,13 +130,14 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
   }
 
   def deleteEvidenceDocument(credId: CredId): Future[Boolean] = {
-    val updateObservable: SingleObservable[UpdateResult] = collection.updateOne(filterByCredId(credId),
+    collection.updateOne(filterByCredId(credId),
       combine(
         Updates.unset("evidenceDocument"),
         Updates.unset("evidenceDocumentUrl"),
-        Updates.unset("evidenceDocumentUploadId")))
-
-    updateObservable.toFuture().map(_.wasAcknowledged())
+        Updates.unset("evidenceDocumentUploadId")
+      )
+    ).toFuture()
+      .map(_.wasAcknowledged())
   }
 
   def findByCredId(credId: CredId): Future[Option[PropertyLinkingUserAnswers]] = {

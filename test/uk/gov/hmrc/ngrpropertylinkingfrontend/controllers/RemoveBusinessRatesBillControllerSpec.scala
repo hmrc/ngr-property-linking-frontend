@@ -51,6 +51,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     mockAuthJourney,
     mockIsRegisteredCheck,
     mockPropertyLinkingRepo,
+    mockFileUploadRepo,
     mcc
   )
 
@@ -97,6 +98,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
       mockRequest(hasCredId = true)
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       when(mockPropertyLinkingRepo.deleteEvidenceDocument(any())).thenReturn(Future.successful(true))
+      when(mockFileUploadRepo.deleteByUploadId(any())).thenReturn(Future.successful(true))
 
       val result = controller().remove()(authenticatedFakeRequest)
       redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None, None).url)
@@ -135,6 +137,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
       mockRequest(hasCredId = true)
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       when(mockPropertyLinkingRepo.deleteEvidenceDocument(any())).thenReturn(Future.successful(false))
+      when(mockFileUploadRepo.deleteByUploadId(any())).thenReturn(Future.successful(false))
 
       val exception = intercept[RuntimeException] {
         await(controller().remove()(authenticatedFakeRequest))

@@ -28,6 +28,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
 import uk.gov.hmrc.http.{NotFoundException, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadStatus.UploadedSuccessfully
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadedBusinessRateBillView
@@ -50,6 +51,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
   val fileExtension: String = ".png"
   val fileUrl: URL = url"http://example.com/dummyLink"
   val fileSize: Option[Long] = Some(120L)
+  val uploadId = UploadId.generate()
 
   "UploadedBusinessRatesBillController show()" must {
     "Return OK and the correct view" in {
@@ -57,7 +59,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully(fileName, fileExtension, fileUrl, fileSize))))
       when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any(), any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-      val result = controller.show(authenticatedFakeRequest)
+      val result = controller.show(uploadId)(authenticatedFakeRequest)
       status(result) mustBe OK
       val content = contentAsString(result)
       content must include("")
@@ -67,7 +69,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
       mockRequest(hasCredId = true)
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
       recoverToExceptionIf[NotFoundException] {
-        controller.show(authenticatedFakeRequest)
+        controller.show(uploadId)(authenticatedFakeRequest)
       }.map { ex =>
         ex.getMessage mustBe "Not found property on account"
       }
@@ -77,7 +79,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
       mockRequest(hasCredId = true)
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(None))
-      val result = controller.show(authenticatedFakeRequest)
+      val result = controller.show(uploadId)(authenticatedFakeRequest)
       status(result) mustBe BAD_REQUEST
     }
 
@@ -86,7 +88,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
       when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully(fileName, fileExtension, fileUrl, fileSize))))
       when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any(), any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       recoverToExceptionIf[NotFoundException] {
-        controller.show(authenticatedFakeRequest)
+        controller.show(uploadId)(authenticatedFakeRequest)
       }.map { ex =>
         ex.getMessage mustBe "No credId found in request"
       }

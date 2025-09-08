@@ -134,7 +134,7 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           addressFull = "address",
           uploadId = UploadId("12345"),
           status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)),
-          evidence = None
+          evidenceType = None
         ).body)
 
 
@@ -174,7 +174,7 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           addressFull = "address",
           uploadId = UploadId("12345"),
           status = InProgress,
-          evidence = None
+          evidenceType = None
         ).body)
 
 
@@ -209,7 +209,7 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           addressFull = "address",
           uploadId = UploadId("12345"),
           status = Failed,
-          evidence = None
+          evidenceType = None
         ).body)
 
 

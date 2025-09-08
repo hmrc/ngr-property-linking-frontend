@@ -69,7 +69,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
               Map("key" -> "value")
             )
           ))
-        when(mockPropertyLinkingRepo.insertUploadId(any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
         when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
         val result = controller.show(None, None)(authenticatedFakeRequest)
         status(result) mustBe OK

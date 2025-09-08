@@ -24,6 +24,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.RemoveBusinessRatesBillView
 
@@ -32,6 +33,7 @@ class RemoveBusinessRatesBillViewSpec extends ViewBaseSpec {
   private val address = "1 Mulholland Drive, LA, 6BH 4PE"
   private val fileName = "testFile.png"
   private val testFileUrl = "downloadYourFile.org"
+  private val uploadId = UploadId.generate()
 
   private val content: NavigationBarContent = NavBarPageContents.CreateNavBar(
     contents = NavBarContents(
@@ -70,9 +72,9 @@ class RemoveBusinessRatesBillViewSpec extends ViewBaseSpec {
 
   "RemoveBusinessRatesBillView" must {
     "render consistently using apply and render" must {
-      val rendered = view.apply(content, address, testSummaryList)(request, messages, mockConfig)
-      val renderedHtml = view.render(content, address, testSummaryList,  request, messages, mockConfig).body
-      lazy val htmlF = view.f(content, address, testSummaryList)
+      val rendered = view.apply(content, address, testSummaryList, uploadId)(request, messages, mockConfig)
+      val renderedHtml = view.render(content, address, testSummaryList, uploadId, request, messages, mockConfig).body
+      lazy val htmlF = view.f(content, address, testSummaryList, uploadId)
 
       "apply must be the same as render" in {
         rendered.body mustBe renderedHtml
@@ -89,7 +91,7 @@ class RemoveBusinessRatesBillViewSpec extends ViewBaseSpec {
 
     "display the correct content" must {
       implicit val document: Document =
-        Jsoup.parse(view(content, address, testSummaryList).body)
+        Jsoup.parse(view(content, address, testSummaryList, uploadId).body)
 
       "have the correct page title" in {
         elementText(Selectors.title) mustBe "Manage Your Business Rates Valuation - GOV.UK"

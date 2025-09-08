@@ -21,21 +21,23 @@ import org.mockito.Mockito.when
 import org.scalatest.RecoverMethods.recoverToExceptionIf
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status.*
+import play.api.mvc.Call
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
 import uk.gov.hmrc.http.{NotFoundException, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadStatus.{Failed, InProgress, UploadedSuccessfully}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow, PropertyLinkingUserAnswers}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadStatus.UploadedSuccessfully
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadedBusinessRateBillView
 
+import java.net.URL
 import scala.concurrent.Future
 
 class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with ScalaFutures {
-  var view: UploadedBusinessRateBillView = inject[UploadedBusinessRateBillView]
-
+  val view: UploadedBusinessRateBillView = inject[UploadedBusinessRateBillView]
   def controller: UploadedBusinessRatesBillController = new UploadedBusinessRatesBillController(
     mockUploadProgressTracker,
     view,
@@ -44,16 +46,20 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
     mockPropertyLinkingRepo,
     mcc
   )
+  val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty, evidenceDocumentUploadId = Some("12345"))
+  val fileName: String = "filename.png"
+  val fileExtension: String = ".png"
+  val fileUrl: URL = url"http://example.com/dummyLink"
+  val fileSize: Option[Long] = Some(120L)
+  val uploadId = UploadId.generate()
 
-  val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty)
-
-  "UploadedBusinessRatesBillController" must {
+  "UploadedBusinessRatesBillController show()" must {
     "Return OK and the correct view" in {
       mockRequest(hasCredId = true)
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-      when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully("filename.png", ".png", url"http://example.com/dummyLink", Some(120L)))))
-      when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-      val result = controller.show(UploadId("12345"), None)(authenticatedFakeRequest)
+      when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully(fileName, fileExtension, fileUrl, fileSize))))
+      when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any(), any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
+      val result = controller.show(uploadId)(authenticatedFakeRequest)
       status(result) mustBe OK
       val content = contentAsString(result)
       content must include("")
@@ -63,7 +69,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
       mockRequest(hasCredId = true)
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
       recoverToExceptionIf[NotFoundException] {
-        controller.show(UploadId("12345"), None)(authenticatedFakeRequest)
+        controller.show(uploadId)(authenticatedFakeRequest)
       }.map { ex =>
         ex.getMessage mustBe "Not found property on account"
       }
@@ -73,57 +79,68 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
       mockRequest(hasCredId = true)
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(None))
-      val result = controller.show(UploadId("12345"), None)(authenticatedFakeRequest)
+      val result = controller.show(uploadId)(authenticatedFakeRequest)
       status(result) mustBe BAD_REQUEST
     }
 
     "Exception when no credId in request" in {
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-      when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully("filename.png", ".png", url"http://example.com/dummyLink", Some(120L)))))
-      when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
+      when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully(fileName, fileExtension, fileUrl, fileSize))))
+      when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any(), any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       recoverToExceptionIf[NotFoundException] {
-        controller.show(UploadId("12345"), None)(authenticatedFakeRequest)
+        controller.show(uploadId)(authenticatedFakeRequest)
       }.map { ex =>
         ex.getMessage mustBe "No credId found in request"
       }
     }
   }
-  
-  "Calling the createSummary list function" should {
-    "return the correct Summary list" when {
-      "the Upload Status is set to inProgress" in {
-        val result = controller.storeAndShowUploadProgress(credId, InProgress, None)
-        val expected =
-          SummaryList(List(
-            SummaryListRow(
-              key = Key(Text("Uploading")),
-              value = Value(HtmlContent("""<span id="uploading-id"></span>"""))
-            )
-          ))
-        result mustBe expected
-      }
 
-      "the Upload Status is set to Failed" in {
-        val result = controller.storeAndShowUploadProgress(credId, Failed, None)
-        val expected =
-          SummaryList(List(
-            SummaryListRow(
-              key = Key(Text("Failed")),
-              value = Value(HtmlContent("""<span id="failed-id"></span>"""))
-            )
-          ))
-        result mustBe expected
-      }
-      
-      "the Upload Status is to Successful" in {
-        val result = controller.storeAndShowUploadProgress(credId, UploadedSuccessfully("filename.png", ".png", url"http://example.com/dummyLink", Some(120L)), None)
-        val expected = SummaryList(List(
-          SummaryListRow(Key(HtmlContent("""<a href="http://example.com/dummyLink" class="govuk-link govuk-summary-list__key_width">filename.png</a>"""), ""), Value(HtmlContent("""<span id="filename.png-id" class="govuk-tag govuk-tag--green">Uploaded</span>"""), ""), "", Some(Actions("", List(ActionItem("/ngr-property-linking-frontend/upload-business-rates-bill", Text("Remove"), None, "", Map("id" -> "remove-link"))))))), None, "", Map())
+  "buildInProgressOrFailedSummaryList() must build the correct summary list" must {
+    "the Upload Status is set to inProgress" in {
+      val expectedSummaryList =
+        SummaryList(List(
+          SummaryListRow(
+            key = Key(Text("Uploading")),
+            value = Value(HtmlContent("""<span id="uploading-id"></span>"""))
+          )
+        ))
+      val actualSummaryList = controller.buildInProgressOrFailedSummaryList("Uploading")
 
-        result mustBe expected
+      actualSummaryList mustBe expectedSummaryList
+    }
+
+    "the Upload Status is set to Failed" in {
+      val expectedSummaryList =
+        SummaryList(List(
+          SummaryListRow(
+            key = Key(Text("Failed")),
+            value = Value(HtmlContent("""<span id="failed-id"></span>"""))
+          )
+        ))
+      val actualSummaryList = controller.buildInProgressOrFailedSummaryList("Failed")
+
+      actualSummaryList mustBe expectedSummaryList
+    }
+  }
+
+    "buildSuccessSummaryList()" must {
+      "build the correct SummaryList when the Upload Status is to Successful" in {
+        val expectedSummaryList: SummaryList = SummaryList(
+          Seq(
+            NGRSummaryListRow(
+              titleMessageKey = fileName,
+              captionKey = None,
+              value = Seq(messages("uploadedBusinessRatesBill.uploaded")),
+              changeLink = Some(Link(Call("GET", routes.RemoveBusinessRatesBillController.show.url), "remove-link", "Remove")),
+              titleLink = Some(Link(Call("GET", fileUrl.toString), "file-download-link", "")),
+              valueClasses = Some("govuk-tag govuk-tag--green")
+            )
+          ).map(summarise))
+
+        val actualSummaryList = controller.buildSuccessSummaryList(fileName, fileUrl.toString)
+
+        actualSummaryList mustBe expectedSummaryList
       }
       
     }
-  }
-  
 }

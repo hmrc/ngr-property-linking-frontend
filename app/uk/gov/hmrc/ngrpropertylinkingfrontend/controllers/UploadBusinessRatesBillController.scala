@@ -52,30 +52,29 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
     "data-min-file-size" -> "1000"
   )
 
-  def show(errorCode: Option[String], evidence: Option[String]): Action[AnyContent] = {
+  def show(errorCode: Option[String], evidenceType: Option[String]): Action[AnyContent] = {
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       request.credId match {
         case Some(rawCredId) =>
           val errorToDisplay: Option[String] = renderError(errorCode)
-          val credId = CredId(rawCredId)
           val uploadId = UploadId.generate()
-          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId, evidence).url}"
-          val evidenceParameter = evidence.map(evidenceValue => s"?evidence=$evidenceValue").getOrElse("")
+          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId).url}"
+          val evidenceParameter = evidenceType.map(evidenceValue => s"?evidenceType=$evidenceValue").getOrElse("")
           val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill$evidenceParameter"
 
           for
             upscanInitiateResponse <- upScanConnector.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
-            maybeProperty <- propertyLinkingRepo.findByCredId(credId)
+            maybePropertyLinkingUserAnswers <- propertyLinkingRepo.findByCredId(CredId(rawCredId))
             _ <- uploadProgressTracker.requestUpload(uploadId, Reference(upscanInitiateResponse.fileReference.reference))
           yield Ok(uploadView(uploadForm(),
             upscanInitiateResponse,
             attributes,
             errorToDisplay,
-            maybeProperty.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
+            maybePropertyLinkingUserAnswers.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
             createDefaultNavBar,
             routes.FindAPropertyController.show.url,
             appConfig.ngrDashboardUrl,
-            evidence)
+            evidenceType)
           )
         case None => Future.failed(throw new NotFoundException("Missing credId in authenticated request"))
       }

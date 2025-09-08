@@ -75,7 +75,7 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
         navigationBarContent = content,
         searchAgainUrl = "searchAgain",
         dashboardUrl = "dashboard",
-        evidence = None)(request, messages, mockConfig)
+        evidenceType = None)(request, messages, mockConfig)
 
       val renderedHtml = view.render(
         form = form,
@@ -88,7 +88,7 @@ class UploadBusinessRatesBillViewSpec extends ViewBaseSpec {
         navigationBarContent = content,
         searchAgainUrl = "searchAgain",
         dashboardUrl = "dashboard",
-        evidence = None, request, messages, mockConfig).body
+        evidenceType = None, request, messages, mockConfig).body
 
       lazy val htmlF = view.f(form, upscanResponse, Map("accept" -> ".pdf,.png,.docx",
         "data-max-file-size" -> "100000000",

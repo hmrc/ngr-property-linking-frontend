@@ -123,3 +123,9 @@ class FileUploadRepo @Inject()(
       )
       .toFuture()
       .map(_.status)
+
+  def deleteByUploadId(uploadId: UploadId): Future[Boolean] = {
+    collection.deleteOne(equal("uploadId.value", uploadId.value))
+      .toFuture()
+      .map(_.wasAcknowledged())
+  }

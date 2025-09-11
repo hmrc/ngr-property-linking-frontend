@@ -65,7 +65,7 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
     val removeLink = "#remove-link"
     val uploadText = "#main-content > div > div > dl > div > dt"
     val failedText = "#main-content > div > div > dl > div > dt"
-    val paragraph = "#main-content > div > div.govuk-grid-column-full > p"
+    val paragraph = "#main-content > div > div.govuk-grid-column-two-thirds > p.govuk-caption-m.hmrc-caption-m"
   }
   
   val uploadSuccessful: Seq[Aliases.SummaryListRow] = Seq(

@@ -603,8 +603,7 @@ uploadBusinessRatesBill.error.fileAlreadyExists = The selected file has already 
 uploadBusinessRatesBill.error.invalidFileType = The selected file must be a PDF or PNG
 
 #RemoveBusinessRatesBill
-removeBusinessRatesBill.title = Manage Your Business Rates Valuation
-removeBusinessRatesBill.h1 = Are you sure you want to remove this file?
+removeBusinessRatesBill.title = Are you sure you want to remove this file?
 removeBusinessRatesBill.p1 = If you remove this file, you need to provide another one.
 removeBusinessRatesBill.continue = Remove file
 removeBusinessRatesBill.cancel = Cancel

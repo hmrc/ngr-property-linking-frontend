@@ -126,7 +126,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
     "buildSuccessSummaryList()" must {
       "build the correct SummaryList when the Upload Status is to Successful" in {
         val expectedSummaryList: SummaryList = SummaryList(
-          Seq(
+          rows = Seq(
             NGRSummaryListRow(
               titleMessageKey = fileName,
               captionKey = None,
@@ -135,7 +135,9 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
               titleLink = Some(Link(Call("GET", fileUrl.toString), "file-download-link", "")),
               valueClasses = Some("govuk-tag govuk-tag--green")
             )
-          ).map(summarise))
+          ).map(summarise),
+          classes = "govuk-summary-list--long-key"
+        )
 
         val actualSummaryList = controller.buildSuccessSummaryList(fileName, fileUrl.toString)
 

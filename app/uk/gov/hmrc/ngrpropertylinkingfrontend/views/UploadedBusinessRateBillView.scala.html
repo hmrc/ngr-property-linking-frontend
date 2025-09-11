@@ -41,7 +41,7 @@
 
 @layout(
     pageTitle    = Some(if(evidenceType.isEmpty){messages("uploadBusinessRatesBill.title")}else{"Upload your " + messages(s"uploadEvidence.${evidenceType.get}.title")}),
-    fullWidth = true,
+    fullWidth = false,
     showBackLink = true,
     navigationBarContent = Some(navigationBarContent),
     additionalHeadBlock = status match {

@@ -97,7 +97,8 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
           titleLink = Some(Link(Call("GET", downloadUrl), "file-download-link", "")),
           valueClasses = Some("govuk-tag govuk-tag--green")
         )
-      ).map(summarise)
+      ).map(summarise),
+      classes = "govuk-summary-list--long-key"
     )
   }
 

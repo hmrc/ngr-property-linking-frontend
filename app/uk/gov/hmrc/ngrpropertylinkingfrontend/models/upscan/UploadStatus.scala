@@ -22,6 +22,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadStatus.{Failed, InProgress, UploadedSuccessfully}
 
 import java.net.URL
+import java.time.Instant
 import java.util.UUID
 
 sealed trait UploadStatus
@@ -39,7 +40,8 @@ case class UploadDetails(
                           id       : ObjectId,
                           uploadId : UploadId,
                           reference: Reference,
-                          status   : UploadStatus
+                          status   : UploadStatus,
+                          createdAt: Instant = Instant.now()
                         )
 
 case class UploadId(value: String) extends AnyVal
@@ -49,4 +51,4 @@ object UploadId:
     UploadId(UUID.randomUUID().toString)
 
   implicit def queryBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[UploadId] =
-    stringBinder.transform(UploadId(_),_.value)
+    stringBinder.transform(UploadId(_), _.value)

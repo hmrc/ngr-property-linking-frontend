@@ -28,7 +28,7 @@ class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
   override val ngrDashboardUrl: String = "http://localhost:1503/ngr-dashboard-frontend/dashboard"
   override val ngrLogoutUrl: String = "http://localhost:1503/ngr-dashboard-frontend/signout"
   override val ngrStubHost: String = "http://localhost:1501"
-  override val timeToLive: String = "3.00"
+  override val timeToLive: String = "3"
   override val ngrPropertyLinkingFrontendInternalUrl: String = "http://localhost:1504/internal"
   override val ngrPropertyLinkingFrontendUrl: String = "http://localhost:1504/ngr-property-linking-frontend"
   override val callbackEndpointTarget: String = "http://localhost:1504/internal/callback-from-upscan"

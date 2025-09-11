@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.services
 
+import org.mockito.Mockito.when
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.bson.collection.immutable.Document
 import uk.gov.hmrc.http.StringContextOps
@@ -39,12 +40,11 @@ class UploadProgressTrackerSpec extends TestSupport with TestData with DefaultPl
 
   "UploadProgressTracker" should  {
     "continue workflow" in {
-
       val reference = Reference("12345")
       val id = UploadId("12345")
       val downloadUrl = url"https://www.some-site.com/a-file.txt"
       val expectedStatus = UploadStatus.UploadedSuccessfully("name", "mimeType", downloadUrl, size = Some(123))
-
+      
       progressTracker.requestUpload(id, reference).futureValue
       progressTracker.registerUploadResult(reference, expectedStatus).futureValue
       val result = progressTracker.getUploadResult(id).futureValue

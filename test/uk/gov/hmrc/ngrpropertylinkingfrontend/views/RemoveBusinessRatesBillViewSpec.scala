@@ -94,7 +94,7 @@ class RemoveBusinessRatesBillViewSpec extends ViewBaseSpec {
         Jsoup.parse(view(content, address, testSummaryList, uploadId).body)
 
       "have the correct page title" in {
-        elementText(Selectors.title) mustBe "Manage Your Business Rates Valuation - GOV.UK"
+        elementText(Selectors.title) mustBe "Are you sure you want to remove this file? - GOV.UK"
       }
 
       "have the correct address caption text" in {

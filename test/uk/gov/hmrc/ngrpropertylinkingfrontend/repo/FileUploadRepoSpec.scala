@@ -21,13 +21,17 @@ import uk.gov.hmrc.http.StringContextOps
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{TestData, TestSupport}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadDetails, UploadId, UploadStatus}
 
+import java.time.Instant
+
 class FileUploadRepoSpec extends TestSupport with TestData {
 
   "Serialization and deserialization of UploadDetails" should {
+    
+    val createdAt = Instant.parse("2025-09-10T12:43:58.342Z")
 
     "serialize and deserialize InProgress status" in {
 
-      val input = UploadDetails(ObjectId.get(), UploadId.generate(), Reference("ABC"), UploadStatus.InProgress)
+      val input = UploadDetails(ObjectId.get(), UploadId.generate(), Reference("ABC"), UploadStatus.InProgress, createdAt)
 
       val serialized = FileUploadRepo.mongoFormat.writes(input)
       val output = FileUploadRepo.mongoFormat.reads(serialized)
@@ -38,7 +42,7 @@ class FileUploadRepoSpec extends TestSupport with TestData {
 
     "serialize and deserialize Failed status" in {
 
-      val input = UploadDetails(ObjectId.get(), UploadId.generate(), Reference("ABC"), UploadStatus.Failed)
+      val input = UploadDetails(ObjectId.get(), UploadId.generate(), Reference("ABC"), UploadStatus.Failed, createdAt)
 
       val serialized = FileUploadRepo.mongoFormat.writes(input)
       val output = FileUploadRepo.mongoFormat.reads(serialized)
@@ -52,7 +56,8 @@ class FileUploadRepoSpec extends TestSupport with TestData {
         ObjectId.get(),
         UploadId.generate(),
         Reference("ABC"),
-        UploadStatus.UploadedSuccessfully("foo.txt", "text/plain", url"http:localhost:8080", size = None)
+        UploadStatus.UploadedSuccessfully("foo.txt", "text/plain", url"http:localhost:8080", size = None),
+        createdAt
       )
 
       val serialized = FileUploadRepo.mongoFormat.writes(input)
@@ -66,7 +71,8 @@ class FileUploadRepoSpec extends TestSupport with TestData {
         ObjectId.get(),
         UploadId.generate(),
         Reference("ABC"),
-        UploadStatus.UploadedSuccessfully("foo.txt", "text/plain", url"http:localhost:8080", size = Some(123456))
+        UploadStatus.UploadedSuccessfully("foo.txt", "text/plain", url"http:localhost:8080", size = Some(123456)),
+        createdAt
       )
 
       val serialized = FileUploadRepo.mongoFormat.writes(input)

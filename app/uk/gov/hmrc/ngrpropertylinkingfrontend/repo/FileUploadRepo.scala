@@ -19,19 +19,20 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.repo
 import com.mongodb.client.model.Indexes.descending
 import org.bson.types.ObjectId
 import org.mongodb.scala.model.Filters.equal
-import org.mongodb.scala.model.Updates.set
+import org.mongodb.scala.model.Updates.{combine, set}
 import org.mongodb.scala.SingleObservableFuture
 import org.mongodb.scala.bson.BsonDocument
-import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
+import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes, Updates}
 import play.api.libs.functional.syntax.*
 import play.api.libs.json.*
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadDetails, UploadId, UploadStatus}
-import uk.gov.hmrc.mongo.play.json.formats.MongoFormats
+import uk.gov.hmrc.mongo.play.json.formats.{MongoFormats, MongoJavatimeFormats}
 import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.{AppConfig, FrontendAppConfig}
 
 import java.net.{URI, URL}
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent
@@ -73,12 +74,15 @@ object FileUploadRepo:
     Format.at[String](__ \ "value")
       .inmap[Reference](Reference.apply, _.value)
 
+  private given Format[Instant] = MongoJavatimeFormats.instantFormat  
+
   private[repo] val mongoFormat: Format[UploadDetails] =
     given Format[ObjectId] = MongoFormats.objectIdFormat
-    ( (__ \ "_id"      ).format[ObjectId]
+    (   (__ \ "_id"      ).format[ObjectId]
       ~ (__ \ "uploadId" ).format[UploadId]
       ~ (__ \ "reference").format[Reference]
       ~ (__ \ "status"   ).format[UploadStatus]
+      ~ (__ \ "createdAt").format[Instant]
       )(UploadDetails.apply, Tuple.fromProductTyped _)
 
 @Singleton
@@ -93,7 +97,14 @@ class FileUploadRepo @Inject()(
   domainFormat   = FileUploadRepo.mongoFormat,
   indexes        = Seq(
     IndexModel(Indexes.ascending("uploadId"), IndexOptions().unique(true)),
-    IndexModel(Indexes.ascending("reference"), IndexOptions().unique(true))
+    IndexModel(Indexes.ascending("reference"), IndexOptions().unique(true)),
+    IndexModel(
+      descending("createdAt"),
+      IndexOptions()
+        .unique(false)
+        .name("createdAt")
+        .expireAfter(config.timeToLive.toLong, TimeUnit.HOURS)
+    )
   ),
   replaceIndexes = true
 ):
@@ -118,7 +129,7 @@ class FileUploadRepo @Inject()(
     collection
       .findOneAndUpdate(
         filter  = equal("reference", Codecs.toBson(reference)),
-        update  = set("status", Codecs.toBson(newStatus)),
+        update  = Seq(set("status", Codecs.toBson(newStatus)), set("createdAt", Instant.now())),
         options = FindOneAndUpdateOptions().upsert(true)
       )
       .toFuture()

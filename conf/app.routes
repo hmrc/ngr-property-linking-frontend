@@ -7,6 +7,10 @@ GET        /dashboard                           uk.gov.hmrc.ngrpropertylinkingfr
 GET        /signout                             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RedirectController.signout
 GET        /add-a-property                      uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyToYourAccountController.show
 POST       /add-a-property                      uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyToYourAccountController.submit
+
+GET        /review-your-property-details        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ReviewYourPropertyDetailsController.show
+POST       /review-your-property-details        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.ReviewYourPropertyDetailsController.submit
+
 GET        /property-search                     uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.FindAPropertyController.show
 POST       /property-search                     uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.FindAPropertyController.submit
 GET        /no-results                          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.NoResultsFoundController.show

@@ -440,6 +440,9 @@ propertySelected.heading= Do you want to add this property to your account?
 propertySelected.error.required = Select yes if you want to add this property to your account
 propertySelected.returnToAccountHome= Return to account home
 
+#reviewYourPropertyDetails
+reviewYourPropertyDetails.title = Review your property details
+reviewYourPropertyDetails.p1 = Holding page
 
 #NoResultsFound
 noResultsFound.title=No results found

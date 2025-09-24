@@ -30,8 +30,7 @@ class AddPropertyRequestSentViewSpec extends ViewBaseSpec {
   lazy val view: AddPropertyRequestSentView = inject[AddPropertyRequestSentView]
   lazy val navBarContent: NavigationBarContent = createDefaultNavBar()
   lazy val summaryList: SummaryList = SummaryList(Seq(
-    NGRSummaryListRow(messages("Address"), None, Seq("123 Nice Lane"), None),
-    NGRSummaryListRow(messages("Property Reference"), None, Seq("123456789"), None)
+    NGRSummaryListRow(messages("Address"), None, Seq("123 Nice Lane"), None)
   ).map(summarise))
 
   val email : String = "test@testUser.com"
@@ -40,11 +39,10 @@ class AddPropertyRequestSentViewSpec extends ViewBaseSpec {
     val title = "#main-content > div > div > div.govuk-panel.govuk-panel--confirmation > h1"
     val yourRef = "#main-content > div > div > div.govuk-panel.govuk-panel--confirmation > div"
     val print = "#printPage > a"
-    val emailSent = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(4)"
-    val whatNext = "#main-content > div > div > h2"
-    val p1 = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(6)"
-    val p2 = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(7)"
-    val goBack = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(8)"
+    val whatNext = "#main-content > div > div.govuk-grid-column-two-thirds > h2"
+    val p1 = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(5)"
+    val p2 = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(6)"
+    val goBack = "#main-content > div > div.govuk-grid-column-two-thirds > p:nth-child(7)"
   }
 
   "AddPropertyRequestSent" must {
@@ -71,7 +69,6 @@ class AddPropertyRequestSentViewSpec extends ViewBaseSpec {
       elementText(Selectors.title) mustBe "Add a property request sent"
       elementText(Selectors.yourRef) must include("Your reference is")
       elementText(Selectors.print) mustBe "Print this page"
-      elementText(Selectors.emailSent) mustBe "We have sent a confirmation email to test@testUser.com"
       elementText(Selectors.whatNext) mustBe "What happens next"
       elementText(Selectors.p1) mustBe "We can usually give you a decision on your request to add a property within 15 working days. We will email you with our decision"
       elementText(Selectors.p2) mustBe "When we approve your request, you can report a change to your property, rent or lease."

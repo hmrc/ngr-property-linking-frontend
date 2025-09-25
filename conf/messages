@@ -606,7 +606,6 @@ addPropertyRequestSent.title = Add a property request sent
 addPropertyRequestSent.yourReference = Your reference is
 addPropertyRequestSent.print = Print this page
 addPropertyRequestSent.address = Address
-addPropertyRequestSent.propertyReference = Property reference
 addPropertyRequestSent.p1 = We have sent a confirmation email to {0}
 addPropertyRequestSent.h2 = What happens next
 addPropertyRequestSent.p2 = We can usually give you a decision on your request to add a property within 15 working days. We will email you with our decision

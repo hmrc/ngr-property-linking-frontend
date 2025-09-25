@@ -44,8 +44,7 @@ class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentVie
 
   private def createSummaryRows(property: VMVProperty)(implicit messages: Messages): Seq[SummaryListRow] = {
     Seq(
-      NGRSummaryListRow(messages("Address"), None, Seq(property.addressFull), None),
-      NGRSummaryListRow(messages("Property Reference"), None, Seq(property.localAuthorityReference), None)
+      NGRSummaryListRow(messages("Address"), None, Seq(property.addressFull), None)
     ).map(summarise)
   }
 

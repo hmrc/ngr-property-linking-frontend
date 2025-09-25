@@ -120,13 +120,6 @@ saveAndContinueButton: saveAndContinueButton
         autoComplete = "postal-code"
         )
 
-        @govukDetails(Details(
-        id = Some("additional-search-options"),
-        summary = Text(messages("manualSearchProperty.additional.title")),
-        content = HtmlContent(dropDownContent),
-        open = isOpen
-        ))
-
         @saveAndContinueButton(msg = messages("manualSearchProperty.button"), isStartButton = false)
     </div>
 </div>

@@ -34,12 +34,6 @@ class ManualPropertySearchViewSpec extends ViewBaseSpec {
   lazy val townLabel = "Town or city (optional)"
   lazy val countyLabel = "County (optional)"
   lazy val postcodeLabel = "Postcode"
-  lazy val detailsLabel = "Additional search options"
-  lazy val referenceLabel = "Property reference"
-  lazy val miniRateableValueLabel = "Minimum rateable value in pounds"
-  lazy val miniRateableValueHint = "For example, 25,000"
-  lazy val maxRateableValueLabel = "Maximum rateable value in pounds"
-  lazy val maxRateableValueHint = "For example, 100,000"
   lazy val continueButton = "Find address"
   lazy val line1EmptyErrorMessage = "Error: Enter address line 1, typically the building and street"
   lazy val line1OverMaxLengthErrorMessage = "Error: Address line 1 must be 100 characters or less"
@@ -75,12 +69,6 @@ class ManualPropertySearchViewSpec extends ViewBaseSpec {
     val townLabel = "#main-content > div > div > form > div > div > div:nth-child(4) > label"
     val countyLabel = "#main-content > div > div > form > div > div > div:nth-child(5) > label"
     val postcodeLabel = "#main-content > div > div > form > div > div > div:nth-child(6) > label"
-    val detailsLabel = "#additional-search-options > summary > span"
-    val referenceLabel = "#additional-search-options > div > div:nth-child(1) > label"
-    val miniRateableValueLabel = "#additional-search-options > div > div:nth-child(2) > label"
-    val miniRateableValueHint = "#miniRateableValue-hint"
-    val maxRateableValueLabel = "#additional-search-options > div > div:nth-child(3) > label"
-    val maxRateableValueHint = "#maxRateableValue-hint"
     val continueButton = "#continue"
     val line1ErrorMessage = "#addressLine1-error"
     val line2ErrorMessage = "#addressLine2-error"
@@ -146,30 +134,6 @@ class ManualPropertySearchViewSpec extends ViewBaseSpec {
         elementText(Selectors.postcodeLabel) mustBe postcodeLabel
       }
 
-      "show correct details label" in {
-        elementText(Selectors.detailsLabel) mustBe detailsLabel
-      }
-
-      "show correct property reference label" in {
-        elementText(Selectors.referenceLabel) mustBe referenceLabel
-      }
-
-      "show correct minimum rateable value label" in {
-        elementText(Selectors.miniRateableValueLabel) mustBe miniRateableValueLabel
-      }
-
-      "show correct minimum rateable hint label" in {
-        elementText(Selectors.miniRateableValueHint) mustBe miniRateableValueHint
-      }
-
-      "show correct maximum rateable value label" in {
-        elementText(Selectors.maxRateableValueLabel) mustBe maxRateableValueLabel
-      }
-
-      "show correct maximum rateable hint label" in {
-        elementText(Selectors.maxRateableValueHint) mustBe maxRateableValueHint
-      }
-
       "show correct continue button" in {
         elementText(Selectors.continueButton) mustBe continueButton
       }
@@ -204,21 +168,6 @@ class ManualPropertySearchViewSpec extends ViewBaseSpec {
       elementText(Selectors.line2ErrorMessage) mustBe line2OverMaxLengthErrorMessage
       elementText(Selectors.townErrorMessage) mustBe townOverMaxLengthErrorMessage
       elementText(Selectors.countyErrorMessage) mustBe countyOverMaxLengthErrorMessage
-    }
-
-    "produce the same output for apply() and render() when exceeding max value of miniRateableValue and maxRateableValue" in {
-      val form = ManualPropertySearchForm
-        .form
-        .fillAndValidate(ManualPropertySearchForm(Some("Line1"), None, Some("town"), None, Postcode("TQ5 9BW"), None, None, None, None, Some(2147483648l), Some(2147483648l)))
-      val manualPropertySearchView = view(form, content)
-      lazy implicit val document: Document = Jsoup.parse(manualPropertySearchView.body)
-      val htmlApply = view.apply(form, content).body
-      val htmlRender = view.render(form, content, false, request, messages, mockConfig).body
-      lazy val htmlF = view.f(form, content, false)
-      htmlF.toString() must not be empty
-      htmlApply mustBe htmlRender
-      elementText(Selectors.miniRateableValueErrorMessage) mustBe miniRateableValueOverMaxErrorMessage
-      elementText(Selectors.maxRateableValueErrorMessage) mustBe maxRateableValueOverMaxErrorMessage
     }
   }
 }

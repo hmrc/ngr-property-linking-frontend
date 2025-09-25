@@ -103,35 +103,6 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
         val content = contentAsString(result)
         content must include("Enter a full UK postcode")
       }
-
-      "Submit invalid minimum rateable value and maximum rateable value and display error message" in {
-        mockConfig.features.vmvPropertyLookupTestEnabled(true)
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
-          .withFormUrlEncodedBody("addressLine1" -> "99",
-            "town" -> "Worthing",
-            "postcode" -> "W126WA",
-            "miniRateableValue" -> "£100,000 00abc",
-            "maxRateableValue" -> "£25,0asas%00.65")
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
-        status(result) mustBe BAD_REQUEST
-        val content = contentAsString(result)
-        content must include("Minimum rateable value must be a number, like £50,000")
-        content must include("Maximum rateable value must be a number, like £100,000")
-      }
-
-      "Submit with minimum rateable value greater than maximum rateable value and display error message" in {
-        mockConfig.features.vmvPropertyLookupTestEnabled(true)
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
-          .withFormUrlEncodedBody("addressLine1" -> "99",
-            "town" -> "Worthing",
-            "postcode" -> "W126WA",
-            "miniRateableValue" -> "100,000",
-            "maxRateableValue" -> "25,000")
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
-        status(result) mustBe BAD_REQUEST
-        val content = contentAsString(result)
-        content must include("Minimum rateable value must be lower than maximum rateable value")
-      }
     }
   }
 }

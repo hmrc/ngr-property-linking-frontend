@@ -539,17 +539,6 @@ manualSearchProperty.county.maxLength.error = County must be 100 characters or l
 manualSearchProperty.propertyReference.maxLength.error = Property reference must be 100 characters or less
 manualSearchProperty.miniRateableValue.maxLength.error = Minimum rateable value must be 20 characters or less
 manualSearchProperty.maxRateableValue.maxLength.error = Maximum rateable value must be 20 characters or less
-manualSearchProperty.additional.title = Additional search options
-manualSearchProperty.propertyReference.label = Property reference
-manualSearchProperty.miniRateableValue.label = Minimum rateable value in pounds
-manualSearchProperty.maxRateableValue.label = Maximum rateable value in pounds
-manualSearchProperty.miniRateableValue.hint = For example, 25,000
-manualSearchProperty.maxRateableValue.hint = For example, 100,000
-manualSearchProperty.miniRateableValue.limit.error = Minimum rateable value must be £2,147,483,647 or lower
-manualSearchProperty.maxRateableValue.limit.error = Maximum rateable value must be £2,147,483,647 or lower
-manualSearchProperty.miniRateableValue.validation.error = Minimum rateable value must be lower than maximum rateable value
-manualSearchProperty.miniRateableValue.invalid.error = Minimum rateable value must be a number, like £50,000
-manualSearchProperty.maxRateableValue.invalid.error = Maximum rateable value must be a number, like £100,000
 
 #ConnectionToProperty
 connectionToProperty.title = What is your connection to the property?

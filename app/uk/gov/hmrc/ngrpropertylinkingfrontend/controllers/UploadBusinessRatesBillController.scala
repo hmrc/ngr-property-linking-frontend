@@ -48,8 +48,8 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
 
   val attributes: Map[String, String] = Map(
     "accept" -> ".pdf,.png,.jpg,.jpeg",
-    "data-max-file-size" -> "100000000",
-    "data-min-file-size" -> "1000"
+    "data-max-file-size" -> "25000000",
+    "data-min-file-size" -> "10000",  
   )
 
   def show(errorCode: Option[String], evidenceType: Option[String]): Action[AnyContent] = {
@@ -84,7 +84,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
       errorCode match {
         case Some("InvalidArgument") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
         case Some("EntityTooLarge") => Some(Messages("uploadBusinessRatesBill.error.exceedsMaximumSize"))
-        case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.noFileSelected"))
+        case Some("EntityTooSmall") => Some(Messages("uploadBusinessRatesBill.error.belowMinimumSize"))
         case Some("InvalidFileType") => Some(Messages("uploadBusinessRatesBill.error.invalidFileType"))
         case Some("QUARANTINE") => Some(Messages("uploadBusinessRatesBill.error.virusDetected"))
         case Some("REJECTED") => Some(Messages("uploadBusinessRatesBill.error.problemWithUpload"))

@@ -601,6 +601,8 @@ uploadBusinessRatesBill.error.virusDetected = The selected file contains a virus
 
 uploadBusinessRatesBill.error.problemWithUpload = The selected file could not be uploaded
 uploadBusinessRatesBill.error.fileAlreadyExists = The selected file has already been uploaded
+uploadBusinessRatesBill.error.belowMinimumSize = The selected file must be larger than 10KB
+
 
 #dont need?
 uploadBusinessRatesBill.error.invalidFileType = The selected file must be a PDF or PNG

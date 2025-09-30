@@ -640,9 +640,20 @@ trait TestData {
     """
       |{"reference":"ref","uploadRequest":{"href":"href","fields":{"key":"value"}}}
       |""".stripMargin)
-  
-  val upScanInitiateRequestModel : UpscanInitiateRequest = UpscanInitiateRequest("callBackUrl",Some("Success"),Some("error"),Some(5),Some(200))
-  val upscanInitiateRequestJson : JsValue = Json.parse("""
-      |{"minimumFileSize":5,"errorRedirect":"error","callbackUrl":"callBackUrl","maximumFileSize":200,"successRedirect":"Success"}
-      |""".stripMargin)
+
+  val upScanInitiateRequestModel: UpscanInitiateRequest =
+    UpscanInitiateRequest("callBackUrl", Some("Success"), Some("error"), Some(10000), Some(25000000))
+
+  val upscanInitiateRequestJson: JsValue = Json.parse(
+    """
+      |{
+      |  "errorRedirect": "error",
+      |  "callbackUrl": "callBackUrl",
+      |  "maximumFileSize": 25000000,
+      |  "minimumFileSize": 10000,
+      |  "successRedirect": "Success"
+      |}
+      |""".stripMargin
+  )
+
 }

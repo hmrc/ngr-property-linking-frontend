@@ -22,7 +22,7 @@ case class UpscanInitiateRequest(
                                   callbackUrl    : String,
                                   successRedirect: Option[String] = None,
                                   errorRedirect  : Option[String] = None,
-                                  minimumFileSize: Option[Int]    = Some(250),
+                                  minimumFileSize: Option[Int]    = Some(10000),
                                   maximumFileSize: Option[Int]    = Some(25000000)
                                 )
 

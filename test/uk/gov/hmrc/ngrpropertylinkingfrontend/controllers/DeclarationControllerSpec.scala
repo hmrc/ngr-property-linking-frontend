@@ -21,7 +21,9 @@ import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.test.DefaultAwaitTimeout
-import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import play.api.test.Helpers.{await, contentAsString, redirectLocation, status}
+import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.ngrpropertylinkingfrontend.config.{AppConfig, FrontendAppConfig}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
@@ -39,22 +41,80 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
     mcc
   )
 
+  val appConfig: AppConfig = inject[FrontendAppConfig]
+  val dashboard: String = appConfig.ngrDashboardUrl
+  val referenceNumber: Option[String] =  Some("test-reqest-ref")
+
   "DeclarationController" must {
-    "Return OK and the correct view" in {
-      val result = controller().show()(authenticatedFakeRequest)
-      status(result) mustBe OK
-      val content = contentAsString(result)
-      content must include("Declaration")
+
+    "show" must {
+      "redirect to dashboard if reference nr exists" in {
+        when(mockPropertyLinkingRepo.findByCredId(any()))
+          .thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(
+            credId = credId,
+            vmvProperty = testVmvProperty,
+            requestSentReference = referenceNumber
+          ))))
+
+        val result = controller().show()(authenticatedFakeRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(dashboard)
+      }
+
+      "return OK and render declaration view if no reference nr" in {
+        when(mockPropertyLinkingRepo.findByCredId(any()))
+          .thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(
+            credId = credId,
+            vmvProperty = testVmvProperty,
+            requestSentReference = None
+          ))))
+
+        val result = controller().show()(authenticatedFakeRequest)
+        status(result) shouldBe OK
+        contentAsString(result) must include("Declaration")
+      }
     }
-    
-    "method accept" must {
-      "Return OK and the correct view" in {
-        when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty))))
+
+    "accept" must {
+      "redirect to dashboard if reference already exists" in {
+        when(mockPropertyLinkingRepo.findByCredId(any()))
+          .thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(
+            credId = credId,
+            vmvProperty = testVmvProperty,
+            requestSentReference = referenceNumber
+          ))))
+
+        val result = controller().accept()(authenticatedFakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(dashboard)
+      }
+
+      "insert reference and redirect to confirmation if no reference exists" in {
+        when(mockPropertyLinkingRepo.findByCredId(any()))
+          .thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(
+            credId = credId,
+            vmvProperty = testVmvProperty,
+            requestSentReference = None
+          ))))
+
+        when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any()))
+          .thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(
+            credId = credId,
+            vmvProperty = testVmvProperty,
+            requestSentReference = referenceNumber
+          ))))
+
         val result = controller().accept()(authenticatedFakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.AddPropertyRequestSentController.show.url)
       }
-    }
 
+      "fail if no property found" in {
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
+
+        val result = controller().accept()(authenticatedFakeRequest)
+        intercept[NotFoundException](await(result))
+      }
+    }
   }
 }

@@ -19,7 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
@@ -37,6 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRatesBillView,
                                             authenticate: AuthRetrievals,
                                             isRegisteredCheck: RegistrationAction,
+                                            isPropertyLinked: PropertyLinkCheckAction,
                                             propertyLinkingRepo: PropertyLinkingRepo,
                                             mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
@@ -49,7 +50,7 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
     hint = Some("uploadBusinessRatesBill.hint"))
 
   def show: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen isRegisteredCheck  andThen isPropertyLinked).async { implicit request =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(property) =>
           val preparedForm = property.businessRatesBill match {

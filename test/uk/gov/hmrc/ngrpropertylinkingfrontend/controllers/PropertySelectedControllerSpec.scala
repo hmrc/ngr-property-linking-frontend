@@ -41,6 +41,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
     propertySelectedView,
     mockAuthJourney,
     mockIsRegisteredCheck,
+    mockIsPropertyLinkedCheck,
     mcc,
     mockFindAPropertyRepo,
     sortingVMVPropertiesService,

@@ -43,6 +43,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
     view,
     mockAuthJourney,
     mockIsRegisteredCheck,
+    mockIsPropertyLinkedCheck,
     mockPropertyLinkingRepo,
     mcc
   )

@@ -20,7 +20,7 @@ import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.{NotFoundException, StringContextOps}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
@@ -40,13 +40,14 @@ import java.net.{URI, URL}
 class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRatesBillView,
                                                   authenticate: AuthRetrievals,
                                                   isRegisteredCheck: RegistrationAction,
+                                                  isPropertyLinked: PropertyLinkCheckAction,
                                                   propertyLinkingRepo: PropertyLinkingRepo,
                                                   fileUploadRepo: FileUploadRepo,
                                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] = {
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen isRegisteredCheck andThen isPropertyLinked).async { implicit request =>
       val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in RemoveBusinessRatesBillController.show()")))
 
       propertyLinkingRepo.findByCredId(credId).map {

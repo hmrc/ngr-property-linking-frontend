@@ -46,6 +46,7 @@ class CurrentRatepayerControllerSpec extends ControllerSpecSupport with DefaultA
     dateTextFields,
     mockAuthJourney,
     mockIsRegisteredCheck,
+    mockIsPropertyLinkedCheck,
     mockPropertyLinkingRepo,
     mcc
   )(appConfig = mockConfig)

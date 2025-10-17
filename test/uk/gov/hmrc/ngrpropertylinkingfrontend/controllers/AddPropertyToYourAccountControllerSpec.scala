@@ -33,6 +33,7 @@ class AddPropertyToYourAccountControllerSpec extends ControllerSpecSupport with 
     addPropertyView,
     mockAuthJourney,
     mockIsRegisteredCheck,
+    mockIsPropertyLinkedCheck,
     mcc
   )(appConfig = mockConfig)
 

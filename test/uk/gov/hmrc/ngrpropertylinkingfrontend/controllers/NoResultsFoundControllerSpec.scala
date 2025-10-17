@@ -32,6 +32,7 @@ class NoResultsFoundControllerSpec extends ControllerSpecSupport with DefaultAwa
     noResultsFoundView,
     mockAuthJourney,
     mockIsRegisteredCheck,
+    mockIsPropertyLinkedCheck,
     mcc
   )(mockConfig)
 

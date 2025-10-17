@@ -23,9 +23,13 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.WhatYouNeedView
 
 class WhatYouNeedControllerSpec extends ControllerSpecSupport {
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    mockRequest() 
+  }
   val pageTitle = "What you need"
   val view: WhatYouNeedView = inject[WhatYouNeedView]
-  val controller: WhatYouNeedController = new WhatYouNeedController(view, mockAuthJourney, mockIsRegisteredCheck, mcc)(mockConfig)
+  val controller: WhatYouNeedController = new WhatYouNeedController(view, mockAuthJourney, mockIsRegisteredCheck, mockIsPropertyLinkedCheck, mcc)(mockConfig)
 
   "What you need controller" must {
     "method show" must {

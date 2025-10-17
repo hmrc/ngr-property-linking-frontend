@@ -21,7 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryListRow
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
@@ -38,6 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswersView,
                                            authenticate: AuthRetrievals,
                                            isRegisteredCheck: RegistrationAction,
+                                           isPropertyLinked: PropertyLinkCheckAction,
                                            propertyLinkingRepo: PropertyLinkingRepo,
                                            ngrConnector: NGRConnector,
                                            mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
@@ -104,7 +105,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
   }
 
   def show: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen isRegisteredCheck andThen isPropertyLinked).async { implicit request =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(userAnswers) => Future.successful(Ok(
           checkYourAnswersView(navigationBarContent = createDefaultNavBar, summaryList = SummaryList(createSummaryRows(userAnswers = userAnswers)))))

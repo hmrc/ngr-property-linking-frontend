@@ -42,6 +42,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
     view,
     mockAuthJourney,
     mockIsRegisteredCheck,
+    mockIsPropertyLinkedCheck,
     mockPropertyLinkingRepo,
     mockNgrConnector,
     mcc)

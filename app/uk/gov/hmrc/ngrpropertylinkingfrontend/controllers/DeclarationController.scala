@@ -19,7 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
@@ -35,38 +35,23 @@ import scala.concurrent.{ExecutionContext, Future}
 class DeclarationController @Inject()(view: DeclarationView,
                                       authenticate: AuthRetrievals,
                                       isRegisteredCheck: RegistrationAction,
+                                      isPropertyLinked: PropertyLinkCheckAction,
                                       propertyLinkingRepo: PropertyLinkingRepo,
                                       mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
-      val credId = CredId(request.credId.getOrElse(""))
-      propertyLinkingRepo.findByCredId(credId).map {
-        case Some(answers) if answers.requestSentReference.isDefined =>
-          Redirect(appConfig.ngrDashboardUrl)
-        case _ =>
-          Ok(view(createDefaultNavBar))
-      }
+    (authenticate andThen isRegisteredCheck andThen isPropertyLinked).async { implicit request =>
+      Future.successful(Ok(view(createDefaultNavBar)))
     }
-  
+
   def accept: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
-      val credId = CredId(request.credId.getOrElse(""))
+    (authenticate andThen isRegisteredCheck andThen isPropertyLinked ).async { implicit request =>
       val ref = UniqueIdGenerator.generateId
-
-      propertyLinkingRepo.findByCredId(credId).flatMap {
-        case Some(answers) if answers.requestSentReference.isDefined =>
-          Future.successful(Redirect(appConfig.ngrDashboardUrl))
-
-        case Some(_) =>
-          propertyLinkingRepo.insertRequestSentReference(credId, ref).map {
-            case Some(_) => Redirect(routes.AddPropertyRequestSentController.show)
-            case None    => throw new Exception(s"Could not save reference for credId: ${credId.value}")
-          }
-
-        case None =>
-          Future.failed(new NotFoundException(s"No property for credId: ${credId.value}"))
+      propertyLinkingRepo.insertRequestSentReference(CredId(request.credId.getOrElse("")), ref).flatMap {
+        case Some(answers) => Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
+        case None => throw new Exception("Could not save reference")
       }
+
     }
 }
 

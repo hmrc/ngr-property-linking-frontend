@@ -50,6 +50,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     view,
     mockAuthJourney,
     mockIsRegisteredCheck,
+    mockIsPropertyLinkedCheck,
     mockPropertyLinkingRepo,
     mockFileUploadRepo,
     mcc

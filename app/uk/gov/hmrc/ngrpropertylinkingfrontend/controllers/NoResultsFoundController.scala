@@ -18,7 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.NoResultsFoundView
@@ -31,10 +31,11 @@ import scala.concurrent.Future
 class NoResultsFoundController @Inject()(noResultsFoundView: NoResultsFoundView,
                                          authenticate: AuthRetrievals,
                                          isRegisteredCheck: RegistrationAction,
+                                         isPropertyLinked: PropertyLinkCheckAction,
                                          mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
   def show: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen isRegisteredCheck andThen isPropertyLinked).async { implicit request =>
       Future.successful(Ok(noResultsFoundView(createDefaultNavBar, routes.FindAPropertyController.show.url, appConfig.ngrDashboardUrl)))
     }
 }

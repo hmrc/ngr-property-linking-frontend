@@ -42,6 +42,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
     currentRatepayerView,
     mockAuthJourney,
     mockIsRegisteredCheck,
+    mockIsPropertyLinkedCheck,
     mockPropertyLinkingRepo,
     mcc
   )(appConfig = mockConfig)

@@ -53,7 +53,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
   val view: UploadBusinessRatesBillView = inject[UploadBusinessRatesBillView]
   val uploadFormData: uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm = inject[uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm]
 
-  val controller: UploadBusinessRatesBillController = new UploadBusinessRatesBillController(view, mockUpscanConnector, mockUploadProgressTracker, uploadFormData, mockAuthJourney, mockIsRegisteredCheck, mockPropertyLinkingRepo, mcc)(mockConfig)
+  val controller: UploadBusinessRatesBillController = new UploadBusinessRatesBillController(view, mockUpscanConnector, mockUploadProgressTracker, uploadFormData, mockAuthJourney, mockIsRegisteredCheck, mockIsPropertyLinkedCheck,  mockPropertyLinkingRepo, mcc)(mockConfig)
 
   val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty)
 

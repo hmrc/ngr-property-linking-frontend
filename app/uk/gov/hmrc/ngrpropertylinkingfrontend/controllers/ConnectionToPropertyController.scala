@@ -19,7 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
@@ -38,8 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ConnectionToPropertyController @Inject()(connectionToPropertyView: ConnectionToPropertyView,
                                                authenticate: AuthRetrievals,
-                                               isRegisteredCheck: RegistrationAction,
-                                               isPropertyLinked: PropertyLinkCheckAction,
+                                               mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                                mcc: MessagesControllerComponents,
                                                propertyLinkingRepo: PropertyLinkingRepo)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
@@ -50,7 +49,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
   private val ngrRadio: NGRRadio = NGRRadio(NGRRadioName(ConnectionToPropertyForm.formName), Seq(ownerButton, occupierButton, bothButton))
 
   def show: Action[AnyContent] = {
-    (authenticate andThen isRegisteredCheck andThen isPropertyLinked).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(properties) =>
           val propertyAddress = properties.vmvProperty.addressFull
@@ -70,7 +69,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
   }
 
   def submit: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       form.bindFromRequest().fold(
         formWithErrors => {
           val credId = request.credId.getOrElse("")

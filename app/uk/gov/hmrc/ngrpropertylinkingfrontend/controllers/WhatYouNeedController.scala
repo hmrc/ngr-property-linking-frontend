@@ -18,7 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.WhatYouNeedView
@@ -30,18 +30,17 @@ import scala.concurrent.Future
 @Singleton
 class WhatYouNeedController @Inject()(view: WhatYouNeedView,
                                       authenticate: AuthRetrievals,
-                                      isRegisteredCheck: RegistrationAction,
-                                      isPropertyLinked: PropertyLinkCheckAction,
+                                      mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                       mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck andThen isPropertyLinked).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       Future.successful(Ok(view(createDefaultNavBar, "https://www.gov.uk/contact-your-local-council-about-business-rates")))
     }
 
   def next: Action[AnyContent] = {
-    (authenticate andThen isRegisteredCheck).async { _ =>
+    (authenticate andThen mandatoryCheck).async { _ =>
       Future.successful(Redirect(routes.FindAPropertyController.show.url))
     }
   }

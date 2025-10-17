@@ -41,8 +41,7 @@ class UploadEvidenceControllerSpec extends ControllerSpecSupport with DefaultAwa
   def controller() = new UploadEvidenceController(
     uploadEvidenceView,
     mockAuthJourney,
-    mockIsRegisteredCheck,
-    mockIsPropertyLinkedCheck,
+    mockMandatoryCheck,
     mockPropertyLinkingRepo,
     mcc
   )(appConfig = mockConfig)

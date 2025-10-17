@@ -25,9 +25,11 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOp
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.{VMVProperties, VMVProperty, Valuation}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.{CredId, RatepayerRegistrationValuation}
 
 import java.net.URL
+import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -47,6 +49,16 @@ class NGRConnector @Inject()(http: HttpClientV2,
       .execute[Option[RatepayerRegistrationValuation]]
   }
 
+  def getPropertyLinkingUserAnswers(credId: CredId)(implicit hc: HeaderCarrier): Future[Option[PropertyLinkingUserAnswers]] = {
+    implicit val rds: HttpReads[PropertyLinkingUserAnswers] = readFromJson
+    //Because vmvProperty in PropertyLinkingUserAnswers isn't an option so a dummy VMVProperty has been passed in
+    //which will not affect mongoDB data since it's only use credId to find PropertyLinkingUserAnswers
+    val model: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId, dummyVmvProperty)
+    http.get(url("get-property-linking-user-answers"))
+      .withBody(Json.toJson(model))
+      .execute[Option[PropertyLinkingUserAnswers]]
+  }
+
   def upsertPropertyLinkingUserAnswers(model: PropertyLinkingUserAnswers)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.post(url("upsert-property-linking-user-answers"))
       .withBody(Json.toJson(model))
@@ -59,4 +71,33 @@ class NGRConnector @Inject()(http: HttpClientV2,
         }
     }
   }
+
+  private val dummyVmvProperty: VMVProperty = VMVProperty(
+    uarn = 11905603000L,
+    localAuthorityReference = "2191322564521",
+    addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
+    localAuthorityCode = "4720",
+    valuations = List(
+      Valuation(
+        assessmentRef = 25141561000L,
+        assessmentStatus = "CURRENT",
+        rateableValue = Some(9300),
+        scatCode = Some("249"),
+        descriptionText = "SHOP AND PREMISES",
+        effectiveDate = LocalDate.of(2023, 4, 1),
+        currentFromDate = LocalDate.of(2023, 4, 1),
+        listYear = "2023",
+        primaryDescription = "CS",
+        allowedActions = List(
+          "check",
+          "challenge",
+          "viewDetailedValuation",
+          "propertyLink",
+          "similarProperties"
+        ),
+        listType = "current",
+        propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
+      )
+    )
+  )
 }

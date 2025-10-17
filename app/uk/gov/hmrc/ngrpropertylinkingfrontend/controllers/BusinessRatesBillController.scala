@@ -19,7 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
@@ -34,12 +34,12 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRatesBillView,
-                                            authenticate: AuthRetrievals,
-                                            isRegisteredCheck: RegistrationAction,
-                                            isPropertyLinked: PropertyLinkCheckAction,
-                                            propertyLinkingRepo: PropertyLinkingRepo,
-                                            mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
+class BusinessRatesBillController @Inject()(
+                                             businessRatesBillView: BusinessRatesBillView,
+                                             authenticate: AuthRetrievals,
+                                             mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
+                                             propertyLinkingRepo: PropertyLinkingRepo,
+                                             mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   private val yesButton: NGRRadioButtons = NGRRadioButtons("Yes", Yes)
@@ -50,7 +50,7 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
     hint = Some("uploadBusinessRatesBill.hint"))
 
   def show: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck  andThen isPropertyLinked).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(property) =>
           val preparedForm = property.businessRatesBill match {
@@ -65,7 +65,7 @@ class BusinessRatesBillController @Inject()(businessRatesBillView: BusinessRates
     }
 
   def submit: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

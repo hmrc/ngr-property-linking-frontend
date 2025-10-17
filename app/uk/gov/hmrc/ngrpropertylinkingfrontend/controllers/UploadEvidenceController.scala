@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
@@ -38,8 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
                                          authenticate: AuthRetrievals,
-                                         isRegisteredCheck: RegistrationAction,
-                                         isPropertyLinked: PropertyLinkCheckAction,
+                                         mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                          propertyLinkingRepo: PropertyLinkingRepo,
                                          mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with CurrencyHelper {
@@ -55,7 +54,7 @@ class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
     licenceButton, serviceStatementButton, stampDutyButton, utilityBillButton, waterRateButton))
 
   def show: Action[AnyContent] = {
-    (authenticate andThen isRegisteredCheck andThen isPropertyLinked).async { implicit request: AuthenticatedUserRequest[AnyContent] =>
+    (authenticate andThen mandatoryCheck).async { implicit request: AuthenticatedUserRequest[AnyContent] =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(property) =>
           val preparedForm: Form[UploadEvidenceForm] = property.uploadEvidence match {
@@ -69,7 +68,7 @@ class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
   }
 
   def submit: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       form.bindFromRequest()
         .fold(
           formWithErrors => {

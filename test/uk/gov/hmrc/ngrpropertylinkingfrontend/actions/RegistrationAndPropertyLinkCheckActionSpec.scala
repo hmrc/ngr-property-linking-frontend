@@ -26,24 +26,28 @@ import play.api.mvc.Results.Ok
 import play.api.test.Helpers.{OK, SEE_OTHER, redirectLocation, status}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{TestData, TestSupport}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperty
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.{CredId, RatepayerRegistrationValuation}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 
 import scala.concurrent.Future
 
-class PropertyLinkCheckActionSpec extends TestSupport with TestData {
+class RegistrationAndPropertyLinkCheckActionSpec extends TestSupport with TestData {
 
 
   override implicit lazy val app: Application = GuiceApplicationBuilder().build()
 
+  private val mockNGRConnector: NGRConnector = mock[NGRConnector]
   private val mockPropertyLinkingRepo: PropertyLinkingRepo = mock[PropertyLinkingRepo]
   private val mockAuthConnector: AuthConnector = mock[AuthConnector]
   private val mockAuthAction = new AuthRetrievalsImpl(mockAuthConnector, mcc)
 
-  private val action = new PropertyLinkCheckActionImpl(
+  private val action = new RegistrationAndPropertyLinkCheckActionImpl(
+    ngrConnector = mockNGRConnector,
     propertyLinkingRepo = mockPropertyLinkingRepo,
     mcc = mcc,
     authenticate = mockAuthAction,
@@ -78,13 +82,27 @@ class PropertyLinkCheckActionSpec extends TestSupport with TestData {
   "PropertyLinkCheckAction" when {
 
     "property is already linked with the user" must {
-      "redirect to the dashboard" in {
+      "redirect to the Add Property Request Sent page" in {
         when(mockAuthConnector.authorise[mockAuthAction.RetrievalsType](any(), any())(any(), any())).thenReturn(retrievalResult)
+        when(mockNGRConnector.getRatepayer(any())(any()))
+          .thenReturn(Future.successful(Some(RatepayerRegistrationValuation(credId, Some(testRegistrationModel.copy(isRegistered = Some(true)))))))
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(testPropertyLinkingUserAnswers.copy(requestSentReference = Some("ABC123")))))
 
         val result = action.invokeBlock(fakeRequest, stubs.successBlock)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(mockConfig.ngrDashboardUrl)
+        redirectLocation(result) mustBe Some(routes.AddPropertyRequestSentController.show.url)
+      }
+
+      "redirect to the Add Property Request Sent page when only find propertyLinkingUserAnswers in backend mongoDB" in {
+        when(mockAuthConnector.authorise[mockAuthAction.RetrievalsType](any(), any())(any(), any())).thenReturn(retrievalResult)
+        when(mockNGRConnector.getRatepayer(any())(any()))
+          .thenReturn(Future.successful(Some(RatepayerRegistrationValuation(credId, Some(testRegistrationModel.copy(isRegistered = Some(true)))))))
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
+        when(mockNGRConnector.getPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(Some(testPropertyLinkingUserAnswers.copy(requestSentReference = Some("ABC123")))))
+
+        val result = action.invokeBlock(fakeRequest, stubs.successBlock)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.AddPropertyRequestSentController.show.url)
       }
     }
 
@@ -92,13 +110,24 @@ class PropertyLinkCheckActionSpec extends TestSupport with TestData {
       "allow the request to proceed without redirect" in {
         when(mockAuthConnector.authorise[mockAuthAction.RetrievalsType](any(), any())(any(), any()))
           .thenReturn(retrievalResult)
-
+        when(mockNGRConnector.getRatepayer(any())(any()))
+          .thenReturn(Future.successful(Some(RatepayerRegistrationValuation(credId, Some(testRegistrationModel.copy(isRegistered = Some(true)))))))
         val notLinkedAnswers = testPropertyLinkingUserAnswers.copy(requestSentReference = None)
-
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(notLinkedAnswers)))
+        when(mockNGRConnector.getPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(Some(notLinkedAnswers)))
 
         val result = action.invokeBlock(fakeRequest, stubs.successBlock)
         status(result) mustBe OK
+      }
+      "redirect to dashboard when the user is not registered" in {
+        when(mockAuthConnector.authorise[mockAuthAction.RetrievalsType](any(), any())(any(), any()))
+          .thenReturn(retrievalResult)
+        when(mockNGRConnector.getRatepayer(any())(any()))
+          .thenReturn(Future.successful(Some(RatepayerRegistrationValuation(credId, Some(testRegistrationModel)))))
+        
+        val result = action.invokeBlock(fakeRequest, stubs.successBlock)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(s"${mockConfig.ngrLoginRegistrationHost}/ngr-login-register-frontend/register")
       }
     }
   }

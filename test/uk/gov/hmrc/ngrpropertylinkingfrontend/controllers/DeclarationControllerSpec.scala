@@ -35,8 +35,7 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
   def controller() = new DeclarationController(
     view,
     mockAuthJourney,
-    mockIsRegisteredCheck,
-    mockIsPropertyLinkedCheck,
+    mockMandatoryCheck,
     mockPropertyLinkingRepo,
     mcc
   )

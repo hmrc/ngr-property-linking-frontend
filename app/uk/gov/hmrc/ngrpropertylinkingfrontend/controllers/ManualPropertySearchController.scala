@@ -19,7 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
@@ -36,20 +36,19 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ManualPropertySearchController @Inject()(manualPropertySearchView: ManualPropertySearchView,
                                                authenticate: AuthRetrievals,
-                                               isRegisteredCheck: RegistrationAction,
-                                               isPropertyLinked: PropertyLinkCheckAction,
+                                               mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                                findAPropertyConnector: FindAPropertyConnector,
                                                findAPropertyRepo: FindAPropertyRepo,
                                                mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck andThen isPropertyLinked).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       Future.successful(Ok(manualPropertySearchView(form, createDefaultNavBar)))
     }
 
   def submit: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

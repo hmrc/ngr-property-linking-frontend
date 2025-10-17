@@ -31,8 +31,7 @@ class NoResultsFoundControllerSpec extends ControllerSpecSupport with DefaultAwa
   def controller() = new NoResultsFoundController(
     noResultsFoundView,
     mockAuthJourney,
-    mockIsRegisteredCheck,
-    mockIsPropertyLinkedCheck,
+    mockMandatoryCheck,
     mcc
   )(mockConfig)
 

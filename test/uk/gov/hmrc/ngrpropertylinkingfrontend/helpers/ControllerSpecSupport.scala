@@ -21,7 +21,7 @@ import org.mockito.Mockito.when
 import play.api.mvc.*
 import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.{FindAPropertyConnector, NGRConnector, UpscanConnector}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FileUploadRepo, FindAPropertyRepo, PropertyLinkingRepo}
@@ -30,12 +30,13 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.services.{SortingVMVPropertiesServ
 import scala.concurrent.{ExecutionContext, Future}
 
 trait ControllerSpecSupport extends TestSupport {
-  val mockIsPropertyLinkedCheck: PropertyLinkCheckAction = mock[PropertyLinkCheckAction]
+  val mockMandatoryCheck: RegistrationAndPropertyLinkCheckAction = mock[RegistrationAndPropertyLinkCheckAction]
   val mockIsRegisteredCheck: RegistrationAction = mock[RegistrationAction]
   val mockAuthJourney: AuthRetrievals = mock[AuthRetrievals]
   val mockFindAPropertyConnector: FindAPropertyConnector = mock[FindAPropertyConnector]
   val mockUpscanConnector: UpscanConnector = mock[UpscanConnector]
   mockRequest()
+  mockMandatoryCheckRequest()
   val mockUploadProgressTracker: UploadProgressTracker = mock[UploadProgressTracker]
   val mockNgrConnector: NGRConnector = mock[NGRConnector]
   val sortingVMVPropertiesService: SortingVMVPropertiesService = inject[SortingVMVPropertiesService]
@@ -46,7 +47,7 @@ trait ControllerSpecSupport extends TestSupport {
   val mockFileUploadRepo: FileUploadRepo = mock[FileUploadRepo]
 
   def mockRequest(hasCredId: Boolean = false, hasNino: Boolean = true): Unit =
-    when(mockAuthJourney andThen mockIsRegisteredCheck andThen mockIsPropertyLinkedCheck) thenReturn new ActionBuilder[AuthenticatedUserRequest, AnyContent] {
+    when(mockAuthJourney andThen mockIsRegisteredCheck) thenReturn new ActionBuilder[AuthenticatedUserRequest, AnyContent] {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedUserRequest[A] => Future[Result]): Future[Result] =  {
         val authRequest = AuthenticatedUserRequest(request, None, None, Some("user@email.com"), if (hasCredId) Some("1234") else None, None, None, nino = if (hasNino) Nino(hasNino = true, Some("AA000003D")) else Nino(hasNino = false, None))
         block(authRequest)
@@ -54,6 +55,18 @@ trait ControllerSpecSupport extends TestSupport {
       override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
       override protected def executionContext: ExecutionContext = ec
     }
+
+  def mockMandatoryCheckRequest(hasCredId: Boolean = true, hasNino: Boolean = true): Unit =
+    when(mockAuthJourney andThen mockMandatoryCheck) thenReturn new ActionBuilder[AuthenticatedUserRequest, AnyContent] {
+      override def invokeBlock[A](request: Request[A], block: AuthenticatedUserRequest[A] => Future[Result]): Future[Result] = {
+        val authRequest = AuthenticatedUserRequest(request, None, None, Some("user@email.com"), if (hasCredId) Some("1234") else None, None, None, nino = if (hasNino) Nino(hasNino = true, Some("AA000003D")) else Nino(hasNino = false, None))
+        block(authRequest)
+      }
+
+      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+
+      override protected def executionContext: ExecutionContext = ec
+    }  
 
   def mockRequest(authRequest: AuthenticatedUserRequest[AnyContentAsEmpty.type]): Unit = {
     when(mockAuthJourney  andThen mockIsRegisteredCheck) thenReturn new ActionBuilder[AuthenticatedUserRequest, AnyContent] {

@@ -21,7 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryListRow
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
@@ -41,8 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PropertySelectedController @Inject()(propertySelectedView: PropertySelectedView,
                                            authenticate: AuthRetrievals,
-                                           isRegisteredCheck: RegistrationAction,
-                                           isPropertyLinked: PropertyLinkCheckAction,
+                                           mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                            mcc: MessagesControllerComponents,
                                            findAPropertyRepo: FindAPropertyRepo,
                                            sortingVMVPropertiesService: SortingVMVPropertiesService,
@@ -65,7 +64,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
   }
 
   def show(index: Int, sortBy: String): Action[AnyContent] = {
-    (authenticate andThen isRegisteredCheck andThen isPropertyLinked).async { implicit request: AuthenticatedUserRequest[AnyContent] =>
+    (authenticate andThen mandatoryCheck).async { implicit request: AuthenticatedUserRequest[AnyContent] =>
       findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
         case Some(properties) =>
           val selectedProperty = sortingVMVPropertiesService.sort(properties.vmvProperties.properties, sortBy)(index)
@@ -80,7 +79,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
   }
 
   def submit(index: Int, sortBy: String): Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       form.bindFromRequest()
         .fold(
         formWithErrors => {

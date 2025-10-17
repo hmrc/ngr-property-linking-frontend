@@ -38,14 +38,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
   lazy val currentRatepayerView: BusinessRatesBillView = inject[BusinessRatesBillView]
   val pageTitle = "Do you have a business rates bill for the property? - GOV.UK"
 
-  def controller() = new BusinessRatesBillController(
-    currentRatepayerView,
-    mockAuthJourney,
-    mockIsRegisteredCheck,
-    mockIsPropertyLinkedCheck,
-    mockPropertyLinkingRepo,
-    mcc
-  )(appConfig = mockConfig)
+  def controller() = new BusinessRatesBillController(currentRatepayerView, mockAuthJourney, mockMandatoryCheck, mockPropertyLinkingRepo, mcc)(appConfig = mockConfig)
 
   "BusinessRatesBillController" must {
     "method show" must {

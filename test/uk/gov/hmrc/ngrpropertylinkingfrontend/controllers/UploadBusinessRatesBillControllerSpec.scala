@@ -53,14 +53,14 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
   val view: UploadBusinessRatesBillView = inject[UploadBusinessRatesBillView]
   val uploadFormData: uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm = inject[uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadForm]
 
-  val controller: UploadBusinessRatesBillController = new UploadBusinessRatesBillController(view, mockUpscanConnector, mockUploadProgressTracker, uploadFormData, mockAuthJourney, mockIsRegisteredCheck, mockIsPropertyLinkedCheck,  mockPropertyLinkingRepo, mcc)(mockConfig)
+  val controller: UploadBusinessRatesBillController = new UploadBusinessRatesBillController(view, mockUpscanConnector, mockUploadProgressTracker, uploadFormData, mockAuthJourney, mockMandatoryCheck, mockPropertyLinkingRepo, mcc)(mockConfig)
 
   val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty)
 
   "Upload business rates bill controller" must {
     "method show" must {
       "Return OK and the correct view" in {
-        mockRequest(hasCredId = true)
+        mockMandatoryCheckRequest()
         when(mockUpscanConnector.initiate(any(), any())(any[HeaderCarrier]))
           .thenReturn(Future.successful(
             UpscanInitiateResponse(
@@ -78,7 +78,7 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
       }
 
       "Throw exception when no property returned" in {
-        mockRequest(hasCredId = true)
+        mockMandatoryCheckRequest()
         when(mockUpscanConnector.initiate(any(), any())(any[HeaderCarrier]))
           .thenReturn(Future.successful(
             UpscanInitiateResponse(
@@ -95,8 +95,8 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
         }
       }
       "Exception when no credId in request" in {
-         mockRequest()
-         when(mockUpscanConnector.initiate(any(), any())(any[HeaderCarrier]))
+        mockMandatoryCheckRequest(hasCredId = false)
+        when(mockUpscanConnector.initiate(any(), any())(any[HeaderCarrier]))
           .thenReturn(Future.successful(
             UpscanInitiateResponse(
               UpscanFileReference("ref"),
@@ -104,57 +104,57 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
               Map("key" -> "value")
             )
           ))
-         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-         when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
-         val exception = intercept[NotFoundException] {
-           await(controller.show(None, None)(authenticatedFakeRequest))
-         }
-         exception.getMessage contains "Missing credId in authenticated request" mustBe true
-       }
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
+        when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
+        val exception = intercept[NotFoundException] {
+          await(controller.show(None, None)(authenticatedFakeRequest))
+        }
+        exception.getMessage contains "Missing credId in authenticated request" mustBe true
+      }
 
-            def testErrorCase(errorCode: String, expectedMessage: String): Unit = {
-              mockRequest(hasCredId = true)
-              when(mockUpscanConnector.initiate(any(), any())(any[HeaderCarrier]))
-                .thenReturn(Future.successful(
-                  UpscanInitiateResponse(
-                    UpscanFileReference("ref"),
-                    "postTarget",
-                    Map("key" -> "value")
-                  )
-                ))
-              when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-              when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
-              val result = controller.show(Some(errorCode), None)(authenticatedFakeRequest)
-              status(result) mustBe OK
-              val content = contentAsString(result)
-              content must include(Messages(expectedMessage))
-            }
+      def testErrorCase(errorCode: String, expectedMessage: String): Unit = {
+        mockMandatoryCheckRequest()
+        when(mockUpscanConnector.initiate(any(), any())(any[HeaderCarrier]))
+          .thenReturn(Future.successful(
+            UpscanInitiateResponse(
+              UpscanFileReference("ref"),
+              "postTarget",
+              Map("key" -> "value")
+            )
+          ))
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
+        when(mockUploadProgressTracker.requestUpload(any(), ArgumentMatchers.eq(Reference("ref")))).thenReturn(Future.successful(()))
+        val result = controller.show(Some(errorCode), None)(authenticatedFakeRequest)
+        status(result) mustBe OK
+        val content = contentAsString(result)
+        content must include(Messages(expectedMessage))
+      }
 
 
-            "display 'no file selected' error for InvalidArgument" in {
-              testErrorCase("InvalidArgument", "uploadBusinessRatesBill.error.noFileSelected")
-            }
+      "display 'no file selected' error for InvalidArgument" in {
+        testErrorCase("InvalidArgument", "uploadBusinessRatesBill.error.noFileSelected")
+      }
 
-            "display 'file too large' error for EntityTooLarge" in {
-              testErrorCase("EntityTooLarge", "uploadBusinessRatesBill.error.exceedsMaximumSize")
-            }
+      "display 'file too large' error for EntityTooLarge" in {
+        testErrorCase("EntityTooLarge", "uploadBusinessRatesBill.error.exceedsMaximumSize")
+      }
 
-            "display 'no file selected' error for EntityTooSmall" in {
-              testErrorCase("EntityTooSmall", "uploadBusinessRatesBill.error.belowMinimumSize")
-            }
+      "display 'no file selected' error for EntityTooSmall" in {
+        testErrorCase("EntityTooSmall", "uploadBusinessRatesBill.error.belowMinimumSize")
+      }
 
-            "display 'virus detected' error for QUARANTINE" in {
-              testErrorCase("QUARANTINE", "uploadBusinessRatesBill.error.virusDetected")
-            }
+      "display 'virus detected' error for QUARANTINE" in {
+        testErrorCase("QUARANTINE", "uploadBusinessRatesBill.error.virusDetected")
+      }
 
-            "display 'problem with upload' error for REJECTED" in {
-              testErrorCase("REJECTED", "uploadBusinessRatesBill.error.problemWithUpload")
-            }
+      "display 'problem with upload' error for REJECTED" in {
+        testErrorCase("REJECTED", "uploadBusinessRatesBill.error.problemWithUpload")
+      }
 
-            "display 'problem with upload' error for UNKNOWN reason" in {
-              testErrorCase("UNKNOWN123", "uploadBusinessRatesBill.error.problemWithUpload")
-            }
+      "display 'problem with upload' error for UNKNOWN reason" in {
+        testErrorCase("UNKNOWN123", "uploadBusinessRatesBill.error.problemWithUpload")
+      }
 
-          }
     }
   }
+}

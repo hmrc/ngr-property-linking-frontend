@@ -41,8 +41,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
   def controller() = new CheckYourAnswersController(
     view,
     mockAuthJourney,
-    mockIsRegisteredCheck,
-    mockIsPropertyLinkedCheck,
+    mockMandatoryCheck,
     mockPropertyLinkingRepo,
     mockNgrConnector,
     mcc)

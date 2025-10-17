@@ -29,7 +29,7 @@ class WhatYouNeedControllerSpec extends ControllerSpecSupport {
   }
   val pageTitle = "What you need"
   val view: WhatYouNeedView = inject[WhatYouNeedView]
-  val controller: WhatYouNeedController = new WhatYouNeedController(view, mockAuthJourney, mockIsRegisteredCheck, mockIsPropertyLinkedCheck, mcc)(mockConfig)
+  val controller: WhatYouNeedController = new WhatYouNeedController(view, mockAuthJourney, mockMandatoryCheck, mcc)(mockConfig)
 
   "What you need controller" must {
     "method show" must {

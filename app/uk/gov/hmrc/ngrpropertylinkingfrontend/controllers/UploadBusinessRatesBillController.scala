@@ -19,7 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, PropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.UpscanConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
@@ -41,8 +41,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
                                                   uploadProgressTracker: UploadProgressTracker,
                                                   uploadForm: UploadForm,
                                                   authenticate: AuthRetrievals,
-                                                  isRegisteredCheck: RegistrationAction,
-                                                  isPropertyLinked: PropertyLinkCheckAction,
+                                                  mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                                   propertyLinkingRepo: PropertyLinkingRepo,
                                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
@@ -54,7 +53,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
   )
 
   def show(errorCode: Option[String], evidenceType: Option[String]): Action[AnyContent] = {
-    (authenticate andThen isRegisteredCheck andThen isPropertyLinked).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       request.credId match {
         case Some(rawCredId) =>
           val errorToDisplay: Option[String] = renderError(errorCode)

@@ -18,9 +18,9 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
@@ -36,6 +36,7 @@ class DeclarationController @Inject()(view: DeclarationView,
                                       authenticate: AuthRetrievals,
                                       mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                       propertyLinkingRepo: PropertyLinkingRepo,
+                                      ngrConnector: NGRConnector,
                                       mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
@@ -46,11 +47,20 @@ class DeclarationController @Inject()(view: DeclarationView,
   def accept: Action[AnyContent] =
     (authenticate andThen mandatoryCheck ).async { implicit request =>
       val ref = UniqueIdGenerator.generateId
-      propertyLinkingRepo.insertRequestSentReference(CredId(request.credId.getOrElse("")), ref).flatMap {
-        case Some(answers) => Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
-        case None => throw new Exception("Could not save reference")
-      }
-
+      val credId = CredId(request.credId.getOrElse(""))
+      for {
+        maybeAnswers <- propertyLinkingRepo.insertRequestSentReference(credId, ref)
+        userAnswers <- maybeAnswers match {
+          case Some(result) => Future.successful(result)
+          case None => Future.failed(new Exception(s"Could not save reference for credId: ${credId.value}"))
+        }
+        response <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
+        result <- if (response.status == CREATED) {
+          Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
+        } else {
+          Future.failed(new Exception(s"Failed upsert to backend for credId: ${credId.value}"))
+        }
+      } yield result
     }
 }
 

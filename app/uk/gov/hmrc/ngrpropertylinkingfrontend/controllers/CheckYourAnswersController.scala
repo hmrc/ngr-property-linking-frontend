@@ -23,7 +23,6 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
@@ -39,7 +38,6 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
                                            authenticate: AuthRetrievals,
                                            mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                            propertyLinkingRepo: PropertyLinkingRepo,
-                                           ngrConnector: NGRConnector,
                                            mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
@@ -114,19 +112,6 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
 
   def submit: Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      val credId = CredId(request.credId.getOrElse(""))
-      for {
-        maybeAnswers <- propertyLinkingRepo.findByCredId(credId)
-        userAnswers <- maybeAnswers match {
-          case Some(result) => Future.successful(result)
-          case None => Future.failed(new NotFoundException("Failed to find the user answers"))
-        }
-        response <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
-        result <- if (response.status == CREATED) {
-          Future.successful(Redirect(routes.DeclarationController.show))
-        } else {
-          Future.failed(new Exception("Failed upsert to backend"))
-        }
-      } yield result
+      Future.successful(Redirect(routes.DeclarationController.show))
     }
 }

@@ -23,6 +23,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
@@ -40,7 +41,8 @@ class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentVie
                                                  authenticate: AuthRetrievals,
                                                  isRegisteredCheck: RegistrationAction,
                                                  mcc: MessagesControllerComponents,
-                                                 propertyLinkingRepo: PropertyLinkingRepo)(implicit appConfig: AppConfig, executionContext: ExecutionContext)  extends FrontendController(mcc) with I18nSupport {
+                                                 propertyLinkingRepo: PropertyLinkingRepo,
+                                                 ngrConnector: NGRConnector)(implicit appConfig: AppConfig, executionContext: ExecutionContext)  extends FrontendController(mcc) with I18nSupport {
 
   private def createSummaryRows(property: VMVProperty)(implicit messages: Messages): Seq[SummaryListRow] = {
     Seq(
@@ -51,16 +53,21 @@ class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentVie
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
       val email: String = request.email.getOrElse(throw new NotFoundException("email not found on account"))
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
-        case Some(answers) =>
-          val property = answers.vmvProperty
-          val ref = answers.requestSentReference.getOrElse("")
-          val summaryRows = createSummaryRows(property)
-          Future.successful(Ok(view(ref, SummaryList(summaryRows), createDefaultNavBar,email)))
-        case None => throw new NotFoundException("failed to find property from mongo")
-      }
-
+      val credId = CredId(request.credId.getOrElse(""))
+      for {
+        maybeAnswers <- propertyLinkingRepo.findByCredId(credId)
+        userAnswers <- maybeAnswers match {
+          case Some(result) => Future.successful(result)
+          case None => ngrConnector.getPropertyLinkingUserAnswers(credId).flatMap {
+            case Some(answers) => Future.successful(answers)
+            case None => Future.failed(new NotFoundException(s"Could not find property for credId: ${credId.value}"))
+          }
+        }
+        property = userAnswers.vmvProperty
+        ref = userAnswers.requestSentReference.getOrElse("")
+        summaryRows = createSummaryRows(userAnswers.vmvProperty)
+        result <- Future.successful(Ok(view(ref, SummaryList(summaryRows), createDefaultNavBar, email)))
+      } yield result
     }
-
 }
 

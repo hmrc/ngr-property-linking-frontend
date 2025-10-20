@@ -20,7 +20,8 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status.OK
 import play.api.test.DefaultAwaitTimeout
-import play.api.test.Helpers.{contentAsString, status}
+import play.api.test.Helpers.{await, contentAsString, status}
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
@@ -35,11 +36,11 @@ class AddPropertyRequestSentControllerSpec extends ControllerSpecSupport with De
     mockAuthJourney,
     mockIsRegisteredCheck, 
     mcc,
-    mockPropertyLinkingRepo
+    mockPropertyLinkingRepo,
+    mockNgrConnector
   )
 
   "AddPropertyRequestSentController" must {
-
     "Return OK and the correct view" in {
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, requestSentReference = Some("reference")))))
       val result = controller().show()(authenticatedFakeRequest)
@@ -48,5 +49,23 @@ class AddPropertyRequestSentControllerSpec extends ControllerSpecSupport with De
       content must include("Add a property request sent")
     }
 
+    "Return OK and the correct view when property only exist in the backend" in {
+      when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
+      when(mockNgrConnector.getPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, requestSentReference = Some("reference")))))
+      val result = controller().show()(authenticatedFakeRequest)
+      status(result) mustBe OK
+      val content = contentAsString(result)
+      content must include("Add a property request sent")
+    }
+
+    "Throw exception when no property linking is found" in {
+      when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
+      when(mockNgrConnector.getPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(None))
+      mockRequest(hasCredId = true)
+      val exception = intercept[NotFoundException] {
+        await(controller().show(authenticatedFakeRequest))
+      }
+      exception.getMessage contains "Could not find property for credId: 1234" mustBe true
+    }
   }
 }

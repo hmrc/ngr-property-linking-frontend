@@ -40,7 +40,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
   def controller() = new PropertySelectedController(
     propertySelectedView,
     mockAuthJourney,
-    mockIsRegisteredCheck,
+    mockMandatoryCheck,
     mcc,
     mockFindAPropertyRepo,
     sortingVMVPropertiesService,

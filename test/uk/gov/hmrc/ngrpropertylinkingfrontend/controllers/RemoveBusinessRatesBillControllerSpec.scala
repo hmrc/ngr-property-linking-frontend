@@ -49,7 +49,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
   def controller() = new RemoveBusinessRatesBillController(
     view,
     mockAuthJourney,
-    mockIsRegisteredCheck,
+    mockMandatoryCheck,
     mockPropertyLinkingRepo,
     mockFileUploadRepo,
     mcc
@@ -57,7 +57,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
 
   "RemoveBusinessRatesBillController" must {
     "show() returns OK and the correct view" in {
-      mockRequest(hasCredId = true)
+      mockMandatoryCheckRequest()
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
 
       val result = controller().show()(authenticatedFakeRequest)
@@ -66,7 +66,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     }
 
     "show() throws an exception when no CredId in request" in {
-      mockRequest()
+      mockMandatoryCheckRequest(hasCredId = false)
 
       val exception = intercept[NotFoundException] {
         await(controller().show()(authenticatedFakeRequest))
@@ -75,7 +75,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     }
 
     "show() throws an exception when fields are missing" in {
-      mockRequest(hasCredId = true)
+      mockMandatoryCheckRequest()
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(incompletePropertyLinkingUserAnswers)))
 
       val exception = intercept[NotFoundException] {
@@ -85,7 +85,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     }
 
     "show() throws an exception when no property is returned" in {
-      mockRequest(hasCredId = true)
+      mockMandatoryCheckRequest()
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
 
       val exception = intercept[NotFoundException] {
@@ -95,7 +95,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     }
 
     "remove() returns OK and the correct view" in {
-      mockRequest(hasCredId = true)
+      mockMandatoryCheckRequest()
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       when(mockPropertyLinkingRepo.deleteEvidenceDocument(any())).thenReturn(Future.successful(true))
       when(mockFileUploadRepo.deleteByUploadId(any())).thenReturn(Future.successful(true))
@@ -105,7 +105,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     }
 
     "remove() throws an exception when no CredId in request" in {
-      mockRequest()
+      mockMandatoryCheckRequest(hasCredId = false)
 
       val exception = intercept[NotFoundException] {
         await(controller().remove()(authenticatedFakeRequest))
@@ -114,7 +114,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     }
 
     "remove() throws an exception when no EvidenceDocumentUploadId is found" in {
-      mockRequest(hasCredId = true)
+      mockMandatoryCheckRequest()
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(incompletePropertyLinkingUserAnswers)))
 
       val exception = intercept[NotFoundException] {
@@ -124,7 +124,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     }
 
     "remove() throws an exception when no property is returned" in {
-      mockRequest(hasCredId = true)
+      mockMandatoryCheckRequest()
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
 
       val exception = intercept[NotFoundException] {
@@ -134,7 +134,7 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
     }
 
     "remove() throws an exception when the deletion fails" in {
-      mockRequest(hasCredId = true)
+      mockMandatoryCheckRequest()
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       when(mockPropertyLinkingRepo.deleteEvidenceDocument(any())).thenReturn(Future.successful(false))
       when(mockFileUploadRepo.deleteByUploadId(any())).thenReturn(Future.successful(false))

@@ -18,7 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.{AddPropertyToYourAccountView, ReviewYourPropertyDetailsView}
@@ -29,17 +29,17 @@ import scala.concurrent.Future
 
 @Singleton
 class ReviewYourPropertyDetailsController @Inject()(reviewYourPropertyDetailsView: ReviewYourPropertyDetailsView,
-                                                   authenticate: AuthRetrievals,
-                                                   isRegisteredCheck: RegistrationAction,
-                                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
+                                                    authenticate: AuthRetrievals,
+                                                    mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
+                                                    mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
   def show: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       Future.successful(Ok(reviewYourPropertyDetailsView(createDefaultNavBar)))
     }
 
   def submit: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       Future.successful(Redirect(routes.AddPropertyToYourAccountController.show.url)) //TODO Wherever this needs to go
     }
 }

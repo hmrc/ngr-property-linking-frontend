@@ -41,7 +41,7 @@ class SingleSearchResultControllerSpec extends ControllerSpecSupport {
     errorView,
     mockAuthJourney,
     mockFindAPropertyRepo,
-    mockIsRegisteredCheck,
+    mockMandatoryCheck,
     sortingVMVPropertiesService,
     mcc
   )(mockConfig)

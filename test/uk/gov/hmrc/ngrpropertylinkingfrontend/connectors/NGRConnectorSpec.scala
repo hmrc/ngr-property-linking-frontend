@@ -46,6 +46,20 @@ class NGRConnectorSpec extends MockHttpV2 {
     }
   }
 
+  "getPropertyLinkingUserAnswers" when {
+    "Successfully return a propertyLinkingUserAnswers" in {
+      val response: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty)
+      setupMockHttpV2Get(s"${mockConfig.nextGenerationRatesHost}/next-generation-rates/get-property-linking-user-answers")(Some(response))
+      val result: Future[Option[PropertyLinkingUserAnswers]] = ngrConnector.getPropertyLinkingUserAnswers(credId)
+      result.futureValue.get mustBe response
+    }
+    "ratepayer not found" in {
+      setupMockHttpV2Get(s"${mockConfig.nextGenerationRatesHost}/next-generation-rates/get-property-linking-user-answers")(None)
+      val result: Future[Option[PropertyLinkingUserAnswers]] = ngrConnector.getPropertyLinkingUserAnswers(credId)
+      result.futureValue mustBe None
+    }
+  }
+
   "upsertPropertyLinkingUserAnswers" when {
     "return HttpResponse when the response is 201 CREATED" in {
       val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty)

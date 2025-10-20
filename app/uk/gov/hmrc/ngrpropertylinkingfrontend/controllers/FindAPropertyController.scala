@@ -19,7 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
@@ -37,18 +37,18 @@ import scala.concurrent.{ExecutionContext, Future}
 class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
                                         findAPropertyConnector: FindAPropertyConnector,
                                         authenticate: AuthRetrievals,
-                                        isRegisteredCheck: RegistrationAction,
+                                        mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                         mcc: MessagesControllerComponents,
                                         findAPropertyRepo: FindAPropertyRepo)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       Future.successful(Ok(findAPropertyView(form, createDefaultNavBar)))
     }
 
   def submit: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

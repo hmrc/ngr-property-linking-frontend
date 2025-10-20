@@ -21,7 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Table
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
@@ -45,7 +45,7 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
                                            errorView: ErrorTemplate,
                                            authenticate: AuthRetrievals,
                                            findAPropertyRepo: FindAPropertyRepo,
-                                           isRegisteredCheck: RegistrationAction,
+                                           mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                            sortingVMVPropertiesService: SortingVMVPropertiesService,
                                            mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with CurrencyHelper {
@@ -53,13 +53,13 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
   private lazy val defaultPageSize: Int = 10
 
   def selectedProperty(index: Int, sortBy: String): Action[AnyContent] = {
-    (authenticate andThen isRegisteredCheck) async { _ =>
+    (authenticate andThen mandatoryCheck) async { _ =>
       Future.successful(Redirect(routes.PropertySelectedController.show(index, sortBy)))
     }
   }
   
   def show(page: Option[Int], sortBy: Option[String]): Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
         case Some(properties) =>
           showSingleSearchResultView(properties, page.getOrElse(1), sortBy.getOrElse("AddressASC"))
@@ -68,7 +68,7 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
     }
 
   def sort: Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

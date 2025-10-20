@@ -33,7 +33,7 @@ class AddPropertyRequestSentControllerSpec extends ControllerSpecSupport with De
   def controller() = new AddPropertyRequestSentController(
     view,
     mockAuthJourney,
-    mockIsRegisteredCheck,
+    mockIsRegisteredCheck, 
     mcc,
     mockPropertyLinkingRepo
   )

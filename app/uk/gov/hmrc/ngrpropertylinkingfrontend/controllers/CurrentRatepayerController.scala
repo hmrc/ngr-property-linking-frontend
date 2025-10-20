@@ -21,7 +21,7 @@ import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
@@ -43,7 +43,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepayerView,
                                            dateTextFields: DateTextFields,
                                            authenticate: AuthRetrievals,
-                                           isRegisteredCheck: RegistrationAction,
+                                           mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                            propertyLinkingRepo: PropertyLinkingRepo,
                                            mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
@@ -68,7 +68,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
     }
 
   def show(mode: String): Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
         case Some(property) =>
           val preparedForm = property.currentRatepayer match {
@@ -82,7 +82,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
     }
 
   def submit(mode: String): Action[AnyContent] =
-    (authenticate andThen isRegisteredCheck).async { implicit request =>
+    (authenticate andThen mandatoryCheck).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

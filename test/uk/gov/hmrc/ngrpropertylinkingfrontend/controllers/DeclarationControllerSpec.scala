@@ -21,8 +21,9 @@ import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.test.DefaultAwaitTimeout
-import play.api.test.Helpers.{contentAsString, redirectLocation, status}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
+import play.api.test.Helpers.{await, contentAsString, redirectLocation, status}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.config.{AppConfig, FrontendAppConfig}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{ControllerSpecSupport, TestData}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.DeclarationView
@@ -34,9 +35,14 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
   def controller() = new DeclarationController(
     view,
     mockAuthJourney,
-    mockIsRegisteredCheck,
+    mockMandatoryCheck,
     mockPropertyLinkingRepo,
     mcc
+  )
+
+  val baseAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(
+    credId = CredId(testCredId.providerId),
+    vmvProperty = properties1.properties.head
   )
 
   "DeclarationController" must {
@@ -46,10 +52,11 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
       val content = contentAsString(result)
       content must include("Declaration")
     }
-    
+
+
     "method accept" must {
       "Return OK and the correct view" in {
-        when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null),vmvProperty = testVmvProperty))))
+        when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty))))
         val result = controller().accept()(authenticatedFakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.AddPropertyRequestSentController.show.url)

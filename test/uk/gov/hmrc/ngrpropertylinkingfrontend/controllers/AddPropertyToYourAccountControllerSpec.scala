@@ -29,12 +29,7 @@ class AddPropertyToYourAccountControllerSpec extends ControllerSpecSupport with 
   lazy val addPropertyView: AddPropertyToYourAccountView = inject[AddPropertyToYourAccountView]
   val pageTitle = "Add a property to your account"
 
-  def controller() = new AddPropertyToYourAccountController(
-    addPropertyView,
-    mockAuthJourney,
-    mockIsRegisteredCheck,
-    mcc
-  )(appConfig = mockConfig)
+  def controller() = new AddPropertyToYourAccountController(addPropertyView, mockAuthJourney, mockMandatoryCheck, mcc)(appConfig = mockConfig)
 
   "AddPropertyToYourAccountController" must {
     "method show" must {

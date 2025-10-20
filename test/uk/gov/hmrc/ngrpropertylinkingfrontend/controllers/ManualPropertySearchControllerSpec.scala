@@ -39,7 +39,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
   def controller() = new ManualPropertySearchController(
     manualPropertySearchView,
     mockAuthJourney,
-    mockIsRegisteredCheck,
+    mockMandatoryCheck,
     mockFindAPropertyConnector,
     mockFindAPropertyRepo,
     mcc

@@ -43,7 +43,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
   def controller() = new ConnectionToPropertyController(
     connectionToPropertyView,
     mockAuthJourney,
-    mockIsRegisteredCheck,
+    mockMandatoryCheck,
     mcc,
     mockPropertyLinkingRepo,
   )(appConfig = mockConfig, ec = ec)

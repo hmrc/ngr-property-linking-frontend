@@ -43,7 +43,6 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
     mockAuthJourney,
     mockMandatoryCheck,
     mockPropertyLinkingRepo,
-    mockNgrConnector,
     mcc)
 
   "Controller" must {
@@ -97,9 +96,6 @@ class CheckYourAnswersControllerSpec extends ControllerSpecSupport with TestData
     }
 
     "Calling the submit function return a 303 and the correct redirect location" in {
-      mockRequest()
-      val httpResponse = HttpResponse(CREATED, "Created Successfully")
-      when(mockNgrConnector.upsertPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(httpResponse))
       val result = controller().submit()(authenticatedFakeRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.DeclarationController.show.url)

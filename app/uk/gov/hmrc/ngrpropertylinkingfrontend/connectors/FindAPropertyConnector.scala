@@ -95,7 +95,6 @@ class FindAPropertyConnector @Inject()(
       }else{ url"${appConfig.vmvAddressLookup}/vmv/rating-listing/api/properties?postcode=${searchParams.postcode}&size=50&searchDirection=FORWARD"}
 
     }
-    println(Console.MAGENTA + urlEndpoint + Console.RESET)
     http.get(urlEndpoint)
       .execute[HttpResponse]
       .map { response =>

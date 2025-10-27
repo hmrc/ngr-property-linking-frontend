@@ -29,7 +29,7 @@ final case class ManualPropertySearchForm(addressLine1: Option[String] = None,
                                           addressLine2: Option[String] = None,
                                           town: Option[String] = None,
                                           county: Option[String] = None,
-                                          postcode: Postcode,
+                                          postcode: Option[Postcode] = None,
                                           propertyReference: Option[String] = None,
                                           council: Option[String] = None,
                                           scatCode: Option[ScatCode] = None,
@@ -95,16 +95,16 @@ object ManualPropertySearchForm extends CommonFormValidators {
               )
             )
         ),
-        "postcode" ->
+        "postcode" -> optional(
           text()
             .transform[String](_.strip(), identity)
             .verifying(
               firstError(
-                isNotEmpty("postcode", "manualSearchProperty.postcode.required.error"),
                 regexp(postcodeRegexPattern.pattern(), "manualSearchProperty.postcode.invalid.error")
               )
             )
-            .transform[Postcode](Postcode.apply, _.value),
+            .transform[Postcode](Postcode.apply, _.value)
+        ),
         "propertyReference" -> optional(
           text()
             .verifying(maxLength(100, "manualSearchProperty.propertyReference.maxLength.error"))

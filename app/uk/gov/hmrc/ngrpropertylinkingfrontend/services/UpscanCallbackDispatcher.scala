@@ -32,6 +32,7 @@ class UpscanCallbackDispatcher @Inject() (sessionStorage: UploadProgressTracker)
     "image/jpeg",
   )
   
+  
   def handleCallback(callback: CallbackBody)
                     (using HeaderCarrier): Future[Unit] =
     
@@ -46,7 +47,7 @@ class UpscanCallbackDispatcher @Inject() (sessionStorage: UploadProgressTracker)
               size = Some(s.uploadDetails.size)
             )
           } else {
-            throw new BadRequestException(s"Incorrect file type uploaded, proffered file type was: ${s.uploadDetails.fileMimeType}")
+            throw new BadRequestException(s"Incorrect file type uploaded, preferred file type was: ${s.uploadDetails.fileMimeType}")
           }
         case _: FailedCallbackBody =>
           UploadStatus.Failed

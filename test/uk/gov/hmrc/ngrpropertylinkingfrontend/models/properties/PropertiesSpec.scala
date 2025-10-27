@@ -25,37 +25,33 @@ class PropertiesSpec extends TestSupport {
   val testProperties: VMVProperties = properties1
 
   val testPropertyJsonResponse: JsValue = Json.parse(
-    """{
-      |"total":1,
+    """{"total":1,
       |"properties":[
-        |{
-          |"localAuthorityReference":"2191322564521",
-          |"valuations":[
-          |{"descriptionText":"SHOP AND PREMISES",
-          |"rateableValue":9300,
-          |"assessmentRef":25141561000,
-          |"scatCode":"249",
-          |"currentFromDate":"2023-04-01",
-          |"effectiveDate":"2023-04-01",
-          |"listYear":"2023",
-          |"propertyLinkEarliestStartDate":"2017-04-01",
-          |"primaryDescription":"CS",
-          |"listType":"current",
-          |"assessmentStatus":"CURRENT",
-          |"allowedActions":[
-          |"check","challenge",
-          |"viewDetailedValuation",
-          |"propertyLink",
-          |"similarProperties"
-          |]
-        |}
-      |],
+      |{
+      |"uarn":11905603000,
       |"addressFull":"(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
       |"localAuthorityCode":"4720",
-      |"uarn":11905603000}]}""".stripMargin)
+      |"localAuthorityReference":"2191322564521",
+      |"valuations":
+      |[{"assessmentRef":25141561000,
+      |"assessmentStatus":"CURRENT",
+      |"rateableValue":9300,
+      |"scatCode":"249",
+      |"effectiveDate":"2023-04-01",
+      |"currentFromDate":"2023-04-01",
+      |"currentToDate":"2023-04-01",
+      |"descriptionText":"SHOP AND PREMISES",
+      |"listYear":"2023",
+      |"primaryDescription":"CS",
+      |"allowedActions":["check","challenge","viewDetailedValuation","propertyLink","similarProperties"],
+      |"listType":"current"}]}],
+      |"hasNext":true,
+      |"hasPrevious":true}
+      |""".stripMargin)
 
   "Property" should {
     "deserialize to json" in {
+      println(Json.toJson(properties1))
       Json.toJson(properties1) mustBe testPropertyJsonResponse
     }
     "serialize to json" in {

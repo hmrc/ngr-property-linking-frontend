@@ -23,14 +23,14 @@ class ManualPropertySearchParamsSpec extends TestSupport {
   "ManualPropertySearchParams" should {
 
     "construct query string with only postcode" in {
-      val params = ManualPropertySearchParams(postcode = "W1A 1AA")
+      val params = ManualPropertySearchParams(postcode = Some("W1A 1AA"))
       params.toQueryString mustBe "postcode=W1A+1AA"
-      params.toUrl("https://lookup.service") mustBe "https://lookup.service/external-ndr-list-api/properties?postcode=W1A+1AA"
+      params.toUrl("https://lookup.service") mustBe "https://lookup.service/vmv/rating-listing/api/properties?postcode=W1A+1AA&size=15"
     }
 
     "include and clean optional fields" in {
       val params = ManualPropertySearchParams(
-        postcode = "W1A 1AA",
+        postcode = Some("W1A 1AA"),
         addressLine1 = Some("123 King's (Road)"),
         addressLine2 = Some("West End"),
         town = Some("London"),
@@ -49,13 +49,13 @@ class ManualPropertySearchParamsSpec extends TestSupport {
       query must include("toRateableValue=2000")
 
       val url = params.toUrl("https://lookup.service")
-      url must startWith("https://lookup.service/external-ndr-list-api/properties?")
+      url must startWith("https://lookup.service/vmv/rating-listing/api/properties?")
       url must include("postcode=W1A+1AA")
     }
 
     "URL encode values with spaces and symbols" in {
       val params = ManualPropertySearchParams(
-        postcode = "AB1 2CD",
+        postcode = Some("AB1 2CD"),
         addressLine1 = Some("Flat #3, (Old) House's")
       )
 

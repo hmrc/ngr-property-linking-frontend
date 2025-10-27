@@ -45,9 +45,10 @@ trait TestData {
             assessmentStatus = "CURRENT",
             rateableValue = Some(9300),
             scatCode = Some("249"),
-            descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
+            descriptionText = "SHOP AND PREMISES",
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -57,8 +58,7 @@ trait TestData {
               "propertyLink",
               "similarProperties"
             ),
-            listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
+            listType = "current"
           )
         )
       )
@@ -74,12 +74,13 @@ trait TestData {
         localAuthorityCode = "4720",
         valuations = List(
           Valuation(
-            assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
+            assessmentStatus = "CURRENT",
             rateableValue = None,
             scatCode = Some("249"),
-            currentFromDate = LocalDate.of(2023, 4, 1),
             effectiveDate = LocalDate.of(2023, 4, 1),
+            currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             descriptionText = "Lifeboat Station",
             listYear = "2023",
             primaryDescription = "CS",
@@ -90,7 +91,6 @@ trait TestData {
               "propertyLink",
               "similarProperties"
             ),
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1)),
             listType = "current"
           )
         )
@@ -102,12 +102,13 @@ trait TestData {
         localAuthorityCode = "4720",
         valuations = List(
           Valuation(
-            assessmentStatus = "CURRENT",
             assessmentRef = 25141561000L,
+            assessmentStatus = "CURRENT",
             rateableValue = Some(9300),
             scatCode = Some("249"),
-            currentFromDate = LocalDate.of(2023, 4, 1),
             effectiveDate = LocalDate.of(2023, 4, 1),
+            currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             descriptionText = "SHOP AND PREMISES",
             listYear = "2023",
             primaryDescription = "CS",
@@ -118,7 +119,6 @@ trait TestData {
               "propertyLink",
               "similarProperties"
             ),
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1)),
             listType = "current"
           )
         )
@@ -130,12 +130,13 @@ trait TestData {
         localAuthorityCode = "4720",
         valuations = List(
           Valuation(
-            assessmentStatus = "CURRENT",
             assessmentRef = 85141561000L,
+            assessmentStatus = "CURRENT",
             rateableValue = Some(109300),
             scatCode = Some("249"),
-            currentFromDate = LocalDate.of(2023, 4, 1),
             effectiveDate = LocalDate.of(2023, 4, 1),
+            currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             descriptionText = "GOLF",
             listYear = "2023",
             primaryDescription = "CS",
@@ -146,7 +147,6 @@ trait TestData {
               "propertyLink",
               "similarProperties"
             ),
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1)),
             listType = "current"
           )
         )
@@ -158,12 +158,13 @@ trait TestData {
         localAuthorityCode = "4720",
         valuations = List(
           Valuation(
-            assessmentStatus = "CURRENT",
             assessmentRef = 5141561000L,
+            assessmentStatus = "CURRENT",
             rateableValue = Some(79300),
             scatCode = Some("249"),
-            currentFromDate = LocalDate.of(2023, 4, 1),
             effectiveDate = LocalDate.of(2023, 4, 1),
+            currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             descriptionText = "Miniature Railway",
             listYear = "2023",
             primaryDescription = "CS",
@@ -174,7 +175,6 @@ trait TestData {
               "propertyLink",
               "similarProperties"
             ),
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1)),
             listType = "current"
           )
         )
@@ -198,6 +198,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -208,7 +209,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       ),
@@ -226,6 +226,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -236,7 +237,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       ),
@@ -254,6 +254,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -264,7 +265,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       ),
@@ -282,6 +282,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -292,7 +293,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       ),
@@ -310,6 +310,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -320,7 +321,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       ),
@@ -338,6 +338,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -348,7 +349,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       ),
@@ -366,6 +366,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -376,7 +377,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       ),
@@ -394,6 +394,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -404,7 +405,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       ),
@@ -422,6 +422,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -432,7 +433,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       ),
@@ -450,6 +450,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -460,7 +461,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       ),
@@ -478,6 +478,7 @@ trait TestData {
             descriptionText = "SHOP AND PREMISES",
             effectiveDate = LocalDate.of(2023, 4, 1),
             currentFromDate = LocalDate.of(2023, 4, 1),
+            currentToDate = Some(LocalDate.of(2023, 4, 1)),
             listYear = "2023",
             primaryDescription = "CS",
             allowedActions = List(
@@ -488,7 +489,6 @@ trait TestData {
               "similarProperties"
             ),
             listType = "current",
-            propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
           )
         )
       )
@@ -519,6 +519,7 @@ trait TestData {
         descriptionText = "SHOP AND PREMISES",
         effectiveDate = LocalDate.of(2023, 4, 1),
         currentFromDate = LocalDate.of(2023, 4, 1),
+        currentToDate = Some(LocalDate.of(2023, 4, 1)),
         listYear = "2023",
         primaryDescription = "CS",
         allowedActions = List(
@@ -529,7 +530,6 @@ trait TestData {
           "similarProperties"
         ),
         listType = "current",
-        propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
       ),
       Valuation(
         assessmentRef = 25141561000L,
@@ -539,6 +539,7 @@ trait TestData {
         descriptionText = "SHOP AND PREMISES",
         effectiveDate = LocalDate.of(2023, 4, 1),
         currentFromDate = LocalDate.of(2023, 4, 1),
+        currentToDate = Some(LocalDate.of(2023, 4, 1)),
         listYear = "2023",
         primaryDescription = "CS",
         allowedActions = List(
@@ -549,7 +550,6 @@ trait TestData {
           "similarProperties"
         ),
         listType = "current",
-        propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
       ),
       Valuation(
         assessmentRef = 25141561000L,
@@ -559,6 +559,7 @@ trait TestData {
         descriptionText = "SHOP AND PREMISES",
         effectiveDate = LocalDate.of(2023, 4, 1),
         currentFromDate = LocalDate.of(2023, 4, 1),
+        currentToDate = Some(LocalDate.of(2023, 4, 1)),
         listYear = "2023",
         primaryDescription = "CS",
         allowedActions = List(
@@ -569,7 +570,6 @@ trait TestData {
           "similarProperties"
         ),
         listType = "current",
-        propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
       ),
     ))
   val testFeatureMap: FeatureMap =

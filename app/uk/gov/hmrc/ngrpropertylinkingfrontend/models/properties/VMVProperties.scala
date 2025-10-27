@@ -19,7 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 
-case class VMVProperties(total: Int, properties: List[VMVProperty])
+case class VMVProperties(total: Int, properties: List[VMVProperty], hasNext: Boolean = true, hasPrevious: Boolean = true)
 
 object VMVProperties {
   implicit val format: Format[VMVProperties] = Json.format[VMVProperties]
@@ -29,7 +29,7 @@ case class VMVProperty(uarn: Long,
                        addressFull: String,
                        localAuthorityCode: String,
                        localAuthorityReference: String,
-                       valuations: List[Valuation],
+                       valuations: List[Valuation], 
                       )
 
 object VMVProperty {

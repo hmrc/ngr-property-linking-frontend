@@ -23,7 +23,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class SortingVMVPropertiesService @Inject() {
 
-  def sort(properties: List[VMVProperty], sortBy: String) = {
+  def sort(properties: List[VMVProperty], sortBy: String): List[VMVProperty] = {
     sortBy match
       case "AddressASC"        => properties.sortBy(_.addressFull)
       case "AddressDESC"       => properties.sortBy(_.addressFull).reverse

@@ -83,7 +83,7 @@ class ManualPropertySearchViewSpec extends ViewBaseSpec {
     "produce the same output for apply() and render()" must {
       val form = ManualPropertySearchForm
         .form
-        .fillAndValidate(ManualPropertySearchForm(Some("Address Line 1"), None, Some("town"), None, Postcode("TQ5 9BW"), None, None, None, None, None, None))
+        .fillAndValidate(ManualPropertySearchForm(Some("Address Line 1"), None, Some("town"), None, Some(Postcode("TQ5 9BW")), None, None, None, None, None, None))
       val manualPropertySearchView = view(form, content)
       lazy implicit val document: Document = Jsoup.parse(manualPropertySearchView.body)
       val htmlApply = view.apply(form, content).body
@@ -139,24 +139,10 @@ class ManualPropertySearchViewSpec extends ViewBaseSpec {
       }
     }
 
-    "produce the same output for apply() and render() when missing line1, town and postcode" in {
-      val form = ManualPropertySearchForm
-        .form
-        .fillAndValidate(ManualPropertySearchForm(None, None, None, None, Postcode(""), None, None, None, None, None, None))
-      val manualPropertySearchView = view(form, content)
-      lazy implicit val document: Document = Jsoup.parse(manualPropertySearchView.body)
-      val htmlApply = view.apply(form, content).body
-      val htmlRender = view.render(form, content, false, request, messages, mockConfig).body
-      lazy val htmlF = view.f(form, content, false)
-      htmlF.toString() must not be empty
-      htmlApply mustBe htmlRender
-      elementText(Selectors.postcodeErrorMessage) mustBe postcodeEmptyErrorMessage
-    }
-
     "produce the same output for apply() and render() when max error messages on line1, line2, town and county" in {
       val form = ManualPropertySearchForm
         .form
-        .fillAndValidate(ManualPropertySearchForm(Some(over100Characters), Some(over100Characters), Some(over100Characters), Some(over100Characters), Postcode("TQ5 9BW"), None, None, None, None, None, None))
+        .fillAndValidate(ManualPropertySearchForm(Some(over100Characters), Some(over100Characters), Some(over100Characters), Some(over100Characters), Some(Postcode("TQ5 9BW")), None, None, None, None, None, None))
       val manualPropertySearchView = view(form, content)
       lazy implicit val document: Document = Jsoup.parse(manualPropertySearchView.body)
       val htmlApply = view.apply(form, content).body

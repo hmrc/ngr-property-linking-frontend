@@ -49,18 +49,17 @@ class FindAPropertyConnector @Inject()(
 
   def findAPropertyManualSearch(searchParams: ManualPropertySearchForm)(implicit headerCarrier: HeaderCarrier): Future[Either[ErrorResponse, VMVProperties]] = {
     val urlEndpoint =  if(appConfig.features.vmvPropertyLookupTestEnabled()){
-      url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${searchParams.postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
+      url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${searchParams.postcode.map(_.value.toUpperCase().take(4).trim.replaceAll("\\s", ""))}"
     }else{
       val query = ManualPropertySearchParams(
-        postcode = searchParams.postcode.value,
+        postcode = searchParams.postcode.map(_.value),
         addressLine1 = searchParams.addressLine1,
         addressLine2 = searchParams.addressLine2,
         town = searchParams.town,
         propertyReference = searchParams.propertyReference,
         miniRateableValue = searchParams.miniRateableValue,
         maxRateableValue = searchParams.maxRateableValue
-      ).toUrl(appConfig.addressLookupUrl)
-
+      ).toUrl(appConfig.vmvAddressLookup)
       url"$query"
     }
     http.get(urlEndpoint)
@@ -92,9 +91,11 @@ class FindAPropertyConnector @Inject()(
       url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${searchParams.postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
     } else {
       if(searchParams.propertyName.nonEmpty){
-        url"${appConfig.addressLookupUrl}/external-ndr-list-api/properties?postcode=${searchParams.postcode}&propertyNameNumber=${searchParams.propertyName.map(_.replaceAll("['()]", "")).getOrElse(None)}"
-      }else{ url"${appConfig.addressLookupUrl}/external-ndr-list-api/properties?postcode=${searchParams.postcode}"}
+        url"${appConfig.vmvAddressLookup}/vmv/rating-listing/api/properties?postcode=${searchParams.postcode}&propertyNameNumber=${searchParams.propertyName.map(_.replaceAll("['()]", "")).getOrElse(None)}&size=50&searchDirection=FORWARD"
+      }else{ url"${appConfig.vmvAddressLookup}/vmv/rating-listing/api/properties?postcode=${searchParams.postcode}&size=50&searchDirection=FORWARD"}
+
     }
+    println(Console.MAGENTA + urlEndpoint + Console.RESET)
     http.get(urlEndpoint)
       .execute[HttpResponse]
       .map { response =>

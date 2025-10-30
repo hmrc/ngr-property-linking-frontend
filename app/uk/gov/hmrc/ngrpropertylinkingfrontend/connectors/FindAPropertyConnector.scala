@@ -91,8 +91,8 @@ class FindAPropertyConnector @Inject()(
       url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${searchParams.postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
     } else {
       if(searchParams.propertyName.nonEmpty){
-        url"${appConfig.vmvAddressLookup}/vmv/rating-listing/api/properties?postcode=${searchParams.postcode}&propertyNameNumber=${searchParams.propertyName.map(_.replaceAll("['()]", "")).getOrElse(None)}&size=50&searchDirection=FORWARD"
-      }else{ url"${appConfig.vmvAddressLookup}/vmv/rating-listing/api/properties?postcode=${searchParams.postcode}&size=50&searchDirection=FORWARD"}
+        url"${appConfig.vmvAddressLookup}/vmv/rating-listing/api/properties?postcode=${searchParams.postcode}&propertyNameNumber=${searchParams.propertyName.map(_.replaceAll("['()]", "")).getOrElse(None)}&size=15&searchDirection=FORWARD"
+      }else{ url"${appConfig.vmvAddressLookup}/vmv/rating-listing/api/properties?postcode=${searchParams.postcode}&size=15&searchDirection=FORWARD"}
 
     }
     http.get(urlEndpoint)

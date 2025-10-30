@@ -86,6 +86,7 @@ class NGRConnector @Inject()(http: HttpClientV2,
         descriptionText = "SHOP AND PREMISES",
         effectiveDate = LocalDate.of(2023, 4, 1),
         currentFromDate = LocalDate.of(2023, 4, 1),
+        currentToDate = Some(LocalDate.of(2023, 4, 1)),
         listYear = "2023",
         primaryDescription = "CS",
         allowedActions = List(
@@ -96,7 +97,6 @@ class NGRConnector @Inject()(http: HttpClientV2,
           "similarProperties"
         ),
         listType = "current",
-        propertyLinkEarliestStartDate = Some(LocalDate.of(2017, 4, 1))
       )
     )
   )

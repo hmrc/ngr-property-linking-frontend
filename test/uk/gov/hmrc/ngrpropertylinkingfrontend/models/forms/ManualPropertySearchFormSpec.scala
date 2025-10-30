@@ -36,19 +36,7 @@ class ManualPropertySearchFormSpec extends AnyWordSpec with Matchers {
       val boundForm = ManualPropertySearchForm.form.bind(data)
 
       boundForm.hasErrors shouldBe false
-      boundForm.value shouldBe Some(ManualPropertySearchForm(Some("address line 1"), None, Some("London"), None, Postcode("BH1 6RE")))
-    }
-
-    "fail to bind when manual property search is missing addressLine1, town and postcode" in {
-      val data = Map("addressLine1" -> "",
-        "addressLine2" -> "",
-        "town" -> "",
-        "county" -> "",
-        "postcode" -> "")
-      val boundForm = ManualPropertySearchForm.form.bind(data)
-
-      boundForm.hasErrors shouldBe true
-      boundForm.errors should contain(FormError("postcode", List("manualSearchProperty.postcode.required.error"), ArraySeq("postcode")))
+      boundForm.value shouldBe Some(ManualPropertySearchForm(Some("address line 1"), None, Some("London"), None, Some(Postcode("BH1 6RE"))))
     }
 
     "fail to bind when manual property search has invalid mini and max rateable value" in {

@@ -80,18 +80,6 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
         redirectLocation(result) mustBe Some(routes.SingleSearchResultController.show(Some(1), Some("AddressASC")).url)
       }
 
-      "Submit with no postcode and display error message" in {
-        mockConfig.features.vmvPropertyLookupTestEnabled(true)
-        val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)
-          .withFormUrlEncodedBody("addressLine1" -> "99",
-            "town" -> "Worthing",
-            "postcode" -> "")
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
-        status(result) mustBe BAD_REQUEST
-        val content = contentAsString(result)
-        content must include("Enter postcode")
-      }
-
       "Submit with invalid postcode and display error message" in {
         mockConfig.features.vmvPropertyLookupTestEnabled(true)
         val result = controller().submit()(AuthenticatedUserRequest(FakeRequest(routes.ManualPropertySearchController.submit)

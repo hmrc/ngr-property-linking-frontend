@@ -25,14 +25,14 @@ case class Valuation(
                        assessmentStatus: String,
                        rateableValue: Option[BigDecimal],
                        scatCode: Option[String],
-                       descriptionText: String,
                        effectiveDate: LocalDate,
                        currentFromDate: LocalDate,
+                       currentToDate: Option[LocalDate],
+                       descriptionText: String, 
                        listYear: String,
                        primaryDescription: String,
                        allowedActions: List[String],
                        listType: String,
-                       propertyLinkEarliestStartDate: Option[LocalDate],
                      )
 
 object Valuation {

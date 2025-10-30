@@ -20,7 +20,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
 
 case class ManualPropertySearchParams(
-                                       postcode: String,
+                                       postcode: Option[String] = None,
                                        addressLine1: Option[String] = None,
                                        addressLine2: Option[String] = None,
                                        town: Option[String] = None,
@@ -36,9 +36,9 @@ case class ManualPropertySearchParams(
     value.replaceAll("['()]", "")
 
   def toQueryString: String = {
-    val base = s"postcode=${encode(postcode)}"
 
     val optionalParams = Seq(
+      "postcode"                -> postcode,
       "propertyNameNumber"      -> addressLine1.map(clean),
       "street"                  -> addressLine2.map(clean),
       "town"                    -> town,
@@ -51,10 +51,14 @@ case class ManualPropertySearchParams(
       case (key, Some(value)) => s"$key=${encode(value)}"
     }
 
-    (base +: extras).mkString("&")
+    extras.mkString("&")
   }
 
   def toUrl(baseUrl: String): String =
-    s"$baseUrl/external-ndr-list-api/properties?${toQueryString}"
+    s"$baseUrl/vmv/rating-listing/api/properties?${toQueryString}&size=15"
 }
+
+
+
+
 

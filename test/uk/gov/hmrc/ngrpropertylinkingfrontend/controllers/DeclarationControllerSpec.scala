@@ -61,6 +61,7 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
       "Return OK and the correct view" in {
         when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty))))
         when(mockNgrConnector.upsertPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(HttpResponse(CREATED, "Created Successfully")))
+        when(mockNgrNotifyConnector.postProperty(any())(any())).thenReturn(Future.successful(Right(HttpResponse(CREATED, "Created Successfully"))))
         val result = controller().accept()(authenticatedFakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.AddPropertyRequestSentController.show.url)

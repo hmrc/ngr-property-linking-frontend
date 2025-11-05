@@ -38,7 +38,7 @@ class NgrNotifyConnector @Inject()(
 
   private def uri(path: String) = new URI(s"${appConfig.ngrNotify}/$path")
 
-  def registerRatePayer(propertyLinkingUserAnswers: PropertyLinkingUserAnswers)
+  def postProperty(propertyLinkingUserAnswers: PropertyLinkingUserAnswers)
                        (implicit hc: HeaderCarrier): Future[Either[ErrorResponse, HttpResponse]] = {
     http.post(uri("property").toURL)
       .withBody(Json.toJson(propertyLinkingUserAnswers))

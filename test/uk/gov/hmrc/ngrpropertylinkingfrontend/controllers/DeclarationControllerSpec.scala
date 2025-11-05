@@ -39,6 +39,7 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
     mockMandatoryCheck,
     mockPropertyLinkingRepo,
     mockNgrConnector,
+    mockNgrNotifyConnector,
     mcc
   )
 

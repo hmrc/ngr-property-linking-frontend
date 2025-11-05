@@ -21,6 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NgrNotifyConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
@@ -37,6 +38,7 @@ class DeclarationController @Inject()(view: DeclarationView,
                                       mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                       propertyLinkingRepo: PropertyLinkingRepo,
                                       ngrConnector: NGRConnector,
+                                      ngrNotifyConnector: NgrNotifyConnector,
                                       mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
@@ -54,11 +56,18 @@ class DeclarationController @Inject()(view: DeclarationView,
           case Some(result) => Future.successful(result)
           case None => Future.failed(new Exception(s"Could not save reference for credId: ${credId.value}"))
         }
-        response <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
-        result <- if (response.status == CREATED) {
-          Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
-        } else {
-          Future.failed(new Exception(s"Failed upsert to backend for credId: ${credId.value}"))
+        ngrConnectorResponse <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
+        ngrNotifyConnectorResponse <- ngrNotifyConnector.postProperty(userAnswers)
+
+        result <- (ngrNotifyConnectorResponse, ngrConnectorResponse.status) match {
+          case (Right(resp), CREATED) if resp.status == ACCEPTED || resp.status == CREATED =>
+            Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
+          case (Right(resp), status) if status != CREATED =>
+            Future.failed(new Exception(s"Failed upsert to backend for credId: ${credId.value}"))
+          case (Left(error), _) =>
+            Future.failed(new Exception(s"Failed call to ngr-notify property endpoint for credId: ${credId.value}"))
+          case _ =>
+            Future.failed(new Exception(s"Unknown failure for credId: ${credId.value}"))
         }
       } yield result
     }

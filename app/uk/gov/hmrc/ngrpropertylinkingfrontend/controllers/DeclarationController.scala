@@ -60,7 +60,7 @@ class DeclarationController @Inject()(view: DeclarationView,
         ngrNotifyConnectorResponse <- ngrNotifyConnector.postProperty(userAnswers)
 
         result <- (ngrNotifyConnectorResponse, ngrConnectorResponse.status) match {
-          case (Right(resp), CREATED) if resp.status == ACCEPTED || resp.status == CREATED =>
+          case (Right(resp), CREATED) if resp.status == ACCEPTED  =>
             Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
           case (Right(resp), status) if status != CREATED =>
             Future.failed(new Exception(s"Failed upsert to backend for credId: ${credId.value}"))

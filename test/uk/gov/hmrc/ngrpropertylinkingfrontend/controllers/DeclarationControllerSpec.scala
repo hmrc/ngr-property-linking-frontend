@@ -19,13 +19,13 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.shouldBe
-import play.api.http.Status.{CREATED, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
+import play.api.http.Status.{ACCEPTED, CREATED, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.test.DefaultAwaitTimeout
 import play.api.test.Helpers.{await, contentAsString, redirectLocation, status}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.{AppConfig, FrontendAppConfig}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{ControllerSpecSupport, TestData}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.DeclarationView
 
@@ -61,7 +61,7 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
       "Return OK and the correct view" in {
         when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty))))
         when(mockNgrConnector.upsertPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(HttpResponse(CREATED, "Created Successfully")))
-        when(mockNgrNotifyConnector.postProperty(any())(any())).thenReturn(Future.successful(Right(HttpResponse(CREATED, "Created Successfully"))))
+        when(mockNgrNotifyConnector.postProperty(any())(any())).thenReturn(Future.successful(Right(HttpResponse(ACCEPTED, "Created Successfully"))))
         val result = controller().accept()(authenticatedFakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.AddPropertyRequestSentController.show.url)
@@ -74,6 +74,26 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
           await(controller().accept(authenticatedFakeRequest))
         }
         exception.getMessage contains "Failed upsert to backend for credId: 1234" mustBe true
+      }
+      "Throw exception when fail to call ngr-notify property endpoint" in {
+        when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty))))
+        when(mockNgrConnector.upsertPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(HttpResponse(CREATED, "Created Successfully")))
+        when(mockNgrNotifyConnector.postProperty(any())(any())).thenReturn(Future.successful(Left(ErrorResponse(INTERNAL_SERVER_ERROR, "Internal server error"))))
+        mockMandatoryCheckRequest()
+        val exception = intercept[Exception] {
+          await(controller().accept(authenticatedFakeRequest))
+        }
+        exception.getMessage contains "Failed call to ngr-notify property endpoint for credId: 1234"  mustBe true
+      }
+      "Throw exception for unknown failure" in {
+        when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty))))
+        when(mockNgrConnector.upsertPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(HttpResponse(CREATED, "Created Successfully")))
+        when(mockNgrNotifyConnector.postProperty(any())(any())).thenReturn(Future.successful(Right(HttpResponse(OK, "Created Successfully"))))
+        mockMandatoryCheckRequest()
+        val exception = intercept[Exception] {
+          await(controller().accept(authenticatedFakeRequest))
+        }
+        exception.getMessage shouldBe "Unknown failure for credId: 1234"
       }
     }
 

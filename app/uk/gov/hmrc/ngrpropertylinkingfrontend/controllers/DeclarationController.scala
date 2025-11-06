@@ -18,7 +18,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NgrNotifyConnector

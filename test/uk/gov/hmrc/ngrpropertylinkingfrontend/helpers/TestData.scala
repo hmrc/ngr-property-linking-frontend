@@ -23,7 +23,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{PreparedUpload, Reference, UploadForm, UpscanInitiateRequest}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, Rooms, ScatCode}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, PropertyLinkingUserAnswers, Rooms, ScatCode}
 
 import java.time.{Instant, LocalDate}
 
@@ -656,4 +656,8 @@ trait TestData {
       |""".stripMargin
   )
 
+  val testPropertyLinkingUserAnswers = PropertyLinkingUserAnswers(
+    credId,
+    testVmvProperty
+  )
 }

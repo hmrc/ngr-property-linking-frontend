@@ -38,6 +38,7 @@ trait AppConfig {
   val callbackEndpointTarget: String
   val uploadRedirectTargetBase: String
   val customCurrentDate: Option[String] // TODO remove this after 1st April 2026, as it is only used for testing purposes
+  val ngrNotify: String
 }
 
 @Singleton
@@ -56,6 +57,7 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val callbackEndpointTarget: String = getString("upscan.callback-endpoint")
   override val customCurrentDate: Option[String] = config.getOptional("custom-current-date")
   override val uploadRedirectTargetBase: String = getString("upscan.upload-redirect-target-base")
+  override val ngrNotify: String = getString("microservice.services.ngr-notify.host")
 
 
   def getString(key: String): String =

@@ -34,6 +34,7 @@ class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
   override val callbackEndpointTarget: String = "http://localhost:1504/internal/callback-from-upscan"
   override val vmvAddressLookup: String = "http://localhost:9301"
   override val uploadRedirectTargetBase: String = "http://localhost:1504"
+  override val ngrNotify: String = "https://localhost:1515"
   
   override def getString(key: String): String = ???
 

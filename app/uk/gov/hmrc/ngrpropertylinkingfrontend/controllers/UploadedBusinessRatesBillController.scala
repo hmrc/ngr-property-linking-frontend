@@ -18,9 +18,10 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
@@ -35,7 +36,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadedBusinessRateBil
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: UploadProgressTracker,
@@ -118,4 +119,38 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
       ).map(summarise)
     )
   }
+
+  def statusFragment: Action[AnyContent] =
+    (authenticate andThen mandatoryCheck).async { implicit request =>
+
+      propertyLinkingRepo
+        .findByCredId(CredId(request.credId.getOrElse(throw new RuntimeException("no cred ID"))))
+        .flatMap {
+          case Some(userAnswers) =>
+            userAnswers.evidenceDocumentUploadId match {
+              case Some(uploadId) =>
+                uploadProgressTracker
+                  .getUploadResult(UploadId(uploadId))
+                  .map {
+                    case Some(UploadedSuccessfully(name, _, downloadUrl, _)) =>
+                      Ok(GovukSummaryList().render(buildSuccessSummaryList(name, downloadUrl.toString)))
+                    case Some(UploadStatus.InProgress) =>
+                      Ok(GovukSummaryList().render(buildInProgressOrFailedSummaryList("Uploading")))
+                    case Some(UploadStatus.Failed) =>
+                      Ok(GovukSummaryList().render(buildInProgressOrFailedSummaryList("Failed")))
+                    case _ =>
+                      Ok(GovukSummaryList().render(buildInProgressOrFailedSummaryList("Unknown")))
+                  }
+
+              case None =>
+                // No upload ID in user answers
+                throw new RuntimeException("No upload ID")
+            }
+
+          case None =>
+            // No user answers found
+            throw new RuntimeException("No user answers found")
+        }
+    }
+
 }

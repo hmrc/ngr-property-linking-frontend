@@ -161,7 +161,7 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
           vmvProperty = testVmvProperty)
         await(repository.upsertProperty(propertyLinkingUserAnswersWithUploadFields))
 
-        val isSuccessful = await(repository.insertUploadId(credId, UploadId(uploadId)))
+        val isSuccessful = await(repository.insertUploadId(credId, uploadId))
         isSuccessful mustBe defined
         val response = await(repository.findByCredId(credId))
         val expected = Some(PropertyLinkingUserAnswers(

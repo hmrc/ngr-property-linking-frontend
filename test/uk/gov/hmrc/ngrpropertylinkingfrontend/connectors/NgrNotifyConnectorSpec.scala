@@ -27,6 +27,8 @@ class NgrNotifyConnectorSpec extends MockHttpV2 {
 
   val connector = new NgrNotifyConnector(mockHttpClientV2, mockConfig)
 
+  sys.props += "features.bridgeEnabled" -> "true"
+
   "Calling the property endpoint" when {
 
     "a valid property" should {

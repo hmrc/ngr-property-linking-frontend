@@ -32,25 +32,35 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class NgrNotifyConnector @Inject()(
-                                               http: HttpClientV2,
-                                               appConfig: AppConfig
-                                             )(implicit ec: ExecutionContext) {
+                                    http: HttpClientV2,
+                                    appConfig: AppConfig
+                                  )(implicit ec: ExecutionContext) {
 
   private def url(path: String): URL = url"${appConfig.ngrNotify}/ngr-notify/$path"
 
   def postProperty(propertyLinkingUserAnswers: PropertyLinkingUserAnswers)
-                       (implicit hc: HeaderCarrier): Future[Either[ErrorResponse, HttpResponse]] = {
-    http.post(url("property"))
-      .withBody(Json.toJson(propertyLinkingUserAnswers))
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case ACCEPTED => Right(response)
-          case _ => Left(ErrorResponse(response.status, response.body))
-        }
-      } recover {
-      case ex =>
-        Left(ErrorResponse(Status.INTERNAL_SERVER_ERROR, s"Call to ngr-notify property endpoint failed: ${ex.getMessage}"))
+                  (implicit hc: HeaderCarrier): Future[Either[ErrorResponse, HttpResponse]] = {
+    if (appConfig.features.bridgeEndpointEnabled()) {
+      http.post(url("property"))
+        .withBody(Json.toJson(propertyLinkingUserAnswers))
+        .execute[HttpResponse]
+        .map { response =>
+          response.status match {
+            case ACCEPTED => Right(response)
+            case _ => Left(ErrorResponse(response.status, response.body))
+          }
+        } recover {
+        case ex =>
+          Left(ErrorResponse(Status.INTERNAL_SERVER_ERROR, s"Call to ngr-notify property endpoint failed: ${ex.getMessage}"))
+      }
+    } else {
+      val dummyHttpResponse =
+        HttpResponse(
+          status = ACCEPTED,
+          headers = Map.empty
+        )
+
+      Future.successful(Right(dummyHttpResponse))
     }
   }
 }

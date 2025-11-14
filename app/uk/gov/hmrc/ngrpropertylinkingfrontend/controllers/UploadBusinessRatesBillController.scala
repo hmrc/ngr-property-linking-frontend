@@ -65,6 +65,7 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
           for
             upscanInitiateResponse <- upScanConnector.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
             maybePropertyLinkingUserAnswers <- propertyLinkingRepo.findByCredId(CredId(rawCredId))
+            _ <- propertyLinkingRepo.insertUploadId(CredId(rawCredId), uploadId.value)
             _ <- uploadProgressTracker.requestUpload(uploadId, Reference(upscanInitiateResponse.fileReference.reference))
           yield Ok(uploadView(uploadForm(),
             upscanInitiateResponse,

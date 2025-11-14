@@ -57,6 +57,9 @@ class UploadBusinessRatesBillControllerSpec extends ControllerSpecSupport {
 
   val propertyLinkingUserAnswers: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId = credId, vmvProperty = testVmvProperty)
 
+  when(mockPropertyLinkingRepo.insertUploadId(any(), any()))
+    .thenReturn(Future.successful(None))
+
   "Upload business rates bill controller" must {
     "method show" must {
       "Return OK and the correct view" in {

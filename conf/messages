@@ -637,3 +637,8 @@ uploadEvidence.StampDuty.title = Stamp Duty Land Tax form
 uploadEvidence.UtilityBill.title = utility bill
 uploadEvidence.WaterRate.title = water rate demand
 uploadEvidence.radio.unselected.error = Select what evidence you can provide
+
+#We are checking your details
+weAreCheckingYourDetails.header = We are checking your details
+weAreCheckingYourDetails.p1 = Your information has been submitted
+weAreCheckingYourDetails.goHome = Return to account home

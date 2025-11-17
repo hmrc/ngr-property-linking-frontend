@@ -63,11 +63,11 @@ class RegistrationAndPropertyLinkCheckActionImpl @Inject()(
   private def checkPropertyLinkingReference[A](block: AuthenticatedUserRequest[A] => Future[Result])(implicit authRequest: AuthenticatedUserRequest[A], hc: HeaderCarrier): Future[Result] =
     propertyLinkingRepo.findByCredId(CredId(authRequest.credId.getOrElse(""))).flatMap {
       case Some(answers) if answers.requestSentReference.isDefined =>
-        Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
+        Future.successful(Redirect(routes.WeAreCheckingYourDetailsController.show))
       case _ =>
         ngrConnector.getPropertyLinkingUserAnswers(CredId(authRequest.credId.getOrElse(""))).flatMap { maybeUserAnswers =>
           if (maybeUserAnswers.flatMap(_.requestSentReference).isDefined)
-            Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
+            Future.successful(Redirect(routes.WeAreCheckingYourDetailsController.show))
           else
             block(authRequest)
         }

@@ -35,6 +35,7 @@ GET        /upload-business-rates-bill          uk.gov.hmrc.ngrpropertylinkingfr
 GET        /uploaded-business-rates-bill        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.UploadedBusinessRatesBillController.show(uploadId: uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId)
 GET        /remove-uploaded-file                uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RemoveBusinessRatesBillController.show
 GET        /confirm-remove-file                 uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.RemoveBusinessRatesBillController.remove
+GET        /we-are-checking-your-details        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.WeAreCheckingYourDetailsController.show
 
 GET        /add-property-request-sent           uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.AddPropertyRequestSentController.show
 GET        /declaration                         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.DeclarationController.show

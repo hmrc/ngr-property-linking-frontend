@@ -27,12 +27,17 @@ class NgrNotifyConnectorSpec extends MockHttpV2 {
 
   val connector = new NgrNotifyConnector(mockHttpClientV2, mockConfig)
 
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    mockConfig.features.bridgeEndpointEnabled(true)
+  }
+
   "Calling the property endpoint" when {
 
     "a valid property" should {
       "return a successful response from ngr-notify" in {
         val successResponse = HttpResponse(status = ACCEPTED, headers = Map.empty)
-        setupMockHttpV2Post(s"${mockConfig.ngrNotify}/property")(successResponse)
+        setupMockHttpV2Post(s"${mockConfig.ngrNotify}/ngr-notify/property")(successResponse)
         val result: Future[Either[ErrorResponse, HttpResponse]] = connector.postProperty(testPropertyLinkingUserAnswers)
         result.futureValue mustBe Right(successResponse)
       }
@@ -45,7 +50,7 @@ class NgrNotifyConnectorSpec extends MockHttpV2 {
           json = Json.obj("status" -> "BAD_REQUEST", "error" -> "Missing required field: uploadEvidence"),
           headers = Map.empty
         )
-        setupMockHttpV2Post(s"${mockConfig.ngrNotify}/property")(badRequestResponse)
+        setupMockHttpV2Post(s"${mockConfig.ngrNotify}/ngr-notify/property")(badRequestResponse)
 
         val result: Future[Either[ErrorResponse, HttpResponse]] = connector.postProperty(testPropertyLinkingUserAnswers)
 
@@ -68,7 +73,7 @@ class NgrNotifyConnectorSpec extends MockHttpV2 {
           headers = Map.empty
         )
 
-        setupMockHttpV2Post(s"${mockConfig.ngrNotify}/property")(unexpectedResponse)
+        setupMockHttpV2Post(s"${mockConfig.ngrNotify}/ngr-notify/property")(unexpectedResponse)
         val result = connector.postProperty(testPropertyLinkingUserAnswers)
         result.futureValue match {
           case Left(ErrorResponse(status, body)) =>
@@ -82,7 +87,7 @@ class NgrNotifyConnectorSpec extends MockHttpV2 {
 
     "a failed call to ngr-notify ratepayer" should {
       "generate an internal server error response" in {
-        setupMockHttpV2FailedPost(s"${mockConfig.ngrNotify}/property")
+        setupMockHttpV2FailedPost(s"${mockConfig.ngrNotify}/ngr-notify/property")
         val result = connector.postProperty(testPropertyLinkingUserAnswers)
         result.futureValue match {
           case Left(ErrorResponse(status, body)) =>

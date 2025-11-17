@@ -22,35 +22,45 @@ import play.api.libs.json.Json
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.ErrorResponse
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 
-import java.net.URI
+import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class NgrNotifyConnector @Inject()(
-                                               http: HttpClientV2,
-                                               appConfig: AppConfig
-                                             )(implicit ec: ExecutionContext) {
+                                    http: HttpClientV2,
+                                    appConfig: AppConfig
+                                  )(implicit ec: ExecutionContext) {
 
-  private def uri(path: String) = new URI(s"${appConfig.ngrNotify}/$path")
+  private def url(path: String): URL = url"${appConfig.ngrNotify}/ngr-notify/$path"
 
   def postProperty(propertyLinkingUserAnswers: PropertyLinkingUserAnswers)
-                       (implicit hc: HeaderCarrier): Future[Either[ErrorResponse, HttpResponse]] = {
-    http.post(uri("property").toURL)
-      .withBody(Json.toJson(propertyLinkingUserAnswers))
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case ACCEPTED => Right(response)
-          case _ => Left(ErrorResponse(response.status, response.body))
-        }
-      } recover {
-      case ex =>
-        Left(ErrorResponse(Status.INTERNAL_SERVER_ERROR, s"Call to ngr-notify property endpoint failed: ${ex.getMessage}"))
+                  (implicit hc: HeaderCarrier): Future[Either[ErrorResponse, HttpResponse]] = {
+    if (appConfig.features.bridgeEndpointEnabled()) {
+      http.post(url("property"))
+        .withBody(Json.toJson(propertyLinkingUserAnswers))
+        .execute[HttpResponse]
+        .map { response =>
+          response.status match {
+            case ACCEPTED => Right(response)
+            case _ => Left(ErrorResponse(response.status, response.body))
+          }
+        } recover {
+        case ex =>
+          Left(ErrorResponse(Status.INTERNAL_SERVER_ERROR, s"Call to ngr-notify property endpoint failed: ${ex.getMessage}"))
+      }
+    } else {
+      val dummyHttpResponse =
+        HttpResponse(
+          status = ACCEPTED,
+          headers = Map.empty
+        )
+
+      Future.successful(Right(dummyHttpResponse))
     }
   }
 }

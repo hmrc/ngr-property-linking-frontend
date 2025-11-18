@@ -18,13 +18,9 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.AuthRetrievals
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.{NGRConnector, NgrNotifyConnector}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
-import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.UniqueIdGenerator
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.WeAreCheckingYourDetailsView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -34,14 +30,10 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class WeAreCheckingYourDetailsController @Inject()(view: WeAreCheckingYourDetailsView,
                                                    authenticate: AuthRetrievals,
-//                                                   mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
-                                                   propertyLinkingRepo: PropertyLinkingRepo,
-                                                   ngrConnector: NGRConnector,
-                                                   ngrNotifyConnector: NgrNotifyConnector,
                                                    mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
-    (authenticate).async { implicit request =>
+    authenticate.async { implicit request =>
       Future.successful(Ok(view(createDefaultNavBar)))
     }
 }

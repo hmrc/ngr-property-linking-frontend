@@ -90,7 +90,7 @@ class RegistrationAndPropertyLinkCheckActionSpec extends TestSupport with TestDa
 
         val result = action.invokeBlock(fakeRequest, stubs.successBlock)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.AddPropertyRequestSentController.show.url)
+        redirectLocation(result) mustBe Some(routes.WeAreCheckingYourDetailsController.show.url)
       }
 
       "redirect to the Add Property Request Sent page when only find propertyLinkingUserAnswers in backend mongoDB" in {
@@ -102,7 +102,7 @@ class RegistrationAndPropertyLinkCheckActionSpec extends TestSupport with TestDa
 
         val result = action.invokeBlock(fakeRequest, stubs.successBlock)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.AddPropertyRequestSentController.show.url)
+        redirectLocation(result) mustBe Some(routes.WeAreCheckingYourDetailsController.show.url)
       }
     }
 

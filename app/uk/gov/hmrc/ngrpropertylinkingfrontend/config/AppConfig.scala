@@ -32,6 +32,7 @@ trait AppConfig {
   val upscanHost: String
   val ngrDashboardUrl: String
   val ngrLogoutUrl: String
+  val ngrCheckYourDetailsUrl: String
   val ngrStubHost: String
   def getString(key: String): String
   val timeToLive: String
@@ -52,6 +53,7 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val upscanHost: String = servicesConfig.baseUrl("upscan")
   override val ngrDashboardUrl: String = s"$dashboardHost/ngr-dashboard-frontend/dashboard"
   override val ngrLogoutUrl: String = s"$dashboardHost/ngr-dashboard-frontend/signout"
+  override val ngrCheckYourDetailsUrl: String = s"$dashboardHost/ngr-dashboard-frontend/check-your-details"
   override val ngrStubHost: String = getString("microservice.services.ngr-stub.host")
   override val timeToLive: String = servicesConfig.getString("time-to-live.time")
   override val callbackEndpointTarget: String = getString("upscan.callback-endpoint")

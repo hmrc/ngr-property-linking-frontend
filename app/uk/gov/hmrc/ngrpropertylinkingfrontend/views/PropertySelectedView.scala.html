@@ -43,9 +43,9 @@ linkComponent: LinkComponent
 }
 <h1 class="govuk-heading-l">@messages("propertySelected.title")</h1>
 @govukSummaryList(summaryList)
-<h1 class="govuk-heading-m">
+<h2 class="govuk-heading-m">
  @messages("propertySelected.heading")
-</h1>
+</h2>
 @govukRadios(radios)
 <div class="govuk-button-group">
 @saveAndContinueButton(msg =  messages("Continue"), isStartButton = false)

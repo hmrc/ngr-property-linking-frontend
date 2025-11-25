@@ -27,7 +27,7 @@
 id = form("ratepayerDate").id,
 namePrefix = None,
 fieldset = Some(Fieldset(
-legend = Some(Legend(content = HtmlContent(s"<h1 class='govuk-heading-s'>${messages("currentRatepayer.date.heading")}</h1>")))
+legend = Some(Legend(content = HtmlContent(s"<h2 class='govuk-heading-s'>${messages("currentRatepayer.date.heading")}</h2>")))
 )),
 hint = Some(Hint(content = Text(messages("currentRatepayer.date.hint")))),
 errorMessage = form("ratepayerDate").error.map(e => ErrorMessage.errorMessageWithDefaultStringsTranslated(content = Text(messages(e.message, e.args:_*))))

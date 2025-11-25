@@ -34,7 +34,7 @@ class DateTextFieldsSpec extends ViewBaseSpec {
   val yearLabel = "Year"
 
   object Selectors {
-    val heading = "div > fieldset > legend > h1"
+    val heading = "div > fieldset > legend > h2"
     val hint = "#ratepayerDate-hint"
     val dayLabel = "#ratepayerDate > div:nth-child(1) > div > label"
     val monthLabel = "#ratepayerDate > div:nth-child(2) > div > label"

@@ -39,7 +39,11 @@ class NGRConnector @Inject()(http: HttpClientV2,
                              logger: NGRLogger)
                             (implicit ec: ExecutionContext){
 
-  private def url(path: String): URL = url"${appConfig.nextGenerationRatesHost}/next-generation-rates/$path"
+  private def url(path: String, parameter: Option[String] = None): URL =
+    parameter match {
+      case None => url"${appConfig.nextGenerationRatesHost}/next-generation-rates/$path"
+      case Some(param) => url"${appConfig.nextGenerationRatesHost}/next-generation-rates/$path/$param"
+    }
 
   def getRatepayer(credId: CredId)(implicit hc: HeaderCarrier): Future[Option[RatepayerRegistrationValuation]] = {
     implicit val rds: HttpReads[RatepayerRegistrationValuation] = readFromJson
@@ -51,11 +55,7 @@ class NGRConnector @Inject()(http: HttpClientV2,
 
   def getPropertyLinkingUserAnswers(credId: CredId)(implicit hc: HeaderCarrier): Future[Option[PropertyLinkingUserAnswers]] = {
     implicit val rds: HttpReads[PropertyLinkingUserAnswers] = readFromJson
-    //Because vmvProperty in PropertyLinkingUserAnswers isn't an option so a dummy VMVProperty has been passed in
-    //which will not affect mongoDB data since it's only use credId to find PropertyLinkingUserAnswers
-    val model: PropertyLinkingUserAnswers = PropertyLinkingUserAnswers(credId, dummyVmvProperty)
-    http.get(url("get-property-linking-user-answers"))
-      .withBody(Json.toJson(model))
+    http.get(url("get-property-linking-user-answers", Some(credId.value)))
       .execute[Option[PropertyLinkingUserAnswers]]
   }
 
@@ -64,40 +64,10 @@ class NGRConnector @Inject()(http: HttpClientV2,
       .withBody(Json.toJson(model))
       .execute[HttpResponse]
       .map { response =>
-        logger.info("Upsert Property Linking UserAnswers" + model)
         response.status match {
           case CREATED => response
           case _ => throw new Exception(s"${response.status}: ${response.body}")
         }
     }
   }
-
-  private val dummyVmvProperty: VMVProperty = VMVProperty(
-    uarn = 11905603000L,
-    localAuthorityReference = "2191322564521",
-    addressFull = "(INCL STORE R/O 2 & 2A) 2A, RODLEY LANE, RODLEY, LEEDS, BH1 7EY",
-    localAuthorityCode = "4720",
-    valuations = List(
-      Valuation(
-        assessmentRef = 25141561000L,
-        assessmentStatus = "CURRENT",
-        rateableValue = Some(9300),
-        scatCode = Some("249"),
-        descriptionText = "SHOP AND PREMISES",
-        effectiveDate = LocalDate.of(2023, 4, 1),
-        currentFromDate = LocalDate.of(2023, 4, 1),
-        currentToDate = Some(LocalDate.of(2023, 4, 1)),
-        listYear = "2023",
-        primaryDescription = "CS",
-        allowedActions = List(
-          "check",
-          "challenge",
-          "viewDetailedValuation",
-          "propertyLink",
-          "similarProperties"
-        ),
-        listType = "current",
-      )
-    )
-  )
 }

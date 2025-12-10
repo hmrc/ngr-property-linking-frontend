@@ -46,7 +46,6 @@ class AuditingService @Inject ()(appConfig: AppConfig, auditConnector: AuditConn
       tags = AuditExtensions.auditHeaderCarrier(hc).toAuditTags(path),
       detail = Json.toJson(auditModel.detail)
     )
-    println(result)
     result
   }
 

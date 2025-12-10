@@ -17,6 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit
 
 trait ExtendedAuditModel {
+  val service: String = "ngr-property-linking-frontend-"
   val auditType: String
   val detail: Map[String, String]
 }

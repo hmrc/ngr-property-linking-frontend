@@ -26,7 +26,7 @@ class AuditModelSpec extends TestSupport with AnyWordSpecLike {
     val exampleModel = AuditModel("123456", "provide-your-national-insurance-number")
 
     "have the correct auditType when going to the national-insurance page" in {
-      exampleModel.auditType mustBe "ngr-login-register-frontend-provide-your-national-insurance-number"
+      exampleModel.auditType mustBe "ngr-property-linking-frontend-provide-your-national-insurance-number"
     }
 
     "have the correct detail" in {
@@ -35,7 +35,7 @@ class AuditModelSpec extends TestSupport with AnyWordSpecLike {
     }
     "have the correct auditType when going to the check your answers page" in {
       val model = exampleModel.copy(nextPage = "check-answers")
-      model.auditType mustBe "ngr-login-register-frontend-check-answers"
+      model.auditType mustBe "ngr-property-linking-frontend-check-answers"
     }
   }
 }

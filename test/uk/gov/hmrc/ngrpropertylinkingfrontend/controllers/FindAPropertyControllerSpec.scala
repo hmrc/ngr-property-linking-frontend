@@ -43,6 +43,7 @@ class FindAPropertyControllerSpec extends ControllerSpecSupport with DefaultAwai
     mockAuthJourney,
     mockMandatoryCheck,
     mcc,
+    mockAuditingService,
     mockFindAPropertyRepo
   )(mockConfig)
 

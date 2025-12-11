@@ -19,14 +19,16 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty.form
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.LookUpVMVProperties
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.FindAPropertyView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -39,6 +41,7 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
                                         authenticate: AuthRetrievals,
                                         mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                         mcc: MessagesControllerComponents,
+                                        auditingService: AuditingService,
                                         findAPropertyRepo: FindAPropertyRepo)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
@@ -54,6 +57,8 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
         .fold(
           formWithErrors => Future.successful(BadRequest(findAPropertyView(formWithErrors, createDefaultNavBar))),
           findAProperty => {
+            auditingService.extendedAudit(FindAPropertyAuditModel(request.credId.getOrElse(""),findAProperty, "results"),
+              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.FindAPropertyController.show.url)
             findAPropertyConnector.findAPropertyPostcodeSearch(findAProperty).flatMap {
               case Left(error) =>
                 Future.successful(Status(error.code)(Json.toJson(error)))

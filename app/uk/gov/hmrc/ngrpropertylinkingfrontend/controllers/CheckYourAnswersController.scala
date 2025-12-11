@@ -30,6 +30,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CheckYourAnswersView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +39,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
                                            authenticate: AuthRetrievals,
                                            mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                            propertyLinkingRepo: PropertyLinkingRepo,
-                                           mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                           mcc: MessagesControllerComponents,
+                                           auditingService: AuditingService)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   private def createSummaryRows(userAnswers: PropertyLinkingUserAnswers)(implicit messages: Messages): Seq[SummaryListRow] = {

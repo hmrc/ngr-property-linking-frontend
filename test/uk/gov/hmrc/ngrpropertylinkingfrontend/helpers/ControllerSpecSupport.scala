@@ -25,7 +25,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, Registrat
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.{FindAPropertyConnector, NGRConnector, NgrNotifyConnector, UpscanConnector}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FileUploadRepo, FindAPropertyRepo, PropertyLinkingRepo}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.services.{SortingVMVPropertiesService, UploadProgressTracker}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.{AuditingService, SortingVMVPropertiesService, UploadProgressTracker}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,6 +35,7 @@ trait ControllerSpecSupport extends TestSupport {
   val mockAuthJourney: AuthRetrievals = mock[AuthRetrievals]
   val mockFindAPropertyConnector: FindAPropertyConnector = mock[FindAPropertyConnector]
   val mockUpscanConnector: UpscanConnector = mock[UpscanConnector]
+  val mockAuditingService: AuditingService = mock[AuditingService]
   mockRequest()
   mockMandatoryCheckRequest()
   val mockUploadProgressTracker: UploadProgressTracker = mock[UploadProgressTracker]

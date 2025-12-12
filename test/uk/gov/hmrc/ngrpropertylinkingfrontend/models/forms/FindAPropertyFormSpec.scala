@@ -22,12 +22,12 @@ import play.api.libs.json.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.Postcode
 
 
-class FindAPropertySpec extends AnyWordSpec with Matchers {
+class FindAPropertyFormSpec extends AnyWordSpec with Matchers {
 
-  "FindAProperty" should {
+  "FindAPropertyForm" should {
 
     "serialize to JSON correctly" in {
-      val model = FindAProperty(Postcode("AB12CD"), Some("Test Property"))
+      val model = FindAPropertyForm(Postcode("AB12CD"), Some("Test Property"))
       val expectedJson = Json.obj(
         "postcode" -> Json.obj("value" -> "AB12CD"),
         "propertyName" -> "Test Property"
@@ -42,10 +42,10 @@ class FindAPropertySpec extends AnyWordSpec with Matchers {
         "propertyName" -> "Test Property"
       )
 
-      val result = json.validate[FindAProperty]
+      val result = json.validate[FindAPropertyForm]
 
       result.isSuccess shouldBe true
-      result.get shouldBe FindAProperty(Postcode("AB12CD"), Some("Test Property"))
+      result.get shouldBe FindAPropertyForm(Postcode("AB12CD"), Some("Test Property"))
     }
 
     "handle missing optional propertyName on deserialization" in {
@@ -53,19 +53,19 @@ class FindAPropertySpec extends AnyWordSpec with Matchers {
         "postcode" -> Json.obj("value" -> "AB12CD")
       )
 
-      val result = json.validate[FindAProperty]
+      val result = json.validate[FindAPropertyForm]
 
       result.isSuccess shouldBe true
-      result.get shouldBe FindAProperty(Postcode("AB12CD"), None)
+      result.get shouldBe FindAPropertyForm(Postcode("AB12CD"), None)
     }
 
     "produce the correct string representation with propertyName" in {
-      val model = FindAProperty(Postcode("AB12CD"), Some("Test Property"))
+      val model = FindAPropertyForm(Postcode("AB12CD"), Some("Test Property"))
       model.toString shouldBe "Some(Test Property),AB12CD"
     }
 
     "produce the correct string representation with no propertyName" in {
-      val model = FindAProperty(Postcode("AB12CD"), None)
+      val model = FindAPropertyForm(Postcode("AB12CD"), None)
       model.toString shouldBe "None,AB12CD"
     }
   }

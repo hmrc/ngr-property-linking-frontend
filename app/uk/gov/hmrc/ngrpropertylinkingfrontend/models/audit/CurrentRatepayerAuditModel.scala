@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit
 
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm
 
-case class FindAPropertyAuditModel(credId: String, form: FindAPropertyForm, nextPage: String) extends ExtendedAuditModel {
+case class CurrentRatepayerAuditModel(credId: String, form: CurrentRatepayerForm, nextPage: String) extends ExtendedAuditModel {
   override val auditType: String = s"$service$nextPage"
   override val detail: Map[String, String] = Map(
     "credId" -> credId,
-    "postcode" -> form.postcode.value,
-    "propertyName" -> form.propertyName.getOrElse("")
+    "radioValue" -> form.radioValue,
+    "maybeRatepayerDate" -> form.maybeRatepayerDate.map(maybeRatepayerDate => maybeRatepayerDate.makeString).getOrElse("")
   )
 }

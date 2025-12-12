@@ -44,6 +44,7 @@ class PropertySelectedControllerSpec extends ControllerSpecSupport {
     mcc,
     mockFindAPropertyRepo,
     sortingVMVPropertiesService,
+    mockAuditingService,
     mockPropertyLinkingRepo
   )(mockConfig)
 

@@ -21,7 +21,7 @@ import org.jsoup.nodes.Document
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ViewBaseSpec
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.Postcode
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.{NavBarContents, NavBarCurrentPage, NavBarPageContents, NavigationBarContent}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAPropertyForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.FindAPropertyView
 
 class FindAPropertyViewSpec extends ViewBaseSpec {
@@ -63,9 +63,9 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
 
   "FindAPropertyView" must {
     "produce the same output for apply() and render()" must {
-      val form = FindAProperty
+      val form = FindAPropertyForm
         .form
-        .fillAndValidate(FindAProperty(Postcode("TQ5 9BW"), None))
+        .fillAndValidate(FindAPropertyForm(Postcode("TQ5 9BW"), None))
       val findAPropertyView = view(form, content)
       lazy implicit val document: Document = Jsoup.parse(findAPropertyView.body)
       val htmlApply = view.apply(form, content).body
@@ -113,9 +113,9 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
       }
     }
     "produce the same output for apply() and render() when valid postcode without space in between" in {
-      val form = FindAProperty
+      val form = FindAPropertyForm
         .form
-        .fillAndValidate(FindAProperty(Postcode("TQ59BW"), None))
+        .fillAndValidate(FindAPropertyForm(Postcode("TQ59BW"), None))
       val htmlApply = view.apply(form, content).body
       val htmlRender = view.render(form, content, request, messages, mockConfig).body
       lazy val htmlF = view.f(form, content)
@@ -124,9 +124,9 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
     }
 
     "produce the same output for apply() and render() with valid property name" in {
-      val form = FindAProperty
+      val form = FindAPropertyForm
         .form
-        .fillAndValidate(FindAProperty(Postcode("TQ5 9BW"), Some("5")))
+        .fillAndValidate(FindAPropertyForm(Postcode("TQ5 9BW"), Some("5")))
       val htmlApply = view.apply(form, content).body
       val htmlRender = view.render(form, content, request, messages, mockConfig).body
       lazy val htmlF = view.f(form, content)
@@ -135,9 +135,9 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
     }
 
     "show missing postcode error correctly" in {
-      val form = FindAProperty
+      val form = FindAPropertyForm
         .form
-        .fillAndValidate(FindAProperty(Postcode(""), None))
+        .fillAndValidate(FindAPropertyForm(Postcode(""), None))
       val findAPropertyView = view(form, content)
       lazy implicit val document: Document = Jsoup.parse(findAPropertyView.body)
       val htmlApply = view.apply(form, content).body
@@ -149,9 +149,9 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
     }
 
     "show invalid postcode error correctly" in {
-      val form = FindAProperty
+      val form = FindAPropertyForm
         .form
-        .fillAndValidate(FindAProperty(Postcode("AAA9 9AA"), None))
+        .fillAndValidate(FindAPropertyForm(Postcode("AAA9 9AA"), None))
       val findAPropertyView = view(form, content)
       lazy implicit val document: Document = Jsoup.parse(findAPropertyView.body)
       val htmlApply = view.apply(form, content).body
@@ -163,9 +163,9 @@ class FindAPropertyViewSpec extends ViewBaseSpec {
     }
 
     "show property name exceed max length error correctly" in {
-      val form = FindAProperty
+      val form = FindAPropertyForm
         .form
-        .fillAndValidate(FindAProperty(Postcode("AA9 9AA"), Some(over100Characters)))
+        .fillAndValidate(FindAPropertyForm(Postcode("AA9 9AA"), Some(over100Characters)))
       val findAPropertyView = view(form, content)
       lazy implicit val document: Document = Jsoup.parse(findAPropertyView.body)
       val htmlApply = view.apply(form, content).body

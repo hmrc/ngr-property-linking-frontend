@@ -21,9 +21,10 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Table
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.AuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.SingleSearchResultForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.{LookUpVMVProperties, VMVProperty}
@@ -32,7 +33,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.paginate.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo
-import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SortingVMVPropertiesService
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.{AuditingService, SortingVMVPropertiesService}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.CurrencyHelper
 
 import java.text.NumberFormat
@@ -47,6 +48,7 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
                                            findAPropertyRepo: FindAPropertyRepo,
                                            mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                            sortingVMVPropertiesService: SortingVMVPropertiesService,
+                                           auditingService: AuditingService,
                                            mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with CurrencyHelper {
 
@@ -60,6 +62,8 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
   
   def show(page: Option[Int], sortBy: Option[String]): Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
+      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "property-selected"),
+        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.SingleSearchResultController.show(page, sortBy).url)
       findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
         case Some(properties) =>
           showSingleSearchResultView(properties, page.getOrElse(1), sortBy.getOrElse("AddressASC"))

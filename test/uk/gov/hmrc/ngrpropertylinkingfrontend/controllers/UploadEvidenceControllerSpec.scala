@@ -42,6 +42,7 @@ class UploadEvidenceControllerSpec extends ControllerSpecSupport with DefaultAwa
     uploadEvidenceView,
     mockAuthJourney,
     mockMandatoryCheck,
+    mockAuditingService,
     mockPropertyLinkingRepo,
     mcc
   )(appConfig = mockConfig)

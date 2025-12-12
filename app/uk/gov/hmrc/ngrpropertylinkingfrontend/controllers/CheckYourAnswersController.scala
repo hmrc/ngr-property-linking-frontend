@@ -21,10 +21,11 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryListRow
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.AuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
@@ -39,8 +40,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
                                            authenticate: AuthRetrievals,
                                            mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                            propertyLinkingRepo: PropertyLinkingRepo,
-                                           mcc: MessagesControllerComponents,
-                                           auditingService: AuditingService)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                           auditingService: AuditingService,
+                                           mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   private def createSummaryRows(userAnswers: PropertyLinkingUserAnswers)(implicit messages: Messages): Seq[SummaryListRow] = {
@@ -114,6 +115,8 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
 
   def submit: Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
+      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "declaration"),
+        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.CheckYourAnswersController.show.url)
       Future.successful(Redirect(routes.DeclarationController.show))
     }
 }

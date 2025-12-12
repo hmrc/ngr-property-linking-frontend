@@ -21,15 +21,17 @@ import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.CurrentRatepayerAuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.CurrentRatepayerForm.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{CurrentRatepayerForm, RatepayerDate}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.DateUtils
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.CurrentRatepayerView
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.DateTextFields
@@ -44,6 +46,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
                                            dateTextFields: DateTextFields,
                                            authenticate: AuthRetrievals,
                                            mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
+                                           auditingService: AuditingService,
                                            propertyLinkingRepo: PropertyLinkingRepo,
                                            mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
@@ -108,6 +111,8 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
               case None => throw new NotFoundException("failed to find property from mongo")
             },
           currentRatepayerForm =>
+            auditingService.extendedAudit(CurrentRatepayerAuditModel(request.credId.getOrElse(""), currentRatepayerForm, "business-rates-bill"),
+              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.CurrentRatepayerController.show(mode).url)
             def maybeRatepayerDate: Option[LocalDate] =
               if (currentRatepayerForm.radioValue.equals("After"))
                 currentRatepayerForm.maybeRatepayerDate.map(_.ratepayerDate)

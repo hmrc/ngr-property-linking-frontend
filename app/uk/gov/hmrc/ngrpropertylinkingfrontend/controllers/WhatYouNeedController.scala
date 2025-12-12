@@ -18,20 +18,25 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.AuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.WhatYouNeedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class WhatYouNeedController @Inject()(view: WhatYouNeedView,
                                       authenticate: AuthRetrievals,
                                       mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
-                                      mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
+                                      auditingService: AuditingService,
+                                      mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
@@ -40,7 +45,11 @@ class WhatYouNeedController @Inject()(view: WhatYouNeedView,
     }
 
   def next: Action[AnyContent] = {
-    (authenticate andThen mandatoryCheck).async { _ =>
+    (authenticate andThen mandatoryCheck).async { request =>
+      implicit val hc: HeaderCarrier =
+        HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "property-search"),
+        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.WhatYouNeedController.show.url)
       Future.successful(Redirect(routes.FindAPropertyController.show.url))
     }
   }

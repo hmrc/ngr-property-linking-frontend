@@ -26,10 +26,12 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.AuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperty
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.AddPropertyRequestSentView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -41,6 +43,7 @@ class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentVie
                                                  authenticate: AuthRetrievals,
                                                  isRegisteredCheck: RegistrationAction,
                                                  mcc: MessagesControllerComponents,
+                                                 auditingService: AuditingService,
                                                  propertyLinkingRepo: PropertyLinkingRepo,
                                                  ngrConnector: NGRConnector)(implicit appConfig: AppConfig, executionContext: ExecutionContext)  extends FrontendController(mcc) with I18nSupport {
 
@@ -52,6 +55,8 @@ class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentVie
 
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
+      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "dashboard"),
+        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.AddPropertyRequestSentController.show.url)
       val email: String = request.email.getOrElse(throw new NotFoundException("email not found on account"))
       val credId = CredId(request.credId.getOrElse(""))
       for {

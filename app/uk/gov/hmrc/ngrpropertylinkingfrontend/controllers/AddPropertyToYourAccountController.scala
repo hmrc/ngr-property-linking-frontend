@@ -18,21 +18,24 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.{AuditModel, PropertySelectedAuditModel}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.AddPropertyToYourAccountView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AddPropertyToYourAccountController @Inject()(
                                                     addPropertyToYourAccountView: AddPropertyToYourAccountView,
                                                     authenticate: AuthRetrievals,
                                                     mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
-                                                    mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
+                                                    auditingService: AuditingService,
+                                                    mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
   def show: Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
@@ -41,6 +44,8 @@ class AddPropertyToYourAccountController @Inject()(
 
   def submit: Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
+      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "what-you-need"),
+        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.AddPropertyToYourAccountController.show.url)
       Future.successful(Redirect(routes.WhatYouNeedController.show.url))
     }
 }

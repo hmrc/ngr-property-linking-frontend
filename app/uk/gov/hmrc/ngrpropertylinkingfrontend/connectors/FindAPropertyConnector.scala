@@ -24,7 +24,7 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{FindAProperty, ManualPropertySearchForm}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{FindAPropertyForm, ManualPropertySearchForm}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperties
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, ManualPropertySearchParams}
 
@@ -86,7 +86,7 @@ class FindAPropertyConnector @Inject()(
     }
   }
 
-  def findAPropertyPostcodeSearch(searchParams: FindAProperty)(implicit headerCarrier: HeaderCarrier): Future[Either[ErrorResponse, VMVProperties]] = {
+  def findAPropertyPostcodeSearch(searchParams: FindAPropertyForm)(implicit headerCarrier: HeaderCarrier): Future[Either[ErrorResponse, VMVProperties]] = {
     val urlEndpoint = if (appConfig.features.vmvPropertyLookupTestEnabled()) {
       url"${appConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=${searchParams.postcode.value.toUpperCase().take(4).trim.replaceAll("\\s", "")}"
     } else {

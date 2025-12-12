@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.viewmodels.govuk.all._
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty
+@import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAPropertyForm
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
 
 @this(
@@ -30,7 +30,7 @@ linkComponent: LinkComponent,
 saveAndContinueButton: saveAndContinueButton
 )
 
-@(form: Form[FindAProperty], navigationBarContent: NavigationBarContent)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
+@(form: Form[FindAPropertyForm], navigationBarContent: NavigationBarContent)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @heading = @{messages("findAProperty.title")}
 @layout(pageTitle = Some(heading), fullWidth = true, navigationBarContent =  Some(navigationBarContent), showBackLink = true) {

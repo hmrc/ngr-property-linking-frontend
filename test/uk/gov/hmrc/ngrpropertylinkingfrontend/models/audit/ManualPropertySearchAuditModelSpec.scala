@@ -19,20 +19,45 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit
 import org.scalatest.wordspec.AnyWordSpecLike
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.Postcode
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAPropertyForm
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ManualPropertySearchForm
 
-class FindAPropertyAuditModelSpec extends TestSupport with AnyWordSpecLike {
+class ManualPropertySearchAuditModelSpec extends TestSupport with AnyWordSpecLike {
 
-  "Find A Property Audit Model" should {
+  "Manual Property Search Audit Model" should {
 
-    val exampleModel = FindAPropertyAuditModel("123456", FindAPropertyForm(Postcode("TQ59BW"), Some("10 Carnival Street")), "provide-your-national-insurance-number")
+    val exampleModel =
+      ManualPropertySearchAuditModel(
+        "123456",
+        ManualPropertySearchForm(
+          Some("address line 1"),
+          None,
+          Some("London"),
+          None,
+          Some(Postcode("BH1 6RE"))
+        )
+        ,
+        "provide-your-national-insurance-number"
+      )
 
     "have the correct auditType when going to the national-insurance page" in {
       exampleModel.auditType mustBe "ngr-property-linking-frontend-provide-your-national-insurance-number"
     }
 
     "have the correct detail" in {
-      val expectedDetail = Map("credId" -> "123456", "postcode" -> "TQ59BW", "propertyName" -> "10 Carnival Street")
+      val expectedDetail = Map(
+        "postcode" -> "BH1 6RE",
+        "council" -> "",
+        "county" -> "",
+        "scatCode" -> "",
+        "maxRateableValue" -> "",
+        "town" -> "London",
+        "propertyReference" -> "",
+        "addressLine1" -> "address line 1",
+        "descriptionCode" -> "",
+        "credId" -> "123456",
+        "addressLine2" -> "",
+        "miniRateableValue" -> ""
+      )
       exampleModel.detail mustBe expectedDetail
     }
     "have the correct auditType when going to the check your answers page" in {

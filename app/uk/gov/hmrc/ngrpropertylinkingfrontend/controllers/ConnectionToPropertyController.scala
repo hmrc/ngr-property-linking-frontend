@@ -22,12 +22,14 @@ import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.ConnectionToPropertyAuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm.{Occupier, Owner, OwnerAndOccupier, form}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.Constants
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.ConnectionToPropertyView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -40,6 +42,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
                                                authenticate: AuthRetrievals,
                                                mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                                mcc: MessagesControllerComponents,
+                                               auditingService: AuditingService,
                                                propertyLinkingRepo: PropertyLinkingRepo)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
@@ -86,25 +89,29 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
               Future.successful(Redirect(routes.NoResultsFoundController.show))
           }
         },
-        {
-          case ConnectionToPropertyForm.Owner =>
-            propertyLinkingRepo.insertConnectionToProperty(
-              credId = CredId(request.credId.getOrElse("")),
-              connectionToProperty = Constants.owner
-            )
-            Future.successful(Redirect(routes.CheckYourAnswersController.show))
-          case ConnectionToPropertyForm.Occupier =>
-            propertyLinkingRepo.insertConnectionToProperty(
-              credId = CredId(request.credId.getOrElse("")),
-              connectionToProperty = Constants.occupier
-            )
-            Future.successful(Redirect(routes.CheckYourAnswersController.show))
-          case ConnectionToPropertyForm.OwnerAndOccupier =>
-            propertyLinkingRepo.insertConnectionToProperty(
-              credId = CredId(request.credId.getOrElse("")),
-              connectionToProperty = Constants.ownerAndOccupier
-            )
-            Future.successful(Redirect(routes.CheckYourAnswersController.show))
+          connectionToPropertyForm => {
+            auditingService.extendedAudit(ConnectionToPropertyAuditModel(request.credId.getOrElse(""), connectionToPropertyForm, "check-your-answers"),
+              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ConnectionToPropertyController.show.url)
+            connectionToPropertyForm match {
+              case ConnectionToPropertyForm.Owner =>
+                propertyLinkingRepo.insertConnectionToProperty(
+                  credId = CredId(request.credId.getOrElse("")),
+                  connectionToProperty = Constants.owner
+                )
+                Future.successful(Redirect(routes.CheckYourAnswersController.show))
+              case ConnectionToPropertyForm.Occupier =>
+                propertyLinkingRepo.insertConnectionToProperty(
+                  credId = CredId(request.credId.getOrElse("")),
+                  connectionToProperty = Constants.occupier
+                )
+                Future.successful(Redirect(routes.CheckYourAnswersController.show))
+              case ConnectionToPropertyForm.OwnerAndOccupier =>
+                propertyLinkingRepo.insertConnectionToProperty(
+                  credId = CredId(request.credId.getOrElse("")),
+                  connectionToProperty = Constants.ownerAndOccupier
+                )
+                Future.successful(Redirect(routes.CheckYourAnswersController.show))
+            }
         }
       )
     }

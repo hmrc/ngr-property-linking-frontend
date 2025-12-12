@@ -20,15 +20,17 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.UploadEvidenceAuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadEvidenceForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.UploadEvidenceForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.CurrencyHelper
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.UploadEvidenceView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -39,6 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
                                          authenticate: AuthRetrievals,
                                          mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
+                                         auditingService: AuditingService,
                                          propertyLinkingRepo: PropertyLinkingRepo,
                                          mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with CurrencyHelper {
@@ -81,6 +84,8 @@ class UploadEvidenceController @Inject()(uploadEvidenceView: UploadEvidenceView,
             }
           },
           uploadEvidenceForm => {
+            auditingService.extendedAudit(UploadEvidenceAuditModel(request.credId.getOrElse(""), uploadEvidenceForm, "upload-business-rates-bill"),
+              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.UploadEvidenceController.show.url)
             val evidence = uploadEvidenceForm.radioValue
             propertyLinkingRepo.insertUploadEvidence(CredId(request.credId.getOrElse("")), evidence)
             Future.successful(Redirect(routes.UploadBusinessRatesBillController.show(None, Some(evidence))))

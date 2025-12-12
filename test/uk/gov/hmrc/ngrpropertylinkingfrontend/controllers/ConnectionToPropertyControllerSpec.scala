@@ -45,6 +45,7 @@ class ConnectionToPropertyControllerSpec extends ControllerSpecSupport with Defa
     mockAuthJourney,
     mockMandatoryCheck,
     mcc,
+    mockAuditingService,
     mockPropertyLinkingRepo,
   )(appConfig = mockConfig, ec = ec)
 

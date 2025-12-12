@@ -24,7 +24,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.FindAPropertyConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAProperty.form
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.FindAPropertyForm.form
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.LookUpVMVProperties
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.FindAPropertyRepo

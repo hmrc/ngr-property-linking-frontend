@@ -41,6 +41,7 @@ class ManualPropertySearchControllerSpec extends ControllerSpecSupport with Defa
     mockAuthJourney,
     mockMandatoryCheck,
     mockFindAPropertyConnector,
+    mockAuditingService,
     mockFindAPropertyRepo,
     mcc
   )(mockConfig)

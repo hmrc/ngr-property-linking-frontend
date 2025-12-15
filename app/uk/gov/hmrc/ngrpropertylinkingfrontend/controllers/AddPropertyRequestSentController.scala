@@ -58,7 +58,7 @@ class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentVie
         maybeAnswers <- propertyLinkingRepo.findByCredId(credId)
         userAnswers <- maybeAnswers match {
           case Some(result) => Future.successful(result)
-          case None => ngrConnector.getPropertyLinkingUserAnswers(credId).flatMap {
+          case None => ngrConnector.getPropertyLinkingUserAnswers().flatMap {
             case Some(answers) => Future.successful(answers)
             case None => Future.failed(new NotFoundException(s"Could not find property for credId: ${credId.value}"))
           }

@@ -51,7 +51,7 @@ class AddPropertyRequestSentControllerSpec extends ControllerSpecSupport with De
 
     "Return OK and the correct view when property only exist in the backend" in {
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
-      when(mockNgrConnector.getPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, requestSentReference = Some("reference")))))
+      when(mockNgrConnector.getPropertyLinkingUserAnswers()(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, requestSentReference = Some("reference")))))
       val result = controller().show()(authenticatedFakeRequest)
       status(result) mustBe OK
       val content = contentAsString(result)
@@ -60,7 +60,7 @@ class AddPropertyRequestSentControllerSpec extends ControllerSpecSupport with De
 
     "Throw exception when no property linking is found" in {
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
-      when(mockNgrConnector.getPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(None))
+      when(mockNgrConnector.getPropertyLinkingUserAnswers()(any())).thenReturn(Future.successful(None))
       mockRequest(hasCredId = true)
       val exception = intercept[NotFoundException] {
         await(controller().show(authenticatedFakeRequest))

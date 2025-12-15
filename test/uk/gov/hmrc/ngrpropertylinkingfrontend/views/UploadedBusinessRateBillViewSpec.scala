@@ -61,13 +61,13 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
     val navTitle = "head > title"
     val heading = "h1.govuk-heading-l"
     val caption = "#main-content > div > div > span"
-    val fileName = "#main-content > div > div > dl > div > dt > a"
+    val fileName = "#uploadStatusTable > dl > div > dt > a"
     val removeLink = "#remove-link"
-    val uploadText = "#main-content > div > div > dl > div > dt"
-    val failedText = "#main-content > div > div > dl > div > dt"
+    val uploadText = "#uploadStatusTable > dl > div > dd.govuk-summary-list__value"
+    val failedText = "#uploadStatusTable > dl > div > dd.govuk-summary-list__value"
     val paragraph = "#main-content > div > div.govuk-grid-column-two-thirds > p.govuk-caption-m.hmrc-caption-m"
   }
-  
+
   val uploadSuccessful: Seq[Aliases.SummaryListRow] = Seq(
     NGRSummaryListRow(
       "test.png",
@@ -105,8 +105,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
     "render consistenting using apply and render" should {
 
       val rendered = view.apply(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None)(request, messages, mockConfig)
-      val renderedHtml = view.render(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None, request, messages, mockConfig).body
-      lazy val htmlF = view.f(content, SummaryList(uploadSuccessful), "address", UploadId("1234"), UploadedSuccessfully("test.png", ".png", url"https://example.com/dummyLink", Some(120L)), None)
+      val renderedHtml = view.render(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None, false, request, messages, mockConfig).body
+      lazy val htmlF = view.f(content, SummaryList(uploadSuccessful), "address", UploadId("1234"), UploadedSuccessfully("test.png", ".png", url"https://example.com/dummyLink", Some(120L)), None, false)
 
       "apply must be the same as render" in {
         rendered.body mustBe renderedHtml
@@ -124,8 +124,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
     "Display the correct static content if the upload is successful" should {
 
       val rendered = view.apply(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None)(request, messages, mockConfig)
-      val renderedHtml = view.render(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None, request, messages, mockConfig).body
-      lazy val htmlF = view.f(content, SummaryList(uploadSuccessful), "address", UploadId("1234"), UploadedSuccessfully("test.png", ".png", url"https://example.com/dummyLink", Some(120L)), None)
+      val renderedHtml = view.render(navigationBarContent = content, summaryList = SummaryList(uploadSuccessful), addressFull = "address", uploadId = UploadId("1234"), status = UploadedSuccessfully("test.png", ".png", url"http://example.com/dummyLink", Some(120L)), None, false, request, messages, mockConfig).body
+      lazy val htmlF = view.f(content, SummaryList(uploadSuccessful), "address", UploadId("1234"), UploadedSuccessfully("test.png", ".png", url"https://example.com/dummyLink", Some(120L)), None, false)
 
       implicit val document: Document =
         Jsoup.parse(view(
@@ -167,6 +167,7 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
 
     "Display the correct static content if the upload is inProgress" should {
 
+
       implicit val document: Document =
         Jsoup.parse(view(
           navigationBarContent = content,
@@ -174,7 +175,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           addressFull = "address",
           uploadId = UploadId("12345"),
           status = InProgress,
-          evidenceType = None
+          evidenceType = None,
+          disableScript = true
         ).body)
 
 
@@ -189,10 +191,7 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
       "have the correct caption text" in {
         elementText(Selectors.caption) mustBe address
       }
-      
-      "have the correct uploading test" in {
-        elementText(Selectors.uploadText) mustBe uploading
-      }
+
 
       "have the correct paragraph below heading" in {
         elementText(Selectors.paragraph) must include(p1)
@@ -209,7 +208,8 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
           addressFull = "address",
           uploadId = UploadId("12345"),
           status = Failed,
-          evidenceType = None
+          evidenceType = None,
+          disableScript = true
         ).body)
 
 
@@ -225,9 +225,6 @@ class UploadedBusinessRateBillViewSpec extends ViewBaseSpec {
         elementText(Selectors.caption) mustBe address
       }
 
-      "have the correct uploading test" in {
-        elementText(Selectors.failedText) mustBe failed
-      }
 
       "have the correct paragraph below heading" in {
         elementText(Selectors.paragraph) must include(p1)

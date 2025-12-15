@@ -118,6 +118,10 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
     )
   }
 
+  def insertUploadId(credId: CredId, uploadId: String): Future[Option[PropertyLinkingUserAnswers]] = {
+    findAndUpdateByCredId(credId, Updates.set("evidenceDocumentUploadId", uploadId))
+  }
+
   def insertEvidenceDocument(credId: CredId, evidenceDocument: String, evidenceDocumentUrl: String, evidenceDocumentUploadId: String): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.combine(Updates.set("evidenceDocument", evidenceDocument), Updates.set("evidenceDocumentUrl", evidenceDocumentUrl), Updates.set("evidenceDocumentUploadId", evidenceDocumentUploadId)))
   }
@@ -128,10 +132,6 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
 
   def insertUploadEvidence(credId: CredId, uploadEvidence: String): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.set("uploadEvidence", uploadEvidence))
-  }
-  
-  def insertUploadId(credId: CredId, uploadId: UploadId): Future[Option[PropertyLinkingUserAnswers]] = {
-    findAndUpdateByCredId(credId, Updates.set("evidenceDocumentUploadId", uploadId.value))
   }
 
   def deleteEvidenceDocument(credId: CredId): Future[Boolean] = {

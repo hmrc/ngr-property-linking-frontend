@@ -66,7 +66,7 @@ class ManualPropertySearchController @Inject()(manualPropertySearchView: ManualP
             Future.successful(BadRequest(manualPropertySearchView(formWithCorrectedErrors, createDefaultNavBar, true)))
           },
           manualPropertySearch => {
-            auditingService.extendedAudit(ManualPropertySearchAuditModel(request.credId.getOrElse(""), manualPropertySearch, "results"),
+            auditingService.extendedAudit(ManualPropertySearchAuditModel(request.credId.getOrElse(""), manualPropertySearch, "addressSearchResult"),
               uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ManualPropertySearchController.show.url)
             findAPropertyConnector.findAPropertyManualSearch(manualPropertySearch).flatMap {
               case Left(error) =>

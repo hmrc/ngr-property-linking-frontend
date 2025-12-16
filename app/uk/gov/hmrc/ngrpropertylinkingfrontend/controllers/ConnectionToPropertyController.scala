@@ -19,11 +19,11 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.ConnectionToPropertyAuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.ConnectionToPropertyAuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.ConnectionToPropertyForm.{Occupier, Owner, OwnerAndOccupier, form}
@@ -60,7 +60,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
             case None        => form
             case Some(value) => form.fill(ConnectionToPropertyForm.stringToPropertyForm(value))
           }
-          
+
           Future.successful(Ok(connectionToPropertyView(
             form = preparedForm,
             radios = buildRadios(preparedForm, ngrRadio),
@@ -89,33 +89,23 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
               Future.successful(Redirect(routes.NoResultsFoundController.show))
           }
         },
-          connectionToPropertyForm => {
-            auditingService.extendedAudit(ConnectionToPropertyAuditModel(request.credId.getOrElse(""), connectionToPropertyForm, "check-your-answers"),
-              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ConnectionToPropertyController.show.url)
-            connectionToPropertyForm match {
-              case ConnectionToPropertyForm.Owner =>
-                propertyLinkingRepo.insertConnectionToProperty(
-                  credId = CredId(request.credId.getOrElse("")),
-                  connectionToProperty = Constants.owner
-                )
-                Future.successful(Redirect(routes.CheckYourAnswersController.show))
-              case ConnectionToPropertyForm.Occupier =>
-                propertyLinkingRepo.insertConnectionToProperty(
-                  credId = CredId(request.credId.getOrElse("")),
-                  connectionToProperty = Constants.occupier
-                )
-                Future.successful(Redirect(routes.CheckYourAnswersController.show))
-              case ConnectionToPropertyForm.OwnerAndOccupier =>
-                propertyLinkingRepo.insertConnectionToProperty(
-                  credId = CredId(request.credId.getOrElse("")),
-                  connectionToProperty = Constants.ownerAndOccupier
-                )
-                Future.successful(Redirect(routes.CheckYourAnswersController.show))
-            }
+        connectionToPropertyForm => {
+          auditingService.extendedAudit(ConnectionToPropertyAuditModel(request.credId.getOrElse(""), connectionToPropertyForm, "check-your-answers"),
+            uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ConnectionToPropertyController.show.url)
+
+          val connectionToProperty = connectionToPropertyForm match {
+            case ConnectionToPropertyForm.Owner => Constants.owner
+            case ConnectionToPropertyForm.Occupier => Constants.occupier
+            case ConnectionToPropertyForm.OwnerAndOccupier => Constants.ownerAndOccupier
+          }
+
+          propertyLinkingRepo.insertConnectionToProperty(
+            credId = CredId(request.credId.getOrElse("")),
+            connectionToProperty = connectionToProperty
+          )
+          Future.successful(Redirect(routes.CheckYourAnswersController.show))
         }
       )
     }
-
-
 }
 

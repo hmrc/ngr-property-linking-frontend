@@ -51,7 +51,7 @@ class DeclarationController @Inject()(view: DeclarationView,
 
   def accept: Action[AnyContent] =
     (authenticate andThen mandatoryCheck ).async { implicit request =>
-      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "declaration"),
+      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "add-property-request-sent"),
         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.DeclarationController.show.url)
       val ref = UniqueIdGenerator.generateId
       val credId = CredId(request.credId.getOrElse(""))

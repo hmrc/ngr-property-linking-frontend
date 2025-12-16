@@ -39,11 +39,7 @@ class NGRConnector @Inject()(http: HttpClientV2,
                              logger: NGRLogger)
                             (implicit ec: ExecutionContext){
 
-  private def url(path: String, parameter: Option[String] = None): URL =
-    parameter match {
-      case None => url"${appConfig.nextGenerationRatesHost}/next-generation-rates/$path"
-      case Some(param) => url"${appConfig.nextGenerationRatesHost}/next-generation-rates/$path/$param"
-    }
+  private def url(path: String): URL = url"${appConfig.nextGenerationRatesHost}/next-generation-rates/$path"
 
   def getRatepayer(credId: CredId)(implicit hc: HeaderCarrier): Future[Option[RatepayerRegistrationValuation]] = {
     implicit val rds: HttpReads[RatepayerRegistrationValuation] = readFromJson
@@ -53,9 +49,8 @@ class NGRConnector @Inject()(http: HttpClientV2,
       .execute[Option[RatepayerRegistrationValuation]]
   }
 
-  def getPropertyLinkingUserAnswers(credId: CredId)(implicit hc: HeaderCarrier): Future[Option[PropertyLinkingUserAnswers]] = {
-    implicit val rds: HttpReads[PropertyLinkingUserAnswers] = readFromJson
-    http.get(url("get-property-linking-user-answers", Some(credId.value)))
+  def getPropertyLinkingUserAnswers()(implicit hc: HeaderCarrier): Future[Option[PropertyLinkingUserAnswers]] = {
+    http.get(url("get-property-linking-user-answers"))
       .execute[Option[PropertyLinkingUserAnswers]]
   }
 

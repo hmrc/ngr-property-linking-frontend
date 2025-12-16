@@ -98,7 +98,7 @@ class RegistrationAndPropertyLinkCheckActionSpec extends TestSupport with TestDa
         when(mockNGRConnector.getRatepayer(any())(any()))
           .thenReturn(Future.successful(Some(RatepayerRegistrationValuation(credId, Some(testRegistrationModel.copy(isRegistered = Some(true)))))))
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(None))
-        when(mockNGRConnector.getPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(Some(testPropertyLinkingUserAnswers.copy(requestSentReference = Some("ABC123")))))
+        when(mockNGRConnector.getPropertyLinkingUserAnswers()(any())).thenReturn(Future.successful(Some(testPropertyLinkingUserAnswers.copy(requestSentReference = Some("ABC123")))))
 
         val result = action.invokeBlock(fakeRequest, stubs.successBlock)
         status(result) mustBe SEE_OTHER
@@ -114,7 +114,7 @@ class RegistrationAndPropertyLinkCheckActionSpec extends TestSupport with TestDa
           .thenReturn(Future.successful(Some(RatepayerRegistrationValuation(credId, Some(testRegistrationModel.copy(isRegistered = Some(true)))))))
         val notLinkedAnswers = testPropertyLinkingUserAnswers.copy(requestSentReference = None)
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(notLinkedAnswers)))
-        when(mockNGRConnector.getPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(Some(notLinkedAnswers)))
+        when(mockNGRConnector.getPropertyLinkingUserAnswers()(any())).thenReturn(Future.successful(Some(notLinkedAnswers)))
 
         val result = action.invokeBlock(fakeRequest, stubs.successBlock)
         status(result) mustBe OK

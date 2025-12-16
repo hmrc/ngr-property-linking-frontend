@@ -65,7 +65,7 @@ class RegistrationAndPropertyLinkCheckActionImpl @Inject()(
       case Some(answers) if answers.requestSentReference.isDefined =>
         Future.successful(Redirect(appConfig.ngrCheckYourDetailsUrl))
       case _ =>
-        ngrConnector.getPropertyLinkingUserAnswers(CredId(authRequest.credId.getOrElse(""))).flatMap { maybeUserAnswers =>
+        ngrConnector.getPropertyLinkingUserAnswers().flatMap { maybeUserAnswers =>
           if (maybeUserAnswers.flatMap(_.requestSentReference).isDefined)
             Future.successful(Redirect(appConfig.ngrCheckYourDetailsUrl))
           else

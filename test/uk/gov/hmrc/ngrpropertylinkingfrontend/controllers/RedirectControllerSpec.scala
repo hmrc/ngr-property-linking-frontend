@@ -27,7 +27,7 @@ class RedirectControllerSpec extends ControllerSpecSupport with DefaultAwaitTime
   val pageTitle = "Manage your business rates valuation"
   val expectedLogoutUrl = "http://localhost:1503/ngr-dashboard-frontend/signout"
 
-  def controller() = new RedirectController(mockAuthJourney, mockIsRegisteredCheck, mcc)(mockConfig)
+  def controller() = new RedirectController(mockAuthJourney, mockIsRegisteredCheck, mockAuditingService, mcc)(mockConfig)
 
   "RedirectController" must {
     "redirect user to ngr dashboard signout" when {

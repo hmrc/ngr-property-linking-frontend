@@ -22,9 +22,11 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, Registrat
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NgrNotifyConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.AuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.UniqueIdGenerator
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.DeclarationView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -39,6 +41,7 @@ class DeclarationController @Inject()(view: DeclarationView,
                                       propertyLinkingRepo: PropertyLinkingRepo,
                                       ngrConnector: NGRConnector,
                                       ngrNotifyConnector: NgrNotifyConnector,
+                                      auditingService: AuditingService,
                                       mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
@@ -48,6 +51,8 @@ class DeclarationController @Inject()(view: DeclarationView,
 
   def accept: Action[AnyContent] =
     (authenticate andThen mandatoryCheck ).async { implicit request =>
+      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "add-property-request-sent"),
+        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.DeclarationController.show.url)
       val ref = UniqueIdGenerator.generateId
       val credId = CredId(request.credId.getOrElse(""))
       for {

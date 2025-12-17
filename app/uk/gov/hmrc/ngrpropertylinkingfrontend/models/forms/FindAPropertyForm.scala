@@ -21,12 +21,12 @@ import play.api.data.Forms.{mapping, optional, text}
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.Postcode
 
-final case class FindAProperty(postcode: Postcode, propertyName: Option[String]) {
+final case class FindAPropertyForm(postcode: Postcode, propertyName: Option[String]) {
   override def toString: String = Seq(propertyName, postcode.value).mkString(",")
 }
 
-object FindAProperty extends CommonFormValidators {
-  implicit val format: OFormat[FindAProperty] = Json.format[FindAProperty]
+object FindAPropertyForm extends CommonFormValidators {
+  implicit val format: OFormat[FindAPropertyForm] = Json.format[FindAPropertyForm]
 
   private lazy val postcodeEmptyError = "findAProperty.postcode.empty.error"
   private lazy val invalidPostcodeError = "findAProperty.postcode.invalid.error"
@@ -34,9 +34,9 @@ object FindAProperty extends CommonFormValidators {
   private val postcode = "postcode-value"
   private val propertyName = "property-name-value"
 
-  def unapply(findAProperty: FindAProperty): Option[(Postcode, Option[String])] = Some((findAProperty.postcode, findAProperty.propertyName))
+  def unapply(findAProperty: FindAPropertyForm): Option[(Postcode, Option[String])] = Some((findAProperty.postcode, findAProperty.propertyName))
 
-  def form: Form[FindAProperty] =
+  def form: Form[FindAPropertyForm] =
     Form(
       mapping(
         postcode -> text()
@@ -50,6 +50,6 @@ object FindAProperty extends CommonFormValidators {
           .transform[Postcode](Postcode.apply, _.value),
         propertyName -> optional(text
           .verifying(maxLength(100, invalidPropertyNameError)))
-      )(FindAProperty.apply)(FindAProperty.unapply)
+      )(FindAPropertyForm.apply)(FindAPropertyForm.unapply)
     )
 }

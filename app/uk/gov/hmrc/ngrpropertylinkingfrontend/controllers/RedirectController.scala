@@ -20,19 +20,24 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.AuditModel
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RedirectController @Inject()(authenticate: AuthRetrievals,
                                    isRegisteredCheck: RegistrationAction,
-                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig)
+                                   auditingService: AuditingService,
+                                   mcc: MessagesControllerComponents)(implicit appConfig: AppConfig,  executionContext: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
 
   def signout: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
+      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "sign-out"),
+        uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.RedirectController.signout.url)
       Future.successful(Redirect(appConfig.ngrLogoutUrl))
   }
 

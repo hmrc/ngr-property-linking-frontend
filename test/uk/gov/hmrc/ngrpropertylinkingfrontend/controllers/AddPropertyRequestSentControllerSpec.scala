@@ -36,6 +36,7 @@ class AddPropertyRequestSentControllerSpec extends ControllerSpecSupport with De
     mockAuthJourney,
     mockIsRegisteredCheck, 
     mcc,
+    mockAuditingService,
     mockPropertyLinkingRepo,
     mockNgrConnector
   )

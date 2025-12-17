@@ -18,18 +18,20 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
 import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.mvc.RequestHeader
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.WhatYouNeedView
 
 class WhatYouNeedControllerSpec extends ControllerSpecSupport {
+  implicit val requestHeader: RequestHeader = mock[RequestHeader]
   override def beforeEach(): Unit = {
     super.beforeEach()
     mockRequest() 
   }
   val pageTitle = "What you need"
   val view: WhatYouNeedView = inject[WhatYouNeedView]
-  val controller: WhatYouNeedController = new WhatYouNeedController(view, mockAuthJourney, mockMandatoryCheck, mcc)(mockConfig)
+  val controller: WhatYouNeedController = new WhatYouNeedController(view, mockAuthJourney, mockMandatoryCheck, mockAuditingService, mcc)(mockConfig)
 
   "What you need controller" must {
     "method show" must {

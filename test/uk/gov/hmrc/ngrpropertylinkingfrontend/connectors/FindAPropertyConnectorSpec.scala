@@ -25,7 +25,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestData
 import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
 import uk.gov.hmrc.ngrpropertylinkingfrontend.mocks.MockHttpV2
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.ErrorResponse
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{FindAProperty, ManualPropertySearchForm}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.{FindAPropertyForm, ManualPropertySearchForm}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperties
 
 import scala.concurrent.Future
@@ -43,14 +43,14 @@ class FindAPropertyConnectorSpec extends MockHttpV2 with TestData {
         mockConfig.features.vmvPropertyLookupTestEnabled(true)
         val notFoundResponse = HttpResponse(status = NOT_FOUND, json = noResultsFoundJson, headers = Map.empty)
         setupMockHttpV2Get(s"${mockConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=LS1")(notFoundResponse)
-        val result: Future[Either[ErrorResponse, VMVProperties]] = findAPropertyConnector.findAPropertyPostcodeSearch(FindAProperty(postcode = testNoResultsFoundPostCode, None))
+        val result: Future[Either[ErrorResponse, VMVProperties]] = findAPropertyConnector.findAPropertyPostcodeSearch(FindAPropertyForm(postcode = testNoResultsFoundPostCode, None))
         result.futureValue mustBe Right(noResultsFoundProperty)
       }
       "return a 500" in {
         mockConfig.features.vmvPropertyLookupTestEnabled(true)
         val internalServerErrorResponse = HttpResponse(status = INTERNAL_SERVER_ERROR, "Invalid postcode has been sent", headers = Map.empty)
         setupMockHttpV2Get(s"${mockConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=LS1")(internalServerErrorResponse)
-        val result = findAPropertyConnector.findAPropertyPostcodeSearch(FindAProperty(postcode = testNoResultsFoundPostCode, None))
+        val result = findAPropertyConnector.findAPropertyPostcodeSearch(FindAPropertyForm(postcode = testNoResultsFoundPostCode, None))
         result.futureValue mustBe Left(ErrorResponse(INTERNAL_SERVER_ERROR,"Invalid postcode has been sent"))
       }
     }
@@ -98,14 +98,14 @@ class FindAPropertyConnectorSpec extends MockHttpV2 with TestData {
         mockConfig.features.vmvPropertyLookupTestEnabled(true)
         val successResponse = HttpResponse(status = OK, json = Json.obj(), headers = Map.empty)
         setupMockHttpV2Get(s"${mockConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=LS1")(successResponse)
-        val result = findAPropertyConnector.findAPropertyPostcodeSearch(FindAProperty(postcode = testNoResultsFoundPostCode, None))
+        val result = findAPropertyConnector.findAPropertyPostcodeSearch(FindAPropertyForm(postcode = testNoResultsFoundPostCode, None))
         result.futureValue mustBe Left(ErrorResponse(BAD_REQUEST, "Json Validation Error: List((/properties,List(JsonValidationError(List(error.path.missing),ArraySeq()))), (/total,List(JsonValidationError(List(error.path.missing),ArraySeq()))))"))
       }
     }
     "the GET call has failed" in {
       mockConfig.features.vmvPropertyLookupTestEnabled(true)
       setupMockFailedHttpV2Get(s"${mockConfig.ngrStubHost}/ngr-stub/external-ndr-list-api/properties?postcode=LS1")
-      val result = findAPropertyConnector.findAPropertyPostcodeSearch(FindAProperty(postcode = testNoResultsFoundPostCode, None))
+      val result = findAPropertyConnector.findAPropertyPostcodeSearch(FindAPropertyForm(postcode = testNoResultsFoundPostCode, None))
       result.futureValue mustBe Left(ErrorResponse(INTERNAL_SERVER_ERROR,"Call to VMV find a property failed"))
     }
   }

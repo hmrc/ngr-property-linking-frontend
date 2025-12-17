@@ -19,15 +19,17 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRRadio.buildRadios
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.BusinessRatesBillForm
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.forms.BusinessRatesBillForm.form
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.BusinessRatesBillAuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.BusinessRatesBillView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -38,6 +40,7 @@ class BusinessRatesBillController @Inject()(
                                              businessRatesBillView: BusinessRatesBillView,
                                              authenticate: AuthRetrievals,
                                              mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
+                                             auditingService: AuditingService,
                                              propertyLinkingRepo: PropertyLinkingRepo,
                                              mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
@@ -78,6 +81,8 @@ class BusinessRatesBillController @Inject()(
             case None => throw new NotFoundException("failed to find property from mongo")
           },
           businessRatesBillForm =>
+            auditingService.extendedAudit(BusinessRatesBillAuditModel(request.credId.getOrElse(""), businessRatesBillForm, "upload-business-rates-bill"),
+              uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.BusinessRatesBillController.show.url)
             propertyLinkingRepo.insertBusinessRatesBill(
               credId = CredId(request.credId.getOrElse("")),
               businessRatesBill = businessRatesBillForm.radioValue

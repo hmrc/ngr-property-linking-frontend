@@ -62,9 +62,9 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
   
   def show(page: Option[Int], sortBy: Option[String]): Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "property-selected"),
+      auditingService.extendedAudit(AuditModel(request.credId.value, "property-selected"),
         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.SingleSearchResultController.show(page, sortBy).url)
-      findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
+      findAPropertyRepo.findByCredId(CredId(request.credId.value)).flatMap{
         case Some(properties) =>
           showSingleSearchResultView(properties, page.getOrElse(1), sortBy.getOrElse("AddressASC"))
         case None => Future.successful(Redirect(routes.FindAPropertyController.show))
@@ -80,7 +80,7 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
             Future.failed(new BadRequestException("Unable to sort, please try again"))
           ,
           singleSearchResult => {
-            findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+            findAPropertyRepo.findByCredId(request.credId).flatMap {
               case Some(properties) => showSingleSearchResultView(properties, 1, singleSearchResult.sortBy)
               case None => Future.failed(new BadRequestException("Unable to sort, please try again"))
             }
@@ -143,7 +143,7 @@ class SingleSearchResultController @Inject(singleSearchResultView: SingleSearchR
             TableRowText(capitalizeEnds(stringValue._1.addressFull)),
             TableRowText(stringValue._1.localAuthorityReference),
             TableRowText(stringValue._1.valuations.last.descriptionText.toLowerCase.capitalize),
-            TableRowText(formatRateableValue(stringValue._1.valuations.last.rateableValue.map(_.longValue).getOrElse(0l))),
+            TableRowText(formatRateableValue(stringValue._1.valuations.last.rateableValue.map(_.longValue).getOrElse(0L))),
             TableRowLink(stringValue._2, "Select property")
           ))
       ).toTable

@@ -47,9 +47,8 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
 
   def show: Action[AnyContent] = {
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in RemoveBusinessRatesBillController.show()")))
 
-      propertyLinkingRepo.findByCredId(credId).map {
+      propertyLinkingRepo.findByCredId(request.credId).map {
         case Some(propertyLinkingUserAnswers) if isEvidenceExist(propertyLinkingUserAnswers) =>
           val summaryList: SummaryList = buildSummaryList(propertyLinkingUserAnswers.evidenceDocument.get, URI(propertyLinkingUserAnswers.evidenceDocumentUrl.get).toURL)
           Ok(removeView(createDefaultNavBar, propertyLinkingUserAnswers.vmvProperty.addressFull, summaryList, propertyLinkingUserAnswers.evidenceDocumentUploadId.map(UploadId(_)).get))
@@ -61,9 +60,8 @@ class RemoveBusinessRatesBillController @Inject()(removeView: RemoveBusinessRate
 
   def remove: Action[AnyContent] = {
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      val credId: CredId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in RemoveBusinessRatesBillController.remove()")))
 
-      propertyLinkingRepo.findByCredId(credId).flatMap {
+      propertyLinkingRepo.findByCredId(request.credId).flatMap {
         case Some(propertyLinkingUserAnswers) if isEvidenceExist(propertyLinkingUserAnswers) =>
           for {
             deletedEvidence <- propertyLinkingRepo.deleteEvidenceDocument(propertyLinkingUserAnswers.credId)

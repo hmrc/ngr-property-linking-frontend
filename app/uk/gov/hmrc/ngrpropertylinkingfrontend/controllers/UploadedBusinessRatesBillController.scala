@@ -48,9 +48,8 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
 
   def show(uploadId: UploadId): Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      val credId = CredId(request.credId.getOrElse(throw new NotFoundException("CredId not found in UploadedBusinessRatesBillController.show()")))
       for {
-        maybePropertyLinkingUserAnswers <- propertyLinkingRepo.findByCredId(credId)
+        maybePropertyLinkingUserAnswers <- propertyLinkingRepo.findByCredId(request.credId)
         propertyLinkingUserAnswers = maybePropertyLinkingUserAnswers.getOrElse(throw new NotFoundException("Property not found in UploadedBusinessRatesBillController.show()"))
         address = propertyLinkingUserAnswers.vmvProperty.addressFull
         evidenceType = propertyLinkingUserAnswers.uploadEvidence
@@ -60,7 +59,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
         uploadResult match
           case Some(UploadStatus.UploadedSuccessfully(evidenceDocument, mimeType, downloadUrl, size)) =>
             val downloadUrlString: String = downloadUrl.toString
-            propertyLinkingRepo.insertEvidenceDocument(credId, evidenceDocument, downloadUrlString, uploadId.value)
+            propertyLinkingRepo.insertEvidenceDocument(request.credId, evidenceDocument, downloadUrlString, uploadId.value)
             Ok(uploadedBusinessRateBillView(
               createDefaultNavBar,
               buildSuccessSummaryList(evidenceDocument, downloadUrlString),

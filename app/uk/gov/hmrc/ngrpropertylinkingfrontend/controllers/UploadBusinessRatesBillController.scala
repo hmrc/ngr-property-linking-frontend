@@ -54,30 +54,26 @@ class UploadBusinessRatesBillController @Inject()(uploadView: UploadBusinessRate
 
   def show(errorCode: Option[String], evidenceType: Option[String]): Action[AnyContent] = {
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      request.credId match {
-        case Some(rawCredId) =>
-          val errorToDisplay: Option[String] = renderError(errorCode)
-          val uploadId = UploadId.generate()
-          val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId).url}"
-          val evidenceParameter = evidenceType.map(evidenceValue => s"?evidenceType=$evidenceValue").getOrElse("")
-          val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill$evidenceParameter"
+        val errorToDisplay: Option[String] = renderError(errorCode)
+        val uploadId = UploadId.generate()
+        val successRedirectUrl = s"${appConfig.uploadRedirectTargetBase}${routes.UploadedBusinessRatesBillController.show(uploadId).url}"
+        val evidenceParameter = evidenceType.map(evidenceValue => s"?evidenceType=$evidenceValue").getOrElse("")
+        val errorRedirectUrl = s"${appConfig.ngrPropertyLinkingFrontendUrl}/upload-business-rates-bill$evidenceParameter"
 
-          for
-            upscanInitiateResponse <- upScanConnector.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
-            maybePropertyLinkingUserAnswers <- propertyLinkingRepo.findByCredId(CredId(rawCredId))
-            _ <- uploadProgressTracker.requestUpload(uploadId, Reference(upscanInitiateResponse.fileReference.reference))
-          yield Ok(uploadView(uploadForm(),
-            upscanInitiateResponse,
-            attributes,
-            errorToDisplay,
-            maybePropertyLinkingUserAnswers.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
-            createDefaultNavBar,
-            routes.FindAPropertyController.show.url,
-            appConfig.ngrDashboardUrl,
-            evidenceType)
-          )
-        case None => Future.failed(throw new NotFoundException("Missing credId in authenticated request"))
-      }
+        for
+          upscanInitiateResponse <- upScanConnector.initiate(Some(successRedirectUrl), Some(errorRedirectUrl))
+          maybePropertyLinkingUserAnswers <- propertyLinkingRepo.findByCredId(request.credId)
+          _ <- uploadProgressTracker.requestUpload(uploadId, Reference(upscanInitiateResponse.fileReference.reference))
+        yield Ok(uploadView(uploadForm(),
+          upscanInitiateResponse,
+          attributes,
+          errorToDisplay,
+          maybePropertyLinkingUserAnswers.map(_.vmvProperty.addressFull).getOrElse(throw new NotFoundException("Not found property on account")),
+          createDefaultNavBar,
+          routes.FindAPropertyController.show.url,
+          appConfig.ngrDashboardUrl,
+          evidenceType)
+        )
     }
   }
     private def renderError(errorCode: Option[String])(implicit messages: Messages) : Option[String] = {

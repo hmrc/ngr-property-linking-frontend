@@ -66,16 +66,16 @@ class ManualPropertySearchController @Inject()(manualPropertySearchView: ManualP
             Future.successful(BadRequest(manualPropertySearchView(formWithCorrectedErrors, createDefaultNavBar, true)))
           },
           manualPropertySearch => {
-            auditingService.extendedAudit(ManualPropertySearchAuditModel(request.credId.getOrElse(""), manualPropertySearch, "addressSearchResult"),
+            auditingService.extendedAudit(ManualPropertySearchAuditModel(request.credId.value, manualPropertySearch, "addressSearchResult"),
               uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ManualPropertySearchController.show.url)
             findAPropertyConnector.findAPropertyManualSearch(manualPropertySearch).flatMap {
               case Left(error) =>
                 Future.successful(Status(error.code)(Json.toJson(error)))
               case Right(properties) if properties.properties.isEmpty =>
-                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.value),properties))
                 Future.successful(Redirect(routes.NoResultsFoundController.show.url))
               case Right(properties)  =>
-                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")), properties))
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.value), properties))
                 Future.successful(Redirect(routes.SingleSearchResultController.show(Some(1), Some("AddressASC")).url))
             }
           })

@@ -57,16 +57,16 @@ class FindAPropertyController @Inject()(findAPropertyView: FindAPropertyView,
         .fold(
           formWithErrors => Future.successful(BadRequest(findAPropertyView(formWithErrors, createDefaultNavBar))),
           findAProperty => {
-            auditingService.extendedAudit(FindAPropertyAuditModel(request.credId.getOrElse(""),findAProperty, "results"),
+            auditingService.extendedAudit(FindAPropertyAuditModel(request.credId.value,findAProperty, "results"),
               uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.FindAPropertyController.show.url)
             findAPropertyConnector.findAPropertyPostcodeSearch(findAProperty).flatMap {
               case Left(error) =>
                 Future.successful(Status(error.code)(Json.toJson(error)))
               case Right(properties) if properties.properties.isEmpty =>
-                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(request.credId, properties))
                 Future.successful(Redirect(routes.NoResultsFoundController.show.url))
               case Right(properties) =>
-                findAPropertyRepo.upsertProperty(LookUpVMVProperties(CredId(request.credId.getOrElse("")),properties))
+                findAPropertyRepo.upsertProperty(LookUpVMVProperties(request.credId, properties))
                 Future.successful(Redirect(routes.SingleSearchResultController.show(page = Some(1), sortBy = Some("AddressASC")).url))
             }
           })

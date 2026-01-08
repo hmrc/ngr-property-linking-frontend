@@ -53,7 +53,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
 
   def show: Action[AnyContent] = {
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+      propertyLinkingRepo.findByCredId(request.credId).flatMap {
         case Some(properties) =>
           val propertyAddress = properties.vmvProperty.addressFull
           val preparedForm = properties.connectionToProperty match {
@@ -75,8 +75,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
     (authenticate andThen mandatoryCheck).async { implicit request =>
       form.bindFromRequest().fold(
         formWithErrors => {
-          val credId = request.credId.getOrElse("")
-          propertyLinkingRepo.findByCredId(CredId(credId)).flatMap {
+          propertyLinkingRepo.findByCredId(request.credId).flatMap {
             case Some(properties) =>
               val propertyAddress = properties.vmvProperty.addressFull
               Future.successful(BadRequest(connectionToPropertyView(
@@ -90,7 +89,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
           }
         },
         connectionToPropertyForm => {
-          auditingService.extendedAudit(ConnectionToPropertyAuditModel(request.credId.getOrElse(""), connectionToPropertyForm, "check-your-answers"),
+          auditingService.extendedAudit(ConnectionToPropertyAuditModel(request.credId.value, connectionToPropertyForm, "check-your-answers"),
             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.ConnectionToPropertyController.show.url)
 
           val connectionToProperty = connectionToPropertyForm match {
@@ -100,7 +99,7 @@ class ConnectionToPropertyController @Inject()(connectionToPropertyView: Connect
           }
 
           propertyLinkingRepo.insertConnectionToProperty(
-            credId = CredId(request.credId.getOrElse("")),
+            credId = request.credId,
             connectionToProperty = connectionToProperty
           )
           Future.successful(Redirect(routes.CheckYourAnswersController.show))

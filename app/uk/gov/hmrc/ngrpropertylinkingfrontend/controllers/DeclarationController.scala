@@ -51,15 +51,14 @@ class DeclarationController @Inject()(view: DeclarationView,
 
   def accept: Action[AnyContent] =
     (authenticate andThen mandatoryCheck ).async { implicit request =>
-      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "add-property-request-sent"),
+      auditingService.extendedAudit(AuditModel(request.credId.value, "add-property-request-sent"),
         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.DeclarationController.show.url)
       val ref = UniqueIdGenerator.generateId
-      val credId = CredId(request.credId.getOrElse(""))
       for {
-        maybeAnswers <- propertyLinkingRepo.insertRequestSentReference(credId, ref)
+        maybeAnswers <- propertyLinkingRepo.insertRequestSentReference(request.credId, ref)
         userAnswers <- maybeAnswers match {
           case Some(result) => Future.successful(result)
-          case None => Future.failed(new Exception(s"Could not save reference for credId: ${credId.value}"))
+          case None => Future.failed(new Exception(s"Could not save reference for credId: ${request.credId.value}"))
         }
         ngrConnectorResponse <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
         ngrNotifyConnectorResponse <- ngrNotifyConnector.postProperty(userAnswers)
@@ -68,11 +67,11 @@ class DeclarationController @Inject()(view: DeclarationView,
           case (Right(resp), CREATED) if resp.status == ACCEPTED  =>
             Future.successful(Redirect(routes.AddPropertyRequestSentController.show))
           case (Right(resp), status) if status != CREATED =>
-            Future.failed(new Exception(s"Failed upsert to backend for credId: ${credId.value}"))
+            Future.failed(new Exception(s"Failed upsert to backend for credId: ${request.credId.value}"))
           case (Left(error), _) =>
-            Future.failed(new Exception(s"Failed call to ngr-notify property endpoint for credId: ${credId.value}"))
+            Future.failed(new Exception(s"Failed call to ngr-notify property endpoint for credId: ${request.credId.value}"))
           case _ =>
-            Future.failed(new Exception(s"Unknown failure for credId: ${credId.value}"))
+            Future.failed(new Exception(s"Unknown failure for credId: ${request.credId.value}"))
         }
       } yield result
     }

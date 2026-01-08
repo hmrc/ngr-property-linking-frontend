@@ -23,6 +23,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
@@ -48,15 +49,15 @@ class AuthRetrievalsImpl @Inject()(
         Retrievals.name
 
     authorised(ConfidenceLevel.L250).retrieve(retrievals){
-      case credentials ~ Some(nino) ~ confidenceLevel ~ email ~ affinityGroup ~ name =>
+      case Some(credentials) ~ Some(nino) ~ confidenceLevel ~ email ~ affinityGroup ~ name =>
         block(
           AuthenticatedUserRequest(
             request = request,
             confidenceLevel = Some(confidenceLevel),
-            authProvider = credentials.map(_.providerType),
+            authProvider = Some(credentials.providerType),
             nino = Nino(hasNino = true,Some(nino)),
             email = email.filter(_.nonEmpty),
-            credId = credentials.map(_.providerId),
+            credId = CredId(credentials.providerId),
             affinityGroup = affinityGroup,
             name = name
           )

@@ -76,7 +76,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         when(mockPropertyLinkingRepo.insertCurrentRatepayer(any(), any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty, currentRatepayer =  Some(CurrentRatepayer(true, None))))))
         val result = controller().submit(AuthenticatedUserRequest(FakeRequest(routes.BusinessRatesBillController.submit)
           .withFormUrlEncodedBody(("business-rates-bill-radio", "Yes"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, CredId("1234"), None, None, nino = Nino(true, Some(""))))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None, None).url)
       }
@@ -86,7 +86,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         when(mockPropertyLinkingRepo.insertUploadEvidence(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty =  testVmvProperty, currentRatepayer =  Some(CurrentRatepayer(false, Some(""))), uploadEvidence = None))))
         val result = controller().submit(AuthenticatedUserRequest(FakeRequest(routes.BusinessRatesBillController.submit)
           .withFormUrlEncodedBody(("business-rates-bill-radio", "No"))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, CredId("1234"), None, None, nino = Nino(true, Some(""))))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.UploadEvidenceController.show.url)
       }
@@ -95,7 +95,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty))))
         val result = controller().submit(AuthenticatedUserRequest(FakeRequest(routes.BusinessRatesBillController.submit)
           .withFormUrlEncodedBody(("business-rates-bill-radio", ""))
-          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some(""))))
+          .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, CredId("1234"), None, None, nino = Nino(hasNino = true, Some(""))))
         status(result) mustBe BAD_REQUEST
         val content = contentAsString(result)
         content must include(pageTitle)
@@ -106,7 +106,7 @@ class BusinessRatesBillControllerSpec extends ControllerSpecSupport with Default
         val exception = intercept[NotFoundException] {
           await(controller().submit(AuthenticatedUserRequest(FakeRequest(routes.BusinessRatesBillController.submit)
             .withFormUrlEncodedBody(("business-rates-bill-radio", ""))
-            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, None, None, None, nino = Nino(hasNino = true, Some("")))))
+            .withHeaders(HeaderNames.authorisation -> "Bearer 1"), None, None, None, CredId("1234"), None, None, nino = Nino(hasNino = true, Some("")))))
         }
         exception.getMessage contains "failed to find property from mongo" mustBe true
       }

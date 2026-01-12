@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.actions
 
 import org.mockito.ArgumentMatchers.*
-import org.mockito.Mockito.{spy, when}
+import org.mockito.Mockito.{spy, times, verify, when}
 import play.api.Application
 import play.api.http.Status.OK
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -31,6 +31,8 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.EqualsAuthenticatedUserRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 class AuthRetrievalsSpec extends TestSupport{
@@ -74,7 +76,45 @@ class AuthRetrievalsSpec extends TestSupport{
 
         val result = authAction.invokeBlock(testRequest, stubs.successBlock)
 
+        val expectedRequest = AuthenticatedUserRequest(
+          request = testRequest,
+          credId = CredId(testCredId.providerId),
+          authProvider = Some(testCredId.providerType),
+          nino = Nino(true, Some(testNino)),
+          confidenceLevel = Some(testConfidenceLevel),
+          email = Some(testEmail),
+          affinityGroup = Some(testAffinityGroup),
+          name = Some(testName)
+        )
+
         status(result) mustBe OK
+
+        verify(stubs, times(1)).successBlock(argThat(EqualsAuthenticatedUserRequest(expectedRequest)))
+      }
+      "the user has a confidence level of 50 with all details" in {
+
+        val retrievalResult: Future[authAction.RetrievalsType] =
+          Future.successful(
+            Some(testCredId) ~
+              None ~
+              ConfidenceLevel.L50 ~
+              Some(testEmail) ~
+              Some(testAffinityGroup) ~
+              Some(testName)
+          )
+
+        when(
+          mockAuthConnector
+            .authorise[authAction.RetrievalsType](any(), any())(any(), any())
+        ).thenReturn(retrievalResult)
+
+        val stubs = spy(new Stubs)
+
+        val result = authAction.invokeBlock(testRequest, stubs.successBlock)
+
+        whenReady(result.failed){ e =>
+          e.getMessage mustBe "Required confidence level not met: " + ConfidenceLevel.L50
+        }
       }
 
       "is not logged in" must {

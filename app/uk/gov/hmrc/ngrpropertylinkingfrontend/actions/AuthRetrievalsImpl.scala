@@ -62,7 +62,10 @@ class AuthRetrievalsImpl @Inject()(
             name = name
           )
         )
-      case _ ~ _ ~ confidenceLevel ~ _ => throw new Exception("confidenceLevel not met")
+      case None ~ _ ~ _ ~ _ ~ _ ~ _ =>
+        throw new Exception("User credentials are missing")
+      case _ ~ _ ~ confidenceLevel ~ _ ~ _ ~ _ =>
+        throw InsufficientConfidenceLevel(s"Required confidence level not met: $confidenceLevel")
     }recoverWith {
       case ex: Throwable =>
         throw ex

@@ -41,6 +41,8 @@ trait AppConfig {
   val uploadRedirectTargetBase: String
   val customCurrentDate: Option[String] // TODO remove this after 1st April 2026, as it is only used for testing purposes
   val ngrNotify: String
+  val timeout: Int
+  val countdown: Int
 }
 
 @Singleton
@@ -62,6 +64,8 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val customCurrentDate: Option[String] = config.getOptional("custom-current-date")
   override val uploadRedirectTargetBase: String = getString("upscan.upload-redirect-target-base")
   override val ngrNotify: String = servicesConfig.baseUrl("ngr-notify")
+  override val timeout: Int   = config.get[Int]("timeout-dialog.timeout")
+  override val countdown: Int = config.get[Int]("timeout-dialog.countdown")
 
 
   def getString(key: String): String =

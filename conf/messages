@@ -634,3 +634,10 @@ uploadEvidence.StampDuty.title = Stamp Duty Land Tax form
 uploadEvidence.UtilityBill.title = utility bill
 uploadEvidence.WaterRate.title = water rate demand
 uploadEvidence.radio.unselected.error = Select what evidence you can provide
+
+
+#Timeout
+timeout.title = You’re about to be signed out
+timeout.message = Your session is about to expire due to inactivity in
+timeout.keepAlive = Stay Signed In
+timeout.signOut = Sign Out Now

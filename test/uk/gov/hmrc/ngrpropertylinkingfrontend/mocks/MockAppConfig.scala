@@ -41,5 +41,8 @@ class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
   override def getString(key: String): String = ???
 
   override val customCurrentDate: Option[String] = None // TODO remove this after 1st April 2026, as it is only used for testing purposes
+
+  override val timeout: Int = 900
+  override val countdown: Int = 120
 }
 

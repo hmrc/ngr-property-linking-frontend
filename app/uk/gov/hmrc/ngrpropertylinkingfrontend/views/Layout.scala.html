@@ -29,6 +29,8 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcScripts
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import play.api.Configuration
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcTimeoutDialog
+@import uk.gov.hmrc.hmrcfrontend.views.Aliases.TimeoutDialog
 
 @this(
   appConfig: AppConfig,
@@ -36,6 +38,7 @@
   standardBetaBanner: StandardBetaBanner,
   fullWidthLayout: FullWidthLayout,
   twoThirdsLayout: TwoThirdsLayout,
+  hmrcTimeoutDialog: HmrcTimeoutDialog,
   hmrcStandardPage: HmrcStandardPage,
   stylesheets: Stylesheets,
   navigationBarComponent: navigationBarComponent,
@@ -47,12 +50,26 @@ showBackLink: Boolean = false,
 fullWidth: Boolean = false,
 navigationBarContent: Option[NavigationBarContent] = None,
 templateOverrides: TemplateOverrides = TemplateOverrides(),
-additionalHeadBlock: Option[Html] = None
+additionalHeadBlock: Option[Html] = None,
+timeout: Boolean = true
 )(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @headScripts = {
     @stylesheets()
     @additionalHeadBlock
+    @if(timeout) {
+        @hmrcTimeoutDialog(TimeoutDialog(
+            timeout             = Some(appConfig.timeout),
+            countdown           = Some(appConfig.countdown),
+            keepAliveUrl        = Some(uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.KeepAliveController. keepAlive().url),
+            keepAliveButtonText = Some(messages("timeout.keepAlive")),
+            signOutUrl          = Some(uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.RedirectController.signout.url),
+            signOutButtonText   = Some(messages("timeout.signOut")),
+            title               = Some(messages("timeout.title")),
+            message             = Some(messages("timeout.message")),
+            language            = Some(messages.lang.code)
+    ))
+}
 }
 
 @navbar = {

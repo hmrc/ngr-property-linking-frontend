@@ -27,6 +27,8 @@
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavigationBarContent
 @import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.components.navigationBarComponent
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcScripts
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import play.api.Configuration
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcTimeoutDialog
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.TimeoutDialog
 
@@ -76,25 +78,14 @@ timeout: Boolean = true
     }
 }
 
-@languageSelector = {
-    @hmrcLanguageSelectHelper()
-}
-
-@content = {
-    @if(appConfig.features.welshLanguageSupportEnabled()) {
-        @languageSelector
-    }
-    @contentBlock
-}
-
 @hmrcStandardPage(
     HmrcStandardPageParams(
         pageTitle = pageTitle.map(title => messages("service.base.title", title)),
         templateOverrides = TemplateOverrides(
             mainContentLayout = if (fullWidth) {
-                Some((_: Html) => fullWidthLayout(content, navbar))
+                Some((_: Html) => fullWidthLayout(contentBlock, navbar))
             } else {
-                Some((_: Html) => twoThirdsLayout(content, navbar))
+                Some((_: Html) => twoThirdsLayout(contentBlock, navbar))
             },
             additionalHeadBlock = Some(headScripts),
             additionalScriptsBlock = Some(hmrcScripts())
@@ -103,5 +94,12 @@ timeout: Boolean = true
         banners = Banners(
             phaseBanner = Some(standardBetaBanner()),
         ),
+        serviceNavigation = Some(
+            if(appConfig.features.welshLanguageSupportEnabled()){
+                ServiceNavigation(serviceName = Some(messages("service.name"))).withLanguageToggle()
+            } else{
+                ServiceNavigation(serviceName = Some(messages("service.name")))
+            }
+        )
     )
-)(content)
+)(contentBlock)

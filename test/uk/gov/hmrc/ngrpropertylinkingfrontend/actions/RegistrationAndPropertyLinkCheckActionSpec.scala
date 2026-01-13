@@ -17,13 +17,12 @@
 package uk.gov.hmrc.ngrpropertylinkingfrontend.actions
 
 import org.mockito.ArgumentMatchers.any
-import play.api.test.Helpers.defaultAwaitTimeout
 import org.mockito.Mockito.{spy, when}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.{AnyContent, Request, Result}
 import play.api.mvc.Results.Ok
-import play.api.test.Helpers.{OK, SEE_OTHER, redirectLocation, status}
+import play.api.mvc.{AnyContent, Request, Result}
+import play.api.test.Helpers.{OK, SEE_OTHER, defaultAwaitTimeout, redirectLocation, status}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.NGRConnector

@@ -34,6 +34,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.SdesConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.FileTransferNotification
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
+import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -67,21 +68,24 @@ class DeclarationController @Inject()(view: DeclarationView,
           case Some(result) => Future.successful(result)
           case None => Future.failed(new Exception(s"Could not save reference for credId: ${request.credId.value}"))
         }
-        objectStoreFile <- propertyLinkingRepo.findByCredId(request.credId).map(values => values.map(value => value.upscanObjectStoreFile.get))
-        uploadUpscanFileToSdes <-
-          sdesConnector.sendFileNotification(
-            ftn =
-              FileTransferNotification(
-                informationType = appConfig.sdesInformationType,
-                file = objectStoreFile.get,
-                audit = Audit(correlationID = "1cf87d67-42d3-4037-8886-720d8c28003d")
-              )
-          ).map {
-            case Right(status) => Right(status)
-            case Left(errorStatus) =>
-              logger.error(s"Failed to send file with conversation Id [${}] to SDES. Got error status: $errorStatus")
-              Left(errorStatus)
-          }
+        objectStoreFiles <- propertyLinkingRepo
+          .findByCredId(request.credId)
+          .map(_.flatMap(_.objectStoreFile))
+        uploadUpscanFileToSdes <- objectStoreFiles.headOption match {
+          case Some(file) =>
+            val correlationId = UUID.randomUUID().toString
+            val ftn = FileTransferNotification(
+              informationType = appConfig.sdesInformationType,
+              file            = file,
+              audit           = Audit(correlationID = correlationId)
+            )
+            sdesConnector.sendFileNotification(ftn)
+
+          case None =>
+            val msg = s"No object store file found for credId=${request.credId.value}"
+            logger.warn(msg)
+            Future.successful(Left(msg)) 
+        }
         ngrConnectorResponse <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
         ngrNotifyConnectorResponse <- ngrNotifyConnector.postProperty(userAnswers)
 

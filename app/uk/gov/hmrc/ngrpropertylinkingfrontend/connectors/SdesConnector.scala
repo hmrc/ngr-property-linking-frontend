@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
+import play.api.http.Status
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.ErrorResponse
 import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.Json
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
@@ -35,7 +37,7 @@ class SdesConnector @Inject() (
                                 httpClient: HttpClientV2,
                                 logger: NGRLogger
                               )(implicit ec: ExecutionContext)extends HttpReadsHttpResponse {
-  def sendFileNotification(ftn: FileTransferNotification)(implicit hc: HeaderCarrier): Future[Either[Int, Int]]  =
+  def sendFileNotification(ftn: FileTransferNotification)(implicit hc: HeaderCarrier): Future[Either[ErrorResponse, Int]]  =
     httpClient
       .post(url"${config.sdesUrl}")
       .withBody(Json.toJson(ftn)(FileTransferNotification.format))
@@ -47,10 +49,12 @@ class SdesConnector @Inject() (
           case NO_CONTENT =>
             Right(response.status)
           case _ =>
-            logger.error(s"Received status [${response.status}] from SDES for correlationId [${ftn.audit.correlationID}]")
-            Left(response.status)
+            Left(ErrorResponse(code = response.status, message =  s"Received status [${response.status}] from SDES for correlationId [${ftn.audit.correlationID}] with file name: [${ftn.file.name}]"))
         }
-      }
+      }.recover {
+      case _ =>
+        Left(ErrorResponse(code = Status.INTERNAL_SERVER_ERROR, message =  s"Call to sdes notification/fileready"))
+    }
 }
 
 

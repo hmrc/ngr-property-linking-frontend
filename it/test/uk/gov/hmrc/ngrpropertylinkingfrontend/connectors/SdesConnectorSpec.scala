@@ -29,6 +29,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.SdesConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.WireMockHelper
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.ErrorResponse
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.PropertyExtractor.{formBundleKey, locationKey, mimeTypeKey, prefixedFormBundleKey}
 
@@ -146,9 +147,24 @@ class SdesConnectorSpec
   private val statusCases = Table(
     ("sdesStatusCode", "expectedConnectorResult"),
     (NO_CONTENT, Right(NO_CONTENT)),
-    (BAD_REQUEST, Left(BAD_REQUEST)),
-    (INTERNAL_SERVER_ERROR, Left(INTERNAL_SERVER_ERROR)),
-    (REQUEST_TIMEOUT, Left(REQUEST_TIMEOUT))
+    (BAD_REQUEST, Left(
+      ErrorResponse(
+        code = BAD_REQUEST,
+        message =  s"Received status [${BAD_REQUEST}] from SDES for correlationId [${testCorrelationid}] with file name: [$testFormBundleId-$testFileName]"
+      )
+    )),
+    (INTERNAL_SERVER_ERROR, Left(
+      ErrorResponse(
+        code = INTERNAL_SERVER_ERROR,
+        message =  s"Received status [${INTERNAL_SERVER_ERROR}] from SDES for correlationId [${testCorrelationid}] with file name: [$testFormBundleId-$testFileName]"
+      )
+    )),
+    (REQUEST_TIMEOUT, Left(
+      ErrorResponse(
+        code = REQUEST_TIMEOUT,
+        message =  s"Received status [${REQUEST_TIMEOUT}] from SDES for correlationId [${testCorrelationid}] with file name: [$testFormBundleId-$testFileName]"
+      )
+    ))
   )
   
   "SDESConnector" - {
@@ -156,7 +172,7 @@ class SdesConnectorSpec
       s"sendFileNotification must return $expectedConnectorResult when SDES returns $sdesStatusCode" in {
         stubResponse(sdesPath, sdesStatusCode)
         val ftn: FileTransferNotification = sampleFileTransferNotification
-        val result: Future[Either[Int, Int]] = connector.sendFileNotification(ftn)
+        val result: Future[Either[ErrorResponse, Int]] = connector.sendFileNotification(ftn)
         result.futureValue mustBe expectedConnectorResult
       }
     }

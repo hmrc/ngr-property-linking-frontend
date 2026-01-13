@@ -76,7 +76,7 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
           )
         )
         )
-        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty, upscanObjectStoreFile = objectFile))))
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty, objectStoreFile = objectFile))))
         when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty))))
         when(
           mockSdesConnector.sendFileNotification(any[FileTransferNotification])(any[HeaderCarrier])

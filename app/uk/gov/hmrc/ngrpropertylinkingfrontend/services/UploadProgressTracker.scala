@@ -171,7 +171,6 @@ class UploadProgressTracker @Inject()(
                           properties = List.empty
                         )
                       )
-                    mongoCheck <-   propertyLinkingRepo.findByCredId(credId).map(values => values.map(value => value.upscanObjectStoreFile.get))
                     success <- referenceNumberInsert match {
                       case Some(result) =>
                         Future.successful(result)

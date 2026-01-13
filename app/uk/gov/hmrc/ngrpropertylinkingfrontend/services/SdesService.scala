@@ -19,7 +19,6 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.services
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
-import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.SdesConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.PropertyExtractor.{attachmentReferenceKey, locationKey, mimeTypeKey, nrsSubmissionKey}
@@ -32,7 +31,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SdesService @Inject() (
-                              sdesConnector: SdesConnector,
                               auditService: AuditingService,
                               ngrLogger: NGRLogger
                             )(implicit executionContext: ExecutionContext, appConfig: AppConfig) {

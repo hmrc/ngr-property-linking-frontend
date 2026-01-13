@@ -144,7 +144,7 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
     val bson = BsonDocument.parse(Json.stringify(Json.toJson(uploadedFile)))
     findAndUpdateByCredId(
       credId,
-      Updates.set("upscanObjectStoreFile", bson)
+      Updates.set("objectStoreFile", bson)
     )
   }
 

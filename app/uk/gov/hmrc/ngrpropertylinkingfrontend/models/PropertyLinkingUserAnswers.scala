@@ -25,7 +25,7 @@ import play.api.mvc.{Action, ControllerComponents}
 case class PropertyLinkingUserAnswers (credId: CredId,
                                        vmvProperty: VMVProperty,
                                        currentRatepayer: Option[CurrentRatepayer] = None,
-                                       upscanObjectStoreFile: Option[File] = None, 
+                                       objectStoreFile: Option[File] = None,
                                        businessRatesBill: Option[String] = None,
                                        connectionToProperty: Option[String] = None,
                                        requestSentReference: Option[String] = None,

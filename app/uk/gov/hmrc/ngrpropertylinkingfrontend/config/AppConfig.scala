@@ -48,9 +48,9 @@ trait AppConfig {
   val internalAuthToken: String
   val sdesUrl: String
   val sdesAuthorizationToken: String
-  val sdesNotificationUrl: String
   val sdesInformationType: String
   val sdesRecipientOrSender: String
+  val sdesChecksumAlgorithm: Algorithm
 }
 
 @Singleton
@@ -77,23 +77,12 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val internalAuthService: String = servicesConfig.baseUrl("internal-auth")
   override val internalAuthToken: String = config.get[String]("internal-auth.token")
 
-  override val sdesAuthorizationToken: String = servicesConfig.getString("microservice.services.sdes.client-id")
-  override val sdesInformationType = servicesConfig.getString("microservice.services.sdes.informationType")
-  override val sdesRecipientOrSender = servicesConfig.getString("microservice.services.sdes.recipientOrSender")
-  override val sdesUrl: String = servicesConfig.baseUrl("sdes")
-
-  lazy val ngrPropertyLinkingUrl: String = servicesConfig.baseUrl("ngr-property-linking-frontend")
-
-  override val sdesNotificationUrl: String = {
-    val endpoint = "/notification/fileready"
-
-    if (servicesConfig.getBoolean("sdes.stubNotification")) {
-      s"$ngrPropertyLinkingUrl/ngr-property-linking-frontend/test-only$endpoint"
-    } else {
-      sdesUrl + endpoint
-    }
-  }
-
+  private val sdesLocation: Option[String] = Option(config.get[String]("sdes.location")).filter(_.nonEmpty)
+  override val sdesUrl: String = List(Option(servicesConfig.baseUrl("sdes")), sdesLocation, Some("notification"), Some("fileready")).flatten.mkString("/")
+  override val sdesAuthorizationToken: String = servicesConfig.getString("sdes.client-id")
+  override val sdesInformationType = servicesConfig.getString("sdes.information-type")
+  override val sdesRecipientOrSender = servicesConfig.getString("sdes.recipient-or-sender")
+  override val sdesChecksumAlgorithm: Algorithm = Algorithm(config.get[String]("sdes.checksum-algorithm"))
 
   def getString(key: String): String =
     config.getOptional[String](key).filter(!_.isBlank).getOrElse(throwConfigNotFoundError(key))

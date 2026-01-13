@@ -168,7 +168,7 @@ class UploadProgressTracker @Inject()(
                           recipientOrSender = Some("ngr-property-linking"),
                           name = ref,
                           location = Some(uploadedFile.downloadUrl),
-                          checksum = Checksum("SHA-256", value = checksum),
+                          Checksum(appConfig.sdesChecksumAlgorithm, checksum),
                           size = presignedDownloadUrl.contentLength.toInt,
                           properties = List.empty
                         )

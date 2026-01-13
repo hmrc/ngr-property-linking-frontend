@@ -53,7 +53,7 @@ object Algorithm {
   }
 }
 case class Checksum(
-                     algorithm: String,
+                     algorithm: Algorithm,
                      value: String
                    )
 

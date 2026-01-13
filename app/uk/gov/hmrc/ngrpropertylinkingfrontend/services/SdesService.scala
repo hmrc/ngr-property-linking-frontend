@@ -36,9 +36,8 @@ class SdesService @Inject() (
                               auditService: AuditingService,
                               ngrLogger: NGRLogger
                             )(implicit executionContext: ExecutionContext, appConfig: AppConfig) {
-  
+
   def processCallback(sdesCallback: SdesCallback)(implicit hc: HeaderCarrier, request: Request[_]): Future[Unit] = {
-    println(Console.GREEN + "processCallback" + Console.RESET)
     val optUrl = sdesCallback.getPropertyValue(locationKey)
     val optAttachmentId = sdesCallback.getPropertyValue(attachmentReferenceKey)
     val optMimeType = sdesCallback.getPropertyValue(mimeTypeKey)
@@ -54,7 +53,6 @@ class SdesService @Inject() (
     (optUrl, optAttachmentId, optMimeType, optNrSubmissionId, sdesCallback.checksum, sdesCallback.failureReason) match {
       case (Some(url), Some(attachmentId), Some(mimeType), Some(nrSubmissionId), Some(checksum), None)
         if sdesCallback.notification == SdesService.fileReceived =>
-
         val payload = SdesFileReturn(
           attachmentUrl = url,
           attachmentId = attachmentId,
@@ -62,53 +60,32 @@ class SdesService @Inject() (
           attachmentContentType = mimeType,
           nrSubmissionId = nrSubmissionId
         )
-
-        println(Console.MAGENTA_B + s"[SdesService] Received SDES fileReceived callback for attachment $attachmentId" + Console.RESET)
         Future.successful(ngrLogger.info(s"[SdesService] Received SDES fileReceived callback for attachment $attachmentId"))
-      //          auditService.audit(SdesCallbackSuccessAudit(sdesCallback, payload.attachmentUrl))
-
-
       case (Some(_), Some(attachmentId), Some(_), Some(_), Some(_), None) =>
         if (sdesCallback.notification != SdesService.fileProcessed) {
-          //          pagerduty(
-          //            PagerDutyKeys.UNEXPECTED_SDES_CALLBACK_STATUS,
-          //            Some(s"[SdesService] Expected SDES callback status FileProcessed for $attachmentId, but was ${sdesCallback.notification}")
-          //          )
         }
         Future.successful(
           ngrLogger.info(
             s"[SdesService] Not sending attachment NRS payload for $attachmentId. SDES notification type was ${sdesCallback.notification}"
           )
-          //auditService.audit(SdesCallbackNotSentToNrsAudit(sdesCallback))
         )
       case (_, Some(attachmentId), _, _, _, Some(failureReason)) =>
-        //        pagerduty(
-        //          PagerDutyKeys.SDES_CALLBACK_FAILED,
-        //          Some(s"[SdesService] Not sending attachment NRS payload as callback for $attachmentId failed with reason: $failureReason"))
         Future.successful(
           ngrLogger.info(
             s"[SdesService] Not sending attachment NRS payload as callback for $attachmentId failed with reason: $failureReason"
           )
-          //auditService.audit(SdesCallbackFailureAudit(sdesCallback))
         )
       case (Some(_), Some(_), Some(_), None, Some(_), _) =>
         Future.successful(
           ngrLogger.info(
             s"[SdesService] Not sending attachment NRS payload as NRS failed for the Registration Submission"
           )
-          //          pagerduty(
-          //            PagerDutyKeys.SDES_NRS_SUBMISSION_ID_MISSING,
-          //            Some("[SdesService] Not sending attachment NRS payload as NRS failed for the Registration Submission")
-          //          )
         )
       case _ =>
         Future.successful(
           ngrLogger.info(
             s"[SdesService] Could not send attachment NRS payload due to missing data in the callback"
           )
-          //          pagerduty(
-          //            PagerDutyKeys.INVALID_SDES_PAYLOAD_RECEIVED,
-          //            Some("[SdesService] Could not send attachment NRS payload due to missing data in the callback"))
         )
     }
   }

@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
+import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.Json
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReadsHttpResponse, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReadsHttpResponse, HttpResponse, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.SdesNotificationHttpParser.*
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,13 +35,22 @@ class SdesConnector @Inject() (
                                 httpClient: HttpClientV2,
                                 logger: NGRLogger
                               )(implicit ec: ExecutionContext)extends HttpReadsHttpResponse {
-  def notifySdes(ftn: FileTransferNotification)(implicit hc: HeaderCarrier): Future[SdesNotificationResult]  =
+  def sendFileNotification(ftn: FileTransferNotification)(implicit hc: HeaderCarrier): Future[Either[Int, Int]]  =
     httpClient
-      .post(url"${config.sdesNotificationUrl}")
+      .post(url"${config.sdesUrl}")
       .withBody(Json.toJson(ftn)(FileTransferNotification.format))
       .setHeader("x-client-id" -> config.sdesAuthorizationToken)
       .setHeader("Content-Type" -> "application/json")
-      .execute[SdesNotificationResult](SdesNotificationHttpReads, ec)
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case NO_CONTENT =>
+            Right(response.status)
+          case _ =>
+            logger.error(s"Received status [${response.status}] from SDES for correlationId [${ftn.audit.correlationID}]")
+            Left(response.status)
+        }
+      }
 
 }
 

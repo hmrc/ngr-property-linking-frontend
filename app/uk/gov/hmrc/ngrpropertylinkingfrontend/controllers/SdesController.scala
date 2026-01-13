@@ -33,6 +33,8 @@ class SdesController @Inject() (
                                  mcc: MessagesControllerComponents
                                )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
   def sdesCallback: Action[SdesCallback] = Action.async(parse.json[SdesCallback]) { implicit request =>
-    sdesService.processCallback(request.body).map(_ => Accepted)
+    sdesService.processCallback(request.body).map(_ => Accepted).recover { case e =>
+        InternalServerError
+    }
   }
 }

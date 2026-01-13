@@ -19,6 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.mocks
 import play.api.Configuration
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.features.Features
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes._
 
 class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
   override val appName: String = "ngr-login-register-frontend"
@@ -47,10 +48,10 @@ class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
 
   override val internalAuthService: String = "internalAuthService"
   override val internalAuthToken: String = "test-internal-auth-token"
-  override val sdesUrl: String = "test-location"
-  override val sdesAuthorizationToken: String = "test-client-id"
-  override val sdesNotificationUrl: String = "test-client-id"
-  override val sdesInformationType: String = "test-client-id"
-  override val sdesRecipientOrSender: String = "test-client-id"
+  override val sdesUrl: String = "notification/fileready"
+  override val sdesAuthorizationToken: String = "client-id"
+  override val sdesInformationType: String  = "cbc-report"
+  override val sdesRecipientOrSender: String = ("cbc-reporting")
+  override val sdesChecksumAlgorithm: Algorithm = MD5
 }
 

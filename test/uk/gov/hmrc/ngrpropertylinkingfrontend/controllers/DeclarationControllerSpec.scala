@@ -19,16 +19,15 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.shouldBe
-import play.api.http.Status.{ACCEPTED, CREATED, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
+import play.api.http.Status.*
 import play.api.test.DefaultAwaitTimeout
 import play.api.test.Helpers.{await, contentAsString, redirectLocation, status}
-import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.ngrpropertylinkingfrontend.config.{AppConfig, FrontendAppConfig}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{ControllerSpecSupport, TestData}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, PropertyLinkingUserAnswers}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.ControllerSpecSupport
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.DeclarationView
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes._
 
 import scala.concurrent.Future
 
@@ -69,7 +68,7 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
           recipientOrSender = Some("SRN-123456"),
           name = "test-file.txt",
           location = Some("object-store://bucket/path/test-file.txt"),
-          checksum = Checksum(algorithm = "SHA-256", value = "0cc175b9c0f1b6a831c399e269772661"),
+          checksum = Checksum(algorithm = MD5, value = "0cc175b9c0f1b6a831c399e269772661"),
           size = 1234,
           properties = List(
             Property("key1", "value1"),
@@ -79,6 +78,9 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
         )
         when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty, upscanObjectStoreFile = objectFile))))
         when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty))))
+        when(
+          mockSdesConnector.sendFileNotification(any[FileTransferNotification])(any[HeaderCarrier])
+        ).thenReturn(Future.successful(Right(NO_CONTENT)))
         when(mockNgrConnector.upsertPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(HttpResponse(CREATED, "Created Successfully")))
         when(mockNgrNotifyConnector.postProperty(any())(any())).thenReturn(Future.successful(Right(HttpResponse(ACCEPTED, "Created Successfully"))))
         val result = controller().accept()(authenticatedFakeRequest)

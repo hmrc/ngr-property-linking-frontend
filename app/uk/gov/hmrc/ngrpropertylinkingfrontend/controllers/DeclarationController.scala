@@ -26,7 +26,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.AuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
-import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.{AuditingService, SdesService}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.UniqueIdGenerator
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.DeclarationView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -71,26 +71,18 @@ class DeclarationController @Inject()(view: DeclarationView,
         objectStoreFile <- propertyLinkingRepo.findByCredId(request.credId).map(values => values.map(value => value.upscanObjectStoreFile.get))
         uploadUpscanFileToSdes <-
           println(Console.MAGENTA + "About to send to SDES" + Console.RESET)
-          sdesConnector.notifySdes(
+          sdesConnector.sendFileNotification(
             ftn =
               FileTransferNotification(
                 informationType = appConfig.sdesInformationType,
                 file = objectStoreFile.get,
-                audit = Audit(correlationID = "1")
+                audit = Audit(correlationID = "1cf87d67-42d3-4037-8886-720d8c28003d")
               )
           ).map {
-            case res: SdesNotificationSuccess =>
-              println(Console.GREEN_B + s"[SdesService][notifySdes] SDES notification sent for $ref" + Console.RESET)
-              logger.info(s"[SdesService][notifySdes] SDES notification sent for $ref")
-              res
-            case res @ SdesNotificationFailure(status, body) =>
-              println(Console.RED + s"[SdesService][notifySdes] SDES notification failed with status: $status and body: $body" + Console.RESET)
-              logger.error(s"[SdesService][notifySdes] SDES notification failed with status: $status and body: $body")
-              res
-            case res @ SdesNotificationUnexpectedFailure(status, body) =>
-              println(Console.RED + s"[SdesService][notifySdes] SDES notification failed with an unexpected status: $status and body: $body" + Console.RESET)
-              logger.error(s"[SdesService][notifySdes] SDES notification failed with an unexpected status: $status and body: $body")
-              res
+            case Right(status) => Right(status)
+            case Left(errorStatus) =>
+              logger.error(s"Failed to send file with conversation Id [${}] to SDES. Got error status: $errorStatus")
+              Left(errorStatus)
           }
         ngrConnectorResponse <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
         ngrNotifyConnectorResponse <- ngrNotifyConnector.postProperty(userAnswers)

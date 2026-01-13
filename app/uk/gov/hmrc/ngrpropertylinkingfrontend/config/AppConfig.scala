@@ -19,6 +19,7 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.config
 import play.api.Configuration
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.features.Features
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
 
 import javax.inject.{Inject, Singleton}
 
@@ -43,6 +44,13 @@ trait AppConfig {
   val ngrNotify: String
   val timeout: Int
   val countdown: Int
+  val internalAuthService: String
+  val internalAuthToken: String
+  val sdesUrl: String
+  val sdesAuthorizationToken: String
+  val sdesNotificationUrl: String
+  val sdesInformationType: String
+  val sdesRecipientOrSender: String
 }
 
 @Singleton
@@ -66,6 +74,25 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
   override val ngrNotify: String = servicesConfig.baseUrl("ngr-notify")
   override val timeout: Int   = config.get[Int]("timeout-dialog.timeout")
   override val countdown: Int = config.get[Int]("timeout-dialog.countdown")
+  override val internalAuthService: String = servicesConfig.baseUrl("internal-auth")
+  override val internalAuthToken: String = config.get[String]("internal-auth.token")
+
+  override val sdesAuthorizationToken: String = servicesConfig.getString("microservice.services.sdes.client-id")
+  override val sdesInformationType = servicesConfig.getString("microservice.services.sdes.informationType")
+  override val sdesRecipientOrSender = servicesConfig.getString("microservice.services.sdes.recipientOrSender")
+  override val sdesUrl: String = servicesConfig.baseUrl("sdes")
+
+  lazy val ngrPropertyLinkingUrl: String = servicesConfig.baseUrl("ngr-property-linking-frontend")
+
+  override val sdesNotificationUrl: String = {
+    val endpoint = "/notification/fileready"
+
+    if (servicesConfig.getBoolean("sdes.stubNotification")) {
+      s"$ngrPropertyLinkingUrl/ngr-property-linking-frontend/test-only$endpoint"
+    } else {
+      sdesUrl + endpoint
+    }
+  }
 
 
   def getString(key: String): String =
@@ -76,5 +103,4 @@ class FrontendAppConfig @Inject()(config: Configuration, servicesConfig: Service
 
   lazy val dashboardHost: String = getString("microservice.services.ngr-dashboard-frontend.host")
   lazy val propertyLinkingHost: String = getString("microservice.services.ngr-property-linking-frontend.host")
-
 }

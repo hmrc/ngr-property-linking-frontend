@@ -22,7 +22,8 @@ import play.api.mvc.*
 import uk.gov.hmrc.auth.core.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAction, RegistrationAndPropertyLinkCheckAction}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.{FindAPropertyConnector, NGRConnector, NgrNotifyConnector, UpscanConnector}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.{FindAPropertyConnector, NGRConnector, NgrNotifyConnector, SdesConnector, UpscanConnector}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.AuthenticatedUserRequest
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.{FileUploadRepo, FindAPropertyRepo, PropertyLinkingRepo}
@@ -37,10 +38,12 @@ trait ControllerSpecSupport extends TestSupport {
   val mockFindAPropertyConnector: FindAPropertyConnector = mock[FindAPropertyConnector]
   val mockUpscanConnector: UpscanConnector = mock[UpscanConnector]
   val mockAuditingService: AuditingService = mock[AuditingService]
+  val mockNgrLogger: NGRLogger = mock[NGRLogger]
   mockRequest()
   mockMandatoryCheckRequest()
   val mockUploadProgressTracker: UploadProgressTracker = mock[UploadProgressTracker]
   val mockNgrConnector: NGRConnector = mock[NGRConnector]
+  val mockSdesConnector: SdesConnector = mock[SdesConnector]
   val mockNgrNotifyConnector: NgrNotifyConnector = mock[NgrNotifyConnector]
   val sortingVMVPropertiesService: SortingVMVPropertiesService = inject[SortingVMVPropertiesService]
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()

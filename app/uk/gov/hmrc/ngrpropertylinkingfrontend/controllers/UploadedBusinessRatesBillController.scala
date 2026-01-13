@@ -20,13 +20,13 @@ import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction, RegistrationAction}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.actions.{AuthRetrievals, RegistrationAndPropertyLinkCheckAction}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.NGRSummaryListRow.summarise
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadStatus.UploadedSuccessfully
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{UploadId, UploadStatus}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{Reference, UploadId, UploadStatus}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{Link, NGRSummaryListRow}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
 import uk.gov.hmrc.ngrpropertylinkingfrontend.services.UploadProgressTracker
@@ -57,15 +57,16 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
       }
       yield {
         uploadResult match
-          case Some(UploadStatus.UploadedSuccessfully(evidenceDocument, mimeType, downloadUrl, size)) =>
+          case Some(UploadStatus.UploadedSuccessfully(evidenceDocument, mimeType, downloadUrl, size, checksum)) =>
             val downloadUrlString: String = downloadUrl.toString
             propertyLinkingRepo.insertEvidenceDocument(request.credId, evidenceDocument, downloadUrlString, uploadId.value)
+            uploadProgressTracker.transferToObjectStore(credId, downloadUrl, mimeType, checksum, evidenceDocument, fileReference = Reference(uploadId.value), uploadResult.get, appConfig)
             Ok(uploadedBusinessRateBillView(
               createDefaultNavBar,
               buildSuccessSummaryList(evidenceDocument, downloadUrlString),
               address,
               uploadId,
-              UploadStatus.UploadedSuccessfully(evidenceDocument, mimeType, downloadUrl, size),
+              UploadStatus.UploadedSuccessfully(evidenceDocument, mimeType, downloadUrl, size, checksum),
               evidenceType))
           case Some(UploadStatus.InProgress) =>
             Ok(uploadedBusinessRateBillView(

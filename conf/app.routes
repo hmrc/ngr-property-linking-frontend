@@ -40,3 +40,4 @@ POST       /declaration                         uk.gov.hmrc.ngrpropertylinkingfr
 
 GET        /refresh                             uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.KeepAliveController.keepAlive()
 
+POST       /sdes-notification-callback          uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.SdesController.sdesCallback

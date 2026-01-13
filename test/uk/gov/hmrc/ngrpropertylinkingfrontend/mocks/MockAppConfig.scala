@@ -44,5 +44,13 @@ class MockAppConfig(val runModeConfiguration: Configuration) extends AppConfig {
 
   override val timeout: Int = 900
   override val countdown: Int = 120
+
+  override val internalAuthService: String = "internalAuthService"
+  override val internalAuthToken: String = "test-internal-auth-token"
+  override val sdesUrl: String = "test-location"
+  override val sdesAuthorizationToken: String = "test-client-id"
+  override val sdesNotificationUrl: String = "test-client-id"
+  override val sdesInformationType: String = "test-client-id"
+  override val sdesRecipientOrSender: String = "test-client-id"
 }
 

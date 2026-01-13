@@ -30,6 +30,10 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.UniqueIdGenerator
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.DeclarationView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.SdesConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.FileTransferNotification
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,8 +44,10 @@ class DeclarationController @Inject()(view: DeclarationView,
                                       mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                       propertyLinkingRepo: PropertyLinkingRepo,
                                       ngrConnector: NGRConnector,
+                                      sdesConnector: SdesConnector,
                                       ngrNotifyConnector: NgrNotifyConnector,
                                       auditingService: AuditingService,
+                                      logger: NGRLogger,
                                       mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
@@ -55,11 +61,37 @@ class DeclarationController @Inject()(view: DeclarationView,
         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.DeclarationController.show.url)
       val ref = UniqueIdGenerator.generateId
       for {
-        maybeAnswers <- propertyLinkingRepo.insertRequestSentReference(request.credId, ref)
+        maybeAnswers <-
+          println(Console.MAGENTA + "Upload reference" + Console.RESET)
+          propertyLinkingRepo.insertRequestSentReference(request.credId, ref)
         userAnswers <- maybeAnswers match {
           case Some(result) => Future.successful(result)
           case None => Future.failed(new Exception(s"Could not save reference for credId: ${request.credId.value}"))
         }
+        objectStoreFile <- propertyLinkingRepo.findByCredId(request.credId).map(values => values.map(value => value.upscanObjectStoreFile.get))
+//        uploadUpscanFileToSdes <-
+//          println(Console.MAGENTA + "About to send to SDES" + Console.RESET)
+//          sdesConnector.notifySdes(
+//            ftn =
+//              FileTransferNotification(
+//                informationType = appConfig.sdesInformationType,
+//                file = objectStoreFile.get,
+//                audit = Audit(correlationID = "1")
+//              )
+//          ).map {
+//            case res: SdesNotificationSuccess =>
+//              println(Console.GREEN_B + s"[SdesService][notifySdes] SDES notification sent for $ref" + Console.RESET)
+//              logger.info(s"[SdesService][notifySdes] SDES notification sent for $ref")
+//              res
+//            case res@SdesNotificationFailure(status, body) =>
+//              println(Console.RED + s"[SdesService][notifySdes] SDES notification failed with status: $status and body: $body" + Console.RESET)
+//              logger.error(s"[SdesService][notifySdes] SDES notification failed with status: $status and body: $body")
+//              res
+//            case res @ SdesNotificationUnexpectedFailure(status, body) =>
+//              println(Console.RED + s"[SdesService][notifySdes] SDES notification failed with an unexpected status: $status and body: $body" + Console.RESET)
+//              logger.error(s"[SdesService][notifySdes] SDES notification failed with an unexpected status: $status and body: $body")
+//              res
+//          }
         ngrConnectorResponse <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
         ngrNotifyConnectorResponse <- ngrNotifyConnector.postProperty(userAnswers)
 

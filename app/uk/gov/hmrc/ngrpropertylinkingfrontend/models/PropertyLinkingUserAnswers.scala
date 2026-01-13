@@ -19,11 +19,13 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.models
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.VMVProperty
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes._
+import play.api.mvc.{Action, ControllerComponents}
 
 case class PropertyLinkingUserAnswers (credId: CredId,
                                        vmvProperty: VMVProperty,
                                        currentRatepayer: Option[CurrentRatepayer] = None,
-                                       //TODO make boolean?
+                                       upscanObjectStoreFile: Option[File] = None, 
                                        businessRatesBill: Option[String] = None,
                                        connectionToProperty: Option[String] = None,
                                        requestSentReference: Option[String] = None,

@@ -80,7 +80,7 @@ class PropertyLinkingRepoSpec extends TestSupport with TestData
         isSuccessful shouldBe true
         await(repository.insertConnectionToProperty(credId = credId, connectionToProperty = "Owner"))
         val actual: PropertyLinkingUserAnswers = await(repository.findByCredId(credId)).get
-        val expected = PropertyLinkingUserAnswers(credId, testVmvProperty, None, None, Some("Owner"))
+        val expected = PropertyLinkingUserAnswers(credId, testVmvProperty, None, None,None, Some("Owner"))
         actual shouldBe expected
       }
     }

@@ -28,6 +28,7 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.{ControllerSpecSupport, Te
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{ErrorResponse, PropertyLinkingUserAnswers}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.DeclarationView
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes._
 
 import scala.concurrent.Future
 
@@ -39,8 +40,10 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
     mockMandatoryCheck,
     mockPropertyLinkingRepo,
     mockNgrConnector,
+    mockSdesConnector,
     mockNgrNotifyConnector,
     mockAuditingService,
+    mockNgrLogger,
     mcc
   )
 
@@ -51,6 +54,7 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
 
   "DeclarationController" must {
     "Return OK and the correct view" in {
+      when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty))))
       val result = controller().show()(authenticatedFakeRequest)
       status(result) mustBe OK
       val content = contentAsString(result)
@@ -60,6 +64,20 @@ class DeclarationControllerSpec extends ControllerSpecSupport with DefaultAwaitT
 
     "method accept" must {
       "Return OK and the correct view" in {
+        
+        val objectFile: Option[File] = Some(File(
+          recipientOrSender = Some("SRN-123456"),
+          name = "test-file.txt",
+          location = Some("object-store://bucket/path/test-file.txt"),
+          checksum = Checksum(algorithm = "SHA-256", value = "0cc175b9c0f1b6a831c399e269772661"),
+          size = 1234,
+          properties = List(
+            Property("key1", "value1"),
+            Property("key2", "value2")
+          )
+        )
+        )
+        when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = credId,vmvProperty = testVmvProperty, upscanObjectStoreFile = objectFile))))
         when(mockPropertyLinkingRepo.insertRequestSentReference(any(), any())).thenReturn(Future.successful(Some(PropertyLinkingUserAnswers(credId = CredId(null), vmvProperty = testVmvProperty))))
         when(mockNgrConnector.upsertPropertyLinkingUserAnswers(any())(any())).thenReturn(Future.successful(HttpResponse(CREATED, "Created Successfully")))
         when(mockNgrNotifyConnector.postProperty(any())(any())).thenReturn(Future.successful(Right(HttpResponse(ACCEPTED, "Created Successfully"))))

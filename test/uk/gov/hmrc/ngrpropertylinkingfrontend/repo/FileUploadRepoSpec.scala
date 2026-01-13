@@ -28,6 +28,7 @@ class FileUploadRepoSpec extends TestSupport with TestData {
   "Serialization and deserialization of UploadDetails" should {
     
     val createdAt = Instant.parse("2025-09-10T12:43:58.342Z")
+    val checksum = "396f101dd52e8b2ace0dcf5ed09b1d1f030e608938510ce46e7a5c7a4e775100"
 
     "serialize and deserialize InProgress status" in {
 
@@ -56,7 +57,7 @@ class FileUploadRepoSpec extends TestSupport with TestData {
         ObjectId.get(),
         UploadId.generate(),
         Reference("ABC"),
-        UploadStatus.UploadedSuccessfully("foo.txt", "text/plain", url"http:localhost:8080", size = None),
+        UploadStatus.UploadedSuccessfully("foo.txt", "text/plain", url"http:localhost:8080", size = None, checksum),
         createdAt
       )
 
@@ -71,7 +72,7 @@ class FileUploadRepoSpec extends TestSupport with TestData {
         ObjectId.get(),
         UploadId.generate(),
         Reference("ABC"),
-        UploadStatus.UploadedSuccessfully("foo.txt", "text/plain", url"http:localhost:8080", size = Some(123456)),
+        UploadStatus.UploadedSuccessfully("foo.txt", "text/plain", url"http:localhost:8080", size = Some(123456), checksum),
         createdAt
       )
 

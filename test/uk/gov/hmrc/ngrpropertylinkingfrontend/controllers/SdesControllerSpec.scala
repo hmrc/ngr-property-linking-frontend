@@ -58,7 +58,6 @@ final class SdesControllerSpec
     new GuiceApplicationBuilder()
       .configure(
         "play.http.filters" -> "play.api.http.NoHttpFilters",
-        "auditing.enabled"  -> false,
         "metrics.enabled"   -> false
       )
       .overrides(

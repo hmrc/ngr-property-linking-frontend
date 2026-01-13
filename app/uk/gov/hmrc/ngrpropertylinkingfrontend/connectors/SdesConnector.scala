@@ -51,7 +51,6 @@ class SdesConnector @Inject() (
             Left(response.status)
         }
       }
-
 }
 
 

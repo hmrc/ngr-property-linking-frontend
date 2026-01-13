@@ -16,29 +16,28 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.controllers
 
+import org.mockito.{ArgumentMatchers, Mockito}
+import org.mockito.Mockito.{never, reset, times, verify}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.OptionValues.*
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.OptionValues.*
-import org.scalatest.BeforeAndAfterEach
-import org.mockito.Mockito
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{never, reset, times, verify}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.test.Helpers.*
-import play.api.test.FakeRequest
 import play.api.libs.json.{Json, OFormat}
-
-import scala.concurrent.Future
-import java.time.LocalDateTime
-import uk.gov.hmrc.http.HeaderCarrier
 import play.api.mvc.{Request, RequestHeader}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.*
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SdesService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.{Property, SdesCallback}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.SdesService
+
+import java.time.LocalDateTime
+import scala.concurrent.Future
 
 final class SdesControllerSpec
   extends AnyFreeSpec

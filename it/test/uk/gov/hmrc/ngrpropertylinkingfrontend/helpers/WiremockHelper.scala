@@ -16,18 +16,15 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.helpers
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.client.{MappingBuilder, ResponseDefinitionBuilder, WireMock}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.http.{HttpHeader, HttpHeaders, RequestMethod}
-import com.github.tomakehurst.wiremock.{client, WireMockServer}
-import WireMockHelper.{wireMockPort, MappingBuilderExt, ResponseDefinitionBuilderExt}
+import com.github.tomakehurst.wiremock.{WireMockServer, client}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.WireMockHelper.{MappingBuilderExt, ResponseDefinitionBuilderExt, wireMockPort}
 
 import java.net.ServerSocket
-import scala.jdk.CollectionConverters._
-import scala.util.Using
-
-import java.net.ServerSocket
+import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 trait WireMockHelper {

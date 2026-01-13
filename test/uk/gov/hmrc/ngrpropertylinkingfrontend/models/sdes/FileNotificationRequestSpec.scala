@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes
 
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
-import play.api.libs.json._
-
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.Algorithm
+import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.*
 
 
 
@@ -41,10 +39,10 @@ class FileNotificationRequestSpec extends AnyWordSpec with Matchers {
         Algorithm("SHA3")
       }
       intercept[IllegalArgumentException] {
-        Algorithm("sha-256") // wrong case compared to expected "SHA-256"
+        Algorithm("sha-256")
       }
       intercept[IllegalArgumentException] {
-        Algorithm("MD5")     // wrong case compared to expected "md5"
+        Algorithm("MD5")
       }
       intercept[IllegalArgumentException] {
         Algorithm("")

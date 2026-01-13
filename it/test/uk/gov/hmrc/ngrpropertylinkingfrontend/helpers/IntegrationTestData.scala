@@ -18,9 +18,8 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.helpers
 
 
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.Nino
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.{AgentStatus, TRNReferenceNumber, UserType}
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.NINO
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 
 import java.time.LocalDate
 

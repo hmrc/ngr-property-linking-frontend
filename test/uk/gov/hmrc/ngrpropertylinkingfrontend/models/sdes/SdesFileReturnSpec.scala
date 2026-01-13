@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes
 
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import play.api.libs.json._
-import org.scalacheck.{Arbitrary, Gen}
+import play.api.libs.json.*
 
 class SdesFileReturnSpec
   extends AnyFreeSpec
@@ -28,7 +28,7 @@ class SdesFileReturnSpec
     with ScalaCheckPropertyChecks {
 
   // Bring the format into scope from the companion
-  import SdesFileReturn._
+  import SdesFileReturn.*
 
   // ---------- Arbitrary generator for property-based tests ----------
   // Keep it realistic: non-empty strings, plausible content types, hex-ish checksum

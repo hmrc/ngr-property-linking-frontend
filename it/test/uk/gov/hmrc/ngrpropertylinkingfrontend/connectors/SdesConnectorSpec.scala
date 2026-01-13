@@ -29,8 +29,8 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.SdesConnector
 import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.WireMockHelper
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.PropertyExtractor.{formBundleKey, locationKey, mimeTypeKey, prefixedFormBundleKey}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.PropertyExtractor.{formBundleKey, locationKey, mimeTypeKey, prefixedFormBundleKey}
 
 import java.time.LocalDateTime
 import scala.concurrent.Future

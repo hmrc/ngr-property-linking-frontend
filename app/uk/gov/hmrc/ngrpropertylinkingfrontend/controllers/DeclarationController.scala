@@ -62,7 +62,6 @@ class DeclarationController @Inject()(view: DeclarationView,
       val ref = UniqueIdGenerator.generateId
       for {
         maybeAnswers <-
-          println(Console.MAGENTA + "Upload reference" + Console.RESET)
           propertyLinkingRepo.insertRequestSentReference(request.credId, ref)
         userAnswers <- maybeAnswers match {
           case Some(result) => Future.successful(result)
@@ -70,7 +69,6 @@ class DeclarationController @Inject()(view: DeclarationView,
         }
         objectStoreFile <- propertyLinkingRepo.findByCredId(request.credId).map(values => values.map(value => value.upscanObjectStoreFile.get))
         uploadUpscanFileToSdes <-
-          println(Console.MAGENTA + "About to send to SDES" + Console.RESET)
           sdesConnector.sendFileNotification(
             ftn =
               FileTransferNotification(

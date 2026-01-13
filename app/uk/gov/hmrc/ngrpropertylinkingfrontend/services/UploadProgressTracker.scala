@@ -152,7 +152,6 @@ class UploadProgressTracker @Inject()(
                     uploadTimestamp = ZonedDateTime.now(),
                     fileSize = presignedDownloadUrl.contentLength.toInt
                   )
-                println(Console.CYAN + uploadedFile + Console.RESET)
                 Future.successful(
                   for {
                     referenceNumberInsert <- propertyLinkingRepo.insertReferenceNumber(credId, ref)
@@ -161,7 +160,6 @@ class UploadProgressTracker @Inject()(
                       case None => Future.failed(new Exception(s"Could not save reference for credId: ${credId.value}"))
                     }
                     uploadFile <-
-                      println(Console.CYAN + "Uploading object store file to mongo" + Console.RESET)
                       propertyLinkingRepo.insertUploadedFile(
                         credId,
                         File(
@@ -176,7 +174,6 @@ class UploadProgressTracker @Inject()(
                     mongoCheck <-   propertyLinkingRepo.findByCredId(credId).map(values => values.map(value => value.upscanObjectStoreFile.get))
                     success <- referenceNumberInsert match {
                       case Some(result) =>
-                        println(Console.RED + "MONGO:" + mongoCheck + Console.RESET)
                         Future.successful(result)
                       case None => Future.failed(new Exception(s"Could not save reference for credId: ${credId.value}"))
                     }

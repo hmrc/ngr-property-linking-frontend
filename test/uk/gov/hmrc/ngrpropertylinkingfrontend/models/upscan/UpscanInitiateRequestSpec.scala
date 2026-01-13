@@ -24,7 +24,6 @@ class UpscanInitiateRequestSpec extends TestSupport{
   "UpscanInitiateRequest" should {
 
     "serialize to json" in {
-      println(Json.toJson(upScanInitiateRequestModel))
       Json.toJson(upScanInitiateRequestModel) mustBe upscanInitiateRequestJson
     }
 

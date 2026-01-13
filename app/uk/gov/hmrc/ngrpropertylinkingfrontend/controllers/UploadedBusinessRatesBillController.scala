@@ -60,7 +60,7 @@ class UploadedBusinessRatesBillController @Inject()(uploadProgressTracker: Uploa
           case Some(UploadStatus.UploadedSuccessfully(evidenceDocument, mimeType, downloadUrl, size, checksum)) =>
             val downloadUrlString: String = downloadUrl.toString
             propertyLinkingRepo.insertEvidenceDocument(request.credId, evidenceDocument, downloadUrlString, uploadId.value)
-            uploadProgressTracker.transferToObjectStore(credId, downloadUrl, mimeType, checksum, evidenceDocument, fileReference = Reference(uploadId.value), uploadResult.get, appConfig)
+            uploadProgressTracker.transferToObjectStore(request.credId, downloadUrl, mimeType, checksum, evidenceDocument, fileReference = Reference(uploadId.value), uploadResult.get, appConfig)
             Ok(uploadedBusinessRateBillView(
               createDefaultNavBar,
               buildSuccessSummaryList(evidenceDocument, downloadUrlString),

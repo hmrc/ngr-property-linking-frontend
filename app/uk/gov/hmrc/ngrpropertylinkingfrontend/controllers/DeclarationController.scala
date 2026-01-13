@@ -69,29 +69,29 @@ class DeclarationController @Inject()(view: DeclarationView,
           case None => Future.failed(new Exception(s"Could not save reference for credId: ${request.credId.value}"))
         }
         objectStoreFile <- propertyLinkingRepo.findByCredId(request.credId).map(values => values.map(value => value.upscanObjectStoreFile.get))
-//        uploadUpscanFileToSdes <-
-//          println(Console.MAGENTA + "About to send to SDES" + Console.RESET)
-//          sdesConnector.notifySdes(
-//            ftn =
-//              FileTransferNotification(
-//                informationType = appConfig.sdesInformationType,
-//                file = objectStoreFile.get,
-//                audit = Audit(correlationID = "1")
-//              )
-//          ).map {
-//            case res: SdesNotificationSuccess =>
-//              println(Console.GREEN_B + s"[SdesService][notifySdes] SDES notification sent for $ref" + Console.RESET)
-//              logger.info(s"[SdesService][notifySdes] SDES notification sent for $ref")
-//              res
-//            case res@SdesNotificationFailure(status, body) =>
-//              println(Console.RED + s"[SdesService][notifySdes] SDES notification failed with status: $status and body: $body" + Console.RESET)
-//              logger.error(s"[SdesService][notifySdes] SDES notification failed with status: $status and body: $body")
-//              res
-//            case res @ SdesNotificationUnexpectedFailure(status, body) =>
-//              println(Console.RED + s"[SdesService][notifySdes] SDES notification failed with an unexpected status: $status and body: $body" + Console.RESET)
-//              logger.error(s"[SdesService][notifySdes] SDES notification failed with an unexpected status: $status and body: $body")
-//              res
-//          }
+        uploadUpscanFileToSdes <-
+          println(Console.MAGENTA + "About to send to SDES" + Console.RESET)
+          sdesConnector.notifySdes(
+            ftn =
+              FileTransferNotification(
+                informationType = appConfig.sdesInformationType,
+                file = objectStoreFile.get,
+                audit = Audit(correlationID = "1")
+              )
+          ).map {
+            case res: SdesNotificationSuccess =>
+              println(Console.GREEN_B + s"[SdesService][notifySdes] SDES notification sent for $ref" + Console.RESET)
+              logger.info(s"[SdesService][notifySdes] SDES notification sent for $ref")
+              res
+            case res @ SdesNotificationFailure(status, body) =>
+              println(Console.RED + s"[SdesService][notifySdes] SDES notification failed with status: $status and body: $body" + Console.RESET)
+              logger.error(s"[SdesService][notifySdes] SDES notification failed with status: $status and body: $body")
+              res
+            case res @ SdesNotificationUnexpectedFailure(status, body) =>
+              println(Console.RED + s"[SdesService][notifySdes] SDES notification failed with an unexpected status: $status and body: $body" + Console.RESET)
+              logger.error(s"[SdesService][notifySdes] SDES notification failed with an unexpected status: $status and body: $body")
+              res
+          }
         ngrConnectorResponse <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
         ngrNotifyConnectorResponse <- ngrNotifyConnector.postProperty(userAnswers)
 

@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.connectors
 
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, NO_CONTENT}
 import play.api.libs.json.Json
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException, HttpReadsHttpResponse, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReadsHttpResponse, StringContextOps}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.AppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
@@ -40,11 +39,8 @@ class SdesConnector @Inject() (
     httpClient
       .post(url"${config.sdesNotificationUrl}")
       .withBody(Json.toJson(ftn)(FileTransferNotification.format))
-      .setHeader(
-        "Csrf-Token" -> "nocheck",
-        "x-client-id" -> config.sdesAuthorizationToken,
-        "Content-Type" -> "application/json"
-      )
+      .setHeader("x-client-id" -> config.sdesAuthorizationToken)
+      .setHeader("Content-Type" -> "application/json")
       .execute[SdesNotificationResult](SdesNotificationHttpReads, ec)
 
 }

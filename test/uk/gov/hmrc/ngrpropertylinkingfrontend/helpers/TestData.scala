@@ -664,7 +664,7 @@ trait TestData {
   )
 
   val testReference = "testReference"
-  
+
   val testDownloadUrl = "testDownloadUrl"
   val testFileName = "testFileName"
   val testMimeType = "testMimeType"
@@ -686,16 +686,7 @@ trait TestData {
         value = testChecksum
       ),
       size = testSize,
-      properties = List(
-        Property(
-          name = locationKey,
-          value = testDownloadUrl
-        ),
-        Property(
-          name = mimeTypeKey,
-          value = testMimeType
-        )
-      )
+      properties = List()
     ),
     audit = Audit(
       correlationID = testCorrelationid

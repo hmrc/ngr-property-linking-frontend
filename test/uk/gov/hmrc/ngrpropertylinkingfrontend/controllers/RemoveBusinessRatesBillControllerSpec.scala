@@ -65,15 +65,6 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
       content must include("Are you sure you want to remove this file?")
     }
 
-    "show() throws an exception when no CredId in request" in {
-      mockMandatoryCheckRequest(hasCredId = false)
-
-      val exception = intercept[NotFoundException] {
-        await(controller().show()(authenticatedFakeRequest))
-      }
-      exception.getMessage mustBe "CredId not found in RemoveBusinessRatesBillController.show()"
-    }
-
     "show() throws an exception when fields are missing" in {
       mockMandatoryCheckRequest()
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(incompletePropertyLinkingUserAnswers)))
@@ -102,15 +93,6 @@ class RemoveBusinessRatesBillControllerSpec extends ControllerSpecSupport with D
 
       val result = controller().remove()(authenticatedFakeRequest)
       redirectLocation(result) shouldBe Some(routes.UploadBusinessRatesBillController.show(None, None).url)
-    }
-
-    "remove() throws an exception when no CredId in request" in {
-      mockMandatoryCheckRequest(hasCredId = false)
-
-      val exception = intercept[NotFoundException] {
-        await(controller().remove()(authenticatedFakeRequest))
-      }
-      exception.getMessage mustBe "CredId not found in RemoveBusinessRatesBillController.remove()"
     }
 
     "remove() throws an exception when no EvidenceDocumentUploadId is found" in {

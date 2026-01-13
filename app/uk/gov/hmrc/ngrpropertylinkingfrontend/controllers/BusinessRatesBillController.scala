@@ -54,7 +54,7 @@ class BusinessRatesBillController @Inject()(
 
   def show: Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+      propertyLinkingRepo.findByCredId(request.credId).flatMap {
         case Some(property) =>
           val preparedForm = property.businessRatesBill match {
             case None => form
@@ -72,7 +72,7 @@ class BusinessRatesBillController @Inject()(
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+          formWithErrors => propertyLinkingRepo.findByCredId(request.credId).flatMap {
             case Some(property) => Future.successful(BadRequest(businessRatesBillView(
               createDefaultNavBar,
               formWithErrors,
@@ -81,10 +81,10 @@ class BusinessRatesBillController @Inject()(
             case None => throw new NotFoundException("failed to find property from mongo")
           },
           businessRatesBillForm =>
-            auditingService.extendedAudit(BusinessRatesBillAuditModel(request.credId.getOrElse(""), businessRatesBillForm, "upload-business-rates-bill"),
+            auditingService.extendedAudit(BusinessRatesBillAuditModel(request.credId.value, businessRatesBillForm, "upload-business-rates-bill"),
               uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.BusinessRatesBillController.show.url)
             propertyLinkingRepo.insertBusinessRatesBill(
-              credId = CredId(request.credId.getOrElse("")),
+              credId = request.credId,
               businessRatesBill = businessRatesBillForm.radioValue
             )
             if (businessRatesBillForm.radioValue == "Yes") {

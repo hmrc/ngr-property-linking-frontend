@@ -44,7 +44,7 @@ class AddPropertyToYourAccountController @Inject()(
 
   def submit: Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "what-you-need"),
+      auditingService.extendedAudit(AuditModel(request.credId.value, "what-you-need"),
         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.AddPropertyToYourAccountController.show.url)
       Future.successful(Redirect(routes.WhatYouNeedController.show.url))
     }

@@ -129,6 +129,18 @@ class RegistrationAndPropertyLinkCheckActionSpec extends TestSupport with TestDa
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(s"${mockConfig.ngrLoginRegistrationHost}/ngr-login-register-frontend/register")
       }
+      "missing credentials must throw an exception" in {
+        when(
+          mockAuthConnector
+            .authorise[mockAuthAction.RetrievalsType](any(), any())(any(), any())
+        ).thenReturn(Future.successful(None ~ Some(testNino) ~ testConfidenceLevel ~ Some(testEmail) ~ Some(testAffinityGroup) ~ Some(testName)))
+
+        val result = action.invokeBlock(fakeRequest, stubs.successBlock)
+
+        whenReady(result.failed) { e =>
+          e.getMessage mustBe "User credentials are missing"
+        }
+      }
     }
   }
 }

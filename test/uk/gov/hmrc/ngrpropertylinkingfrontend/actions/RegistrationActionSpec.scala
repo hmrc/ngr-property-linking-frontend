@@ -121,6 +121,30 @@ class RegistrationActionSpec extends TestSupport {
         val result = registrationAction.invokeBlock(testRequest, stubs.successBlock)
         status(result) mustBe OK
       }
+      "throw exception for missing credentials" in {
+        when(
+          mockAuthConnector
+            .authorise[mockAuthAction.RetrievalsType](any(), any())(any(), any())
+        )
+          .thenReturn(Future.successful(None ~ Some(testNino) ~ testConfidenceLevel ~ Some(testEmail) ~ Some(testAffinityGroup) ~ Some(testName)))
+
+        when(mockNGRConnector.getRatepayer(any())(any()))
+          .thenReturn(Future.successful(Some(RatepayerRegistrationValuation(credId, Some(testRegistrationModel.copy(isRegistered = Some(true)))))))
+
+
+        val stubs = spy(new Stubs)
+
+
+        val authResult = mockAuthAction.invokeBlock(testRequest, stubs.successBlock)
+        whenReady(authResult.failed){ e =>
+          e.getMessage mustBe "User credentials are missing"
+        }
+
+        val result = registrationAction.invokeBlock(testRequest, stubs.successBlock)
+        whenReady(result.failed) { e =>
+          e.getMessage mustBe "User credentials are missing"
+        }
+      }
     }
   }
 }

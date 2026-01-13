@@ -55,17 +55,16 @@ class AddPropertyRequestSentController @Inject()(view: AddPropertyRequestSentVie
 
   def show: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "dashboard"),
+      auditingService.extendedAudit(AuditModel(request.credId.value, "dashboard"),
         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.AddPropertyRequestSentController.show.url)
       val email: String = request.email.getOrElse(throw new NotFoundException("email not found on account"))
-      val credId = CredId(request.credId.getOrElse(""))
       for {
-        maybeAnswers <- propertyLinkingRepo.findByCredId(credId)
+        maybeAnswers <- propertyLinkingRepo.findByCredId(request.credId)
         userAnswers <- maybeAnswers match {
           case Some(result) => Future.successful(result)
           case None => ngrConnector.getPropertyLinkingUserAnswers().flatMap {
             case Some(answers) => Future.successful(answers)
-            case None => Future.failed(new NotFoundException(s"Could not find property for credId: ${credId.value}"))
+            case None => Future.failed(new NotFoundException(s"Could not find property for credId: ${request.credId.value}"))
           }
         }
         property = userAnswers.vmvProperty

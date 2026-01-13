@@ -40,10 +40,8 @@ class RegistrationActionImpl @Inject()(
 
     authenticate.invokeBlock(request, { implicit authRequest: AuthenticatedUserRequest[A] =>
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(authRequest, authRequest.session)
-
-      val credId = CredId(authRequest.credId.getOrElse(""))
-
-      ngrConnector.getRatepayer(credId).flatMap{ maybeRatepayer =>
+      
+      ngrConnector.getRatepayer(authRequest.credId).flatMap{ maybeRatepayer =>
         val isRegistered = maybeRatepayer
           .flatMap(_.ratepayerRegistration)
           .flatMap(_.isRegistered)

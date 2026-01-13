@@ -72,7 +72,7 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
 
   def show(mode: String): Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+      propertyLinkingRepo.findByCredId(request.credId).flatMap {
         case Some(property) =>
           val preparedForm = property.currentRatepayer match {
             case None => form
@@ -105,23 +105,22 @@ class CurrentRatepayerController @Inject()(currentRatepayerView: CurrentRatepaye
                   formError
             }
             val formWithCorrectedErrors = formWithErrors.copy(errors = correctedFormErrors)
-            propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(throw new NotFoundException("failed to find credId from request")))).flatMap {
+            propertyLinkingRepo.findByCredId(request.credId).flatMap {
               case Some(property) => Future.successful(BadRequest(currentRatepayerView(createDefaultNavBar, formWithCorrectedErrors,
                 buildRadios(formWithCorrectedErrors, ngrRadio(formWithCorrectedErrors)), address = property.vmvProperty.addressFull, mode = mode)))
               case None => throw new NotFoundException("failed to find property from mongo")
             },
           currentRatepayerForm =>
-            auditingService.extendedAudit(CurrentRatepayerAuditModel(request.credId.getOrElse(""), currentRatepayerForm, "business-rates-bill"),
+            auditingService.extendedAudit(CurrentRatepayerAuditModel(request.credId.value, currentRatepayerForm, "business-rates-bill"),
               uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.CurrentRatepayerController.show(mode).url)
             def maybeRatepayerDate: Option[LocalDate] =
               if (currentRatepayerForm.radioValue.equals("After"))
                 currentRatepayerForm.maybeRatepayerDate.map(_.ratepayerDate)
               else
                 None
-
-            val credId = request.credId.getOrElse(throw new NotFoundException("failed to find credId from request"))
+            
             propertyLinkingRepo.insertCurrentRatepayer(
-              credId = CredId(credId),
+              credId = request.credId,
               currentRatepayer = currentRatepayerForm.radioValue.equals("Before"),
               maybeRatepayerDate = currentRatepayerForm.maybeRatepayerDate.map(_.makeString)
             )

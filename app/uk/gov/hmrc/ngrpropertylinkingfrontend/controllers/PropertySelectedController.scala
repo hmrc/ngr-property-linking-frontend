@@ -61,13 +61,13 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
       NGRSummaryListRow(messages("Property Reference"), None, Seq(property.localAuthorityReference), None),
       NGRSummaryListRow(messages("Local Council"), None, Seq("Torbay"), None),
       NGRSummaryListRow(messages("Description"), None, Seq(valuation.descriptionText), None),
-      NGRSummaryListRow(messages("Rateable value"), None, Seq(formatRateableValue(valuation.rateableValue.map(_.longValue).getOrElse(0l))), None),
+      NGRSummaryListRow(messages("Rateable value"), None, Seq(formatRateableValue(valuation.rateableValue.map(_.longValue).getOrElse(0L))), None),
     ).map(summarise)
   }
 
   def show(index: Int, sortBy: String): Action[AnyContent] = {
     (authenticate andThen mandatoryCheck).async { implicit request: AuthenticatedUserRequest[AnyContent] =>
-      findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
+      findAPropertyRepo.findByCredId(request.credId).flatMap{
         case Some(properties) =>
           val selectedProperty = sortingVMVPropertiesService.sort(properties.vmvProperties.properties, sortBy)(index)
           Future.successful(Ok(propertySelectedView(
@@ -85,7 +85,7 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
       form.bindFromRequest()
         .fold(
         formWithErrors => {
-          findAPropertyRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap{
+          findAPropertyRepo.findByCredId(request.credId).flatMap{
             case Some(properties) =>
               val selectedProperty = sortingVMVPropertiesService.sort(properties.vmvProperties.properties, sortBy)(index)
               Future.successful(BadRequest(
@@ -102,16 +102,15 @@ class PropertySelectedController @Inject()(propertySelectedView: PropertySelecte
           }
         },
           propertySelectedForm => {
-            auditingService.extendedAudit(PropertySelectedAuditModel(request.credId.getOrElse(""), propertySelectedForm, "current-ratepayer"),
+            auditingService.extendedAudit(PropertySelectedAuditModel(request.credId.value, propertySelectedForm, "current-ratepayer"),
               uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.PropertySelectedController.show(index = index, sortBy = sortBy).url)
             if(propertySelectedForm.radioValue.equals("Yes")) {
-              val credId = request.credId.getOrElse("")
               for {
-                response <- findAPropertyRepo.findByCredId(CredId(credId))
+                response <- findAPropertyRepo.findByCredId(request.credId)
                 property = response
                   .map(lookupVMVProperties => sortingVMVPropertiesService.sort(lookupVMVProperties.vmvProperties.properties, sortBy)(index))
                   .getOrElse(throw new NotFoundException("No properties found on account"))
-                userAnswers = PropertyLinkingUserAnswers(CredId(credId), property.copy(valuations = List(property.valuations.last)))
+                userAnswers = PropertyLinkingUserAnswers(request.credId, property.copy(valuations = List(property.valuations.last)))
                 _ <- propertyLinkingRepo.upsertProperty(userAnswers)
               } yield Redirect(routes.CurrentRatepayerController.show(""))
             } else {

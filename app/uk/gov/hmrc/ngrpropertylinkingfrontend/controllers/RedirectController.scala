@@ -36,7 +36,7 @@ class RedirectController @Inject()(authenticate: AuthRetrievals,
 
   def signout: Action[AnyContent] =
     (authenticate andThen isRegisteredCheck).async { implicit request =>
-      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "sign-out"),
+      auditingService.extendedAudit(AuditModel(request.credId.value, "sign-out"),
         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.RedirectController.signout.url)
       Future.successful(Redirect(appConfig.ngrLogoutUrl))
   }

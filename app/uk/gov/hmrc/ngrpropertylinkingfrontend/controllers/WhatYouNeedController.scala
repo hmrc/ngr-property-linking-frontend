@@ -48,7 +48,7 @@ class WhatYouNeedController @Inject()(view: WhatYouNeedView,
     (authenticate andThen mandatoryCheck).async { request =>
       implicit val hc: HeaderCarrier =
         HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "property-search"),
+      auditingService.extendedAudit(AuditModel(request.credId.value, "property-search"),
         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.WhatYouNeedController.show.url)
       Future.successful(Redirect(routes.FindAPropertyController.show.url))
     }

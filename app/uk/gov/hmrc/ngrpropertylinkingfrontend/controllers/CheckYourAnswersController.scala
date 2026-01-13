@@ -106,7 +106,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
 
   def show: Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      propertyLinkingRepo.findByCredId(CredId(request.credId.getOrElse(""))).flatMap {
+      propertyLinkingRepo.findByCredId(request.credId).flatMap {
         case Some(userAnswers) => Future.successful(Ok(
           checkYourAnswersView(navigationBarContent = createDefaultNavBar, summaryList = SummaryList(createSummaryRows(userAnswers = userAnswers)))))
         case None => throw new NotFoundException("failed to find property from mongo")
@@ -115,7 +115,7 @@ class CheckYourAnswersController @Inject()(checkYourAnswersView: CheckYourAnswer
 
   def submit: Action[AnyContent] =
     (authenticate andThen mandatoryCheck).async { implicit request =>
-      auditingService.extendedAudit(AuditModel(request.credId.getOrElse(""), "declaration"),
+      auditingService.extendedAudit(AuditModel(request.credId.value, "declaration"),
         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.CheckYourAnswersController.show.url)
       Future.successful(Redirect(routes.DeclarationController.show))
     }

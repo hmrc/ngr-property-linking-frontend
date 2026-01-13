@@ -42,10 +42,8 @@ class RegistrationAndPropertyLinkCheckActionImpl @Inject()(
   override def invokeBlock[A](request: Request[A], block: AuthenticatedUserRequest[A] => Future[Result]): Future[Result] = {
     authenticate.invokeBlock(request, { implicit authRequest: AuthenticatedUserRequest[A] =>
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(authRequest, authRequest.session)
-
-      val credId = CredId(authRequest.credId.getOrElse(""))
-
-      ngrConnector.getRatepayer(credId).flatMap { maybeRatepayer =>
+      
+      ngrConnector.getRatepayer(authRequest.credId).flatMap { maybeRatepayer =>
         val isRegistered = maybeRatepayer
           .flatMap(_.ratepayerRegistration)
           .flatMap(_.isRegistered)
@@ -61,7 +59,7 @@ class RegistrationAndPropertyLinkCheckActionImpl @Inject()(
   }
 
   private def checkPropertyLinkingReference[A](block: AuthenticatedUserRequest[A] => Future[Result])(implicit authRequest: AuthenticatedUserRequest[A], hc: HeaderCarrier): Future[Result] =
-    propertyLinkingRepo.findByCredId(CredId(authRequest.credId.getOrElse(""))).flatMap {
+    propertyLinkingRepo.findByCredId(authRequest.credId).flatMap {
       case Some(answers) if answers.requestSentReference.isDefined =>
         Future.successful(Redirect(appConfig.ngrCheckYourDetailsUrl))
       case _ =>

@@ -9,6 +9,7 @@ StrictBuilding.strictBuildingSetting
 lazy val microservice = Project("ngr-property-linking-frontend", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
+
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     scalacOptions ++= {
       if (StrictBuilding.strictBuilding.value) ScalaCompilerFlags.strictScalaCompilerOptions else Nil
@@ -30,3 +31,5 @@ lazy val it = project
   .dependsOn(microservice % "test->test")
   .settings(DefaultBuildSettings.itSettings())
   .settings(libraryDependencies ++= AppDependencies.it)
+
+resolvers += MavenRepository("HMRC-open-artefacts-maven2", "https://open.artefacts.tax.service.gov.uk/maven2")

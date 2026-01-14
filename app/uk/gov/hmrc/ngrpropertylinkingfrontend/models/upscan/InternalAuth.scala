@@ -16,21 +16,18 @@
 
 package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan
 
-import play.api.libs.json.Json
-import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
 
-class UpscanInitiateRequestSpec extends TestSupport{
+final case class Permission(
+                             resourceType: String,
+                             resourceLocation: String,
+                             actions: Seq[String]
+                           )
 
-  "UpscanInitiateRequest" should {
+final case class InternalAuthConfig(
+                                     token: String,
+                                     principal: String,
+                                     permissions: Seq[Permission],
+                                     endpoint: String
+                                   )
 
-    "serialize to json" in {
-      Json.toJson(upScanInitiateRequestModel) mustBe upscanInitiateRequestJson
-    }
 
-    "deserialize from json" in {
-      upscanInitiateRequestJson.as[UpscanInitiateRequest] mustBe upScanInitiateRequestModel
-    }
-
-  }
-
-}

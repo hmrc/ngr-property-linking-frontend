@@ -22,10 +22,12 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.properties.{VMVProperties, 
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.ReferenceType.TRN
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.UserType.Individual
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.PropertyExtractor.{checksumAlgorithm, locationKey, mimeTypeKey}
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.{Checksum, File, FileTransferNotification, Property, Audit}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{PreparedUpload, Reference, UploadForm, UpscanInitiateRequest}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.{FeatureMap, HasGarage, PropertyLinkingUserAnswers, Rooms, ScatCode}
 
-import java.time.{Instant, LocalDate}
+import java.time.{Instant, LocalDate, LocalDateTime}
 
 trait TestData {
 
@@ -659,5 +661,35 @@ trait TestData {
   val testPropertyLinkingUserAnswers = PropertyLinkingUserAnswers(
     credId,
     testVmvProperty
+  )
+
+  val testReference = "testReference"
+
+  val testDownloadUrl = "testDownloadUrl"
+  val testFileName = "testFileName"
+  val testMimeType = "testMimeType"
+  val testTimeStamp: LocalDateTime = LocalDateTime.now()
+  val testChecksum = "1234567890"
+  val testSize = 123
+  val testFormBundleId = "123412341234"
+  val testNonRepudiationSubmissionId = "testNonRepudiationSubmissionId"
+  val testCorrelationid = "testCorrelationid"
+
+  def testSdesPayload(attachmentReference: String): FileTransferNotification = FileTransferNotification(
+    informationType = "1655996667080",
+    file = File(
+      recipientOrSender = Some("400063095160"),
+      name = s"$testFormBundleId-$testFileName",
+      location = Some(testDownloadUrl),
+      checksum = Checksum(
+        algorithm = checksumAlgorithm,
+        value = testChecksum
+      ),
+      size = testSize,
+      properties = List()
+    ),
+    audit = Audit(
+      correlationID = testCorrelationid
+    )
   )
 }

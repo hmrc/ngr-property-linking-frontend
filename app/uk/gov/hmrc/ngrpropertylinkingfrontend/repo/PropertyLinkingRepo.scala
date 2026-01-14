@@ -18,33 +18,34 @@ package uk.gov.hmrc.ngrpropertylinkingfrontend.repo
 
 import com.google.inject.Singleton
 import com.mongodb.client.model.Indexes.descending
+import org.bson.BsonDocument
 import org.mongodb.scala.bson.conversions.Bson
+import org.mongodb.scala.model.*
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.Updates.combine
-import org.mongodb.scala.model.*
-import org.mongodb.scala.result.UpdateResult
+import org.mongodb.scala.{SingleObservable, SingleObservableFuture}
 import play.api.Logging
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.ngrpropertylinkingfrontend.config.FrontendAppConfig
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.PropertyLinkingUserAnswers
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
-import org.mongodb.scala.{SingleObservable, SingleObservableFuture}
-import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.UploadId
-
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan.{UploadId, UploadedFile}
 import java.time.{Instant, LocalDate}
-import scala.util.{Failure, Success}
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import scala.concurrent.impl.Promise
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 @Singleton
 case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
-                                               config: FrontendAppConfig
-                                              )(implicit ec: ExecutionContext)
+                                         config: FrontendAppConfig
+                                        )(implicit ec: ExecutionContext)
   extends PlayMongoRepository[PropertyLinkingUserAnswers](
     collectionName = "propertyLinking",
     mongoComponent = mongo,
@@ -129,19 +130,33 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
   def insertUploadEvidence(credId: CredId, uploadEvidence: String): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.set("uploadEvidence", uploadEvidence))
   }
-  
+
   def insertUploadId(credId: CredId, uploadId: UploadId): Future[Option[PropertyLinkingUserAnswers]] = {
     findAndUpdateByCredId(credId, Updates.set("evidenceDocumentUploadId", uploadId.value))
   }
 
+  def insertReferenceNumber(credId: CredId, ref: String): Future[Option[PropertyLinkingUserAnswers]] = {
+    findAndUpdateByCredId(credId, Updates.set("referenceNumber", ref))
+  }
+
+
+  def insertUploadedFile(credId: CredId, uploadedFile: File): Future[Option[PropertyLinkingUserAnswers]] = {
+    val bson = BsonDocument.parse(Json.stringify(Json.toJson(uploadedFile)))
+    findAndUpdateByCredId(
+      credId,
+      Updates.set("objectStoreFile", bson)
+    )
+  }
+
+
   def deleteEvidenceDocument(credId: CredId): Future[Boolean] = {
     collection.updateOne(filterByCredId(credId),
-      combine(
-        Updates.unset("evidenceDocument"),
-        Updates.unset("evidenceDocumentUrl"),
-        Updates.unset("evidenceDocumentUploadId")
-      )
-    ).toFuture()
+        combine(
+          Updates.unset("evidenceDocument"),
+          Updates.unset("evidenceDocumentUrl"),
+          Updates.unset("evidenceDocumentUploadId")
+        )
+      ).toFuture()
       .map(_.wasAcknowledged())
   }
 
@@ -150,5 +165,5 @@ case class PropertyLinkingRepo @Inject()(mongo: MongoComponent,
       equal("credId.value", credId.value)
     ).headOption()
   }
-  
+
 }

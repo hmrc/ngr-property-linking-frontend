@@ -52,12 +52,13 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
   val fileUrl: URL = url"http://example.com/dummyLink"
   val fileSize: Option[Long] = Some(120L)
   val uploadId = UploadId.generate()
+  val checksum = "396f101dd52e8b2ace0dcf5ed09b1d1f030e608938510ce46e7a5c7a4e775100"
 
   "UploadedBusinessRatesBillController show()" must {
     "Return OK and the correct view" in {
       mockRequest(hasCredId = true)
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-      when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully(fileName, fileExtension, fileUrl, fileSize))))
+      when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully(fileName, fileExtension, fileUrl, fileSize, checksum))))
       when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any(), any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       val result = controller.show(uploadId)(authenticatedFakeRequest)
       status(result) mustBe OK
@@ -85,7 +86,7 @@ class UploadedBusinessRatesBillControllerSpec extends ControllerSpecSupport with
 
     "Exception when no credId in request" in {
       when(mockPropertyLinkingRepo.findByCredId(any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
-      when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully(fileName, fileExtension, fileUrl, fileSize))))
+      when(mockUploadProgressTracker.getUploadResult(any())).thenReturn(Future.successful(Some(UploadedSuccessfully(fileName, fileExtension, fileUrl, fileSize, checksum))))
       when(mockPropertyLinkingRepo.insertEvidenceDocument(any(), any(), any(), any())).thenReturn(Future.successful(Some(propertyLinkingUserAnswers)))
       recoverToExceptionIf[NotFoundException] {
         controller.show(uploadId)(authenticatedFakeRequest)

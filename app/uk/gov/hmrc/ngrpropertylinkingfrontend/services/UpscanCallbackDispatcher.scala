@@ -44,7 +44,8 @@ class UpscanCallbackDispatcher @Inject() (sessionStorage: UploadProgressTracker)
               name = s.uploadDetails.fileName,
               mimeType = s.uploadDetails.fileMimeType,
               downloadUrl = s.downloadUrl,
-              size = Some(s.uploadDetails.size)
+              size = Some(s.uploadDetails.size),
+              checksum    = s.uploadDetails.checksum
             )
           } else {
             throw new BadRequestException(s"Incorrect file type uploaded, preferred file type was: ${s.uploadDetails.fileMimeType}")

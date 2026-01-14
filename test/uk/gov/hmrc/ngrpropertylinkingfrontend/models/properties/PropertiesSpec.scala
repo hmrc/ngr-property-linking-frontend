@@ -51,7 +51,6 @@ class PropertiesSpec extends TestSupport {
 
   "Property" should {
     "deserialize to json" in {
-      println(Json.toJson(properties1))
       Json.toJson(properties1) mustBe testPropertyJsonResponse
     }
     "serialize to json" in {

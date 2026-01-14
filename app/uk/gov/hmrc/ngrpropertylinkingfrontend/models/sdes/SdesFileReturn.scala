@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ngrpropertylinkingfrontend.models.upscan
+package uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes
 
-import play.api.libs.json.Json
-import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.TestSupport
+import play.api.libs.json.{Json, OFormat}
 
-class UpscanInitiateRequestSpec extends TestSupport{
+case class SdesFileReturn(
+  attachmentUrl: String,
+  attachmentId: String,
+  attachmentSha256Checksum: String,
+  attachmentContentType: String,
+  nrSubmissionId: String
+)
 
-  "UpscanInitiateRequest" should {
-
-    "serialize to json" in {
-      Json.toJson(upScanInitiateRequestModel) mustBe upscanInitiateRequestJson
-    }
-
-    "deserialize from json" in {
-      upscanInitiateRequestJson.as[UpscanInitiateRequest] mustBe upScanInitiateRequestModel
-    }
-
-  }
-
+object SdesFileReturn {
+  implicit val format: OFormat[SdesFileReturn] = Json.format[SdesFileReturn]
 }

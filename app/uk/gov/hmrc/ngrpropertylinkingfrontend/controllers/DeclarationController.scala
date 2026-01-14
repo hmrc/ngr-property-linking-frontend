@@ -26,10 +26,15 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.models.audit.AuditModel
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.components.NavBarPageContents.createDefaultNavBar
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.registration.CredId
 import uk.gov.hmrc.ngrpropertylinkingfrontend.repo.PropertyLinkingRepo
-import uk.gov.hmrc.ngrpropertylinkingfrontend.services.AuditingService
+import uk.gov.hmrc.ngrpropertylinkingfrontend.services.{AuditingService, SdesService}
 import uk.gov.hmrc.ngrpropertylinkingfrontend.utils.UniqueIdGenerator
 import uk.gov.hmrc.ngrpropertylinkingfrontend.views.html.DeclarationView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.ngrpropertylinkingfrontend.connectors.SdesConnector
+import uk.gov.hmrc.ngrpropertylinkingfrontend.logging.NGRLogger
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.FileTransferNotification
+import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
+import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,8 +45,10 @@ class DeclarationController @Inject()(view: DeclarationView,
                                       mandatoryCheck: RegistrationAndPropertyLinkCheckAction,
                                       propertyLinkingRepo: PropertyLinkingRepo,
                                       ngrConnector: NGRConnector,
+                                      sdesConnector: SdesConnector,
                                       ngrNotifyConnector: NgrNotifyConnector,
                                       auditingService: AuditingService,
+                                      logger: NGRLogger,
                                       mcc: MessagesControllerComponents)(implicit appConfig: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] =
@@ -55,10 +62,29 @@ class DeclarationController @Inject()(view: DeclarationView,
         uk.gov.hmrc.ngrpropertylinkingfrontend.controllers.routes.DeclarationController.show.url)
       val ref = UniqueIdGenerator.generateId
       for {
-        maybeAnswers <- propertyLinkingRepo.insertRequestSentReference(request.credId, ref)
+        maybeAnswers <-
+          propertyLinkingRepo.insertRequestSentReference(request.credId, ref)
         userAnswers <- maybeAnswers match {
           case Some(result) => Future.successful(result)
           case None => Future.failed(new Exception(s"Could not save reference for credId: ${request.credId.value}"))
+        }
+        objectStoreFiles <- propertyLinkingRepo
+          .findByCredId(request.credId)
+          .map(_.flatMap(_.objectStoreFile))
+        uploadUpscanFileToSdes <- objectStoreFiles.headOption match {
+          case Some(file) =>
+            val correlationId = UUID.randomUUID().toString
+            val ftn = FileTransferNotification(
+              informationType = appConfig.sdesInformationType,
+              file            = file,
+              audit           = Audit(correlationID = correlationId)
+            )
+            sdesConnector.sendFileNotification(ftn)
+
+          case None =>
+            val msg = s"No object store file found for credId=${request.credId.value}"
+            logger.warn(msg)
+            Future.successful(Left(msg)) 
         }
         ngrConnectorResponse <- ngrConnector.upsertPropertyLinkingUserAnswers(userAnswers)
         ngrNotifyConnectorResponse <- ngrNotifyConnector.postProperty(userAnswers)

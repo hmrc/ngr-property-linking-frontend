@@ -17,6 +17,7 @@
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import org.scalatest.*
+import org.scalatest.concurrent.PatienceConfiguration.{Interval, Timeout}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -32,6 +33,8 @@ import uk.gov.hmrc.ngrpropertylinkingfrontend.helpers.WireMockHelper
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.ErrorResponse
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.*
 import uk.gov.hmrc.ngrpropertylinkingfrontend.models.sdes.PropertyExtractor.{formBundleKey, locationKey, mimeTypeKey, prefixedFormBundleKey}
+import org.scalatest.concurrent.ScalaFutures.*
+import org.scalatest.time.{Millis, Seconds, Span}
 
 import java.time.LocalDateTime
 import scala.concurrent.Future
@@ -166,6 +169,8 @@ class SdesConnectorSpec
       )
     ))
   )
+
+
   
   "SDESConnector" - {
     forAll(statusCases) { (sdesStatusCode, expectedConnectorResult) =>
@@ -173,7 +178,7 @@ class SdesConnectorSpec
         stubResponse(sdesPath, sdesStatusCode)
         val ftn: FileTransferNotification = sampleFileTransferNotification
         val result: Future[Either[ErrorResponse, Int]] = connector.sendFileNotification(ftn)
-        result.futureValue mustBe expectedConnectorResult
+        result.futureValue(Timeout(Span(3, Seconds)), Interval(Span(50, Millis))) mustBe expectedConnectorResult
       }
     }
   }
